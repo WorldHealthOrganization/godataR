@@ -1,0 +1,11 @@
+library(godataR)
+
+url <- "http://localhost:3000/"
+username <- "fullerj@who.int"
+password <- "Monn12345678"
+outbreak_id <- "995b5a2b-c7c7-48d3-8b67-15261143c4f9"
+
+get_godata_version(url)
+get_access_token(url, username, password)
+a <- get_cases2(url, username, password, outbreak_id, wait=1)
+

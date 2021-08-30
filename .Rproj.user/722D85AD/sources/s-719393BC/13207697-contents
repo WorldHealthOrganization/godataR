@@ -1,5 +1,0 @@
-exportPattern("^[[:alpha:]]+")
-import(httr)
-import(jsonlite)
-import(tidyverse)
-importFrom(magrittr, "%>%")
