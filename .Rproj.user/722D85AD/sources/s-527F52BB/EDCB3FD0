@@ -1,0 +1,24 @@
+{
+    "id": "EDCB3FD0",
+    "path": "~/GitHub/godataR/R/get_cases.R",
+    "project_path": "R/get_cases.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1630352114927.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "cursorPosition": "66,42",
+        "scrollLine": "56"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1630355743,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1630355743401,
+    "read_only": false,
+    "read_only_alternatives": []
+}

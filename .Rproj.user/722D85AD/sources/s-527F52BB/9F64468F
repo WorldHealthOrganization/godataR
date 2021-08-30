@@ -1,0 +1,24 @@
+{
+    "id": "9F64468F",
+    "path": "~/GitHub/godataR/R/get_godata_version.R",
+    "project_path": "R/get_godata_version.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1630351643140.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "cursorPosition": "7,12",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1630354631,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1630354631856,
+    "read_only": false,
+    "read_only_alternatives": []
+}
