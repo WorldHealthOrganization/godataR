@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_access_token.R
 \name{get_access_token}
 \alias{get_access_token}
-\title{Title}
+\title{Get an access oauth access token}
 \usage{
 get_access_token(url = url, username = username, password = password)
 }
@@ -17,7 +17,7 @@ get_access_token(url = url, username = username, password = password)
 string
 }
 \description{
-Title
+Get an access oauth access token
 }
 \examples{
 url <- "https://MyGoDataServer.com/"

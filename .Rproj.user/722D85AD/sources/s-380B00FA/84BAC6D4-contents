@@ -1,13 +1,13 @@
-#' Download cases from Go.Data (version 2.38.0 or earlier)
+#' Download lab results from Go.Data (version 2.38.0 or earlier)
 #'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
-#' @param outbreak_id The id number for the outbreak for which you want to download cases.
+#' @param outbreak_id The id number for the outbreak for which you want to download lab results.
 #' @param batch_size For large datasets, specify the number of records to retrieve in each iteration.
 #'
 #' @return
-#' Returns data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
+#' Returns data frame of lab results. Some fields may require further unnesting. See the tidyr::unnest() function.
 #' @export
 #'
 #' @examples
@@ -16,7 +16,7 @@
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
-#' cases <- get_cases(url=url, username=username, password=password, outbreak_id=outbreak_id)
+#' labresults <- get_labresults(url=url, username=username, password=password, outbreak_id=outbreak_id)
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr
@@ -24,7 +24,7 @@
 #' @import tibble
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
-get_cases <- function(url=url, username=username, password=password, outbreak_id=outbreak_id, batch_size=50000) {
+get_labresults <- function(url=url, username=username, password=password, outbreak_id=outbreak_id, batch_size=50000) {
 
   #Check version of Go.Data
   if (check_godata_version(url=url)==TRUE) {
@@ -37,8 +37,8 @@ get_cases <- function(url=url, username=username, password=password, outbreak_id
   }
 
   #get total number of records
-  df_n <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/cases/count"),
-                 add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " "))) %>%
+  df_n <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/lab-results/aggregate-filtered-count"),
+              add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " "))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
     unlist() %>%
@@ -58,9 +58,9 @@ get_cases <- function(url=url, username=username, password=password, outbreak_id
     if (df_n > batch_size)     message(paste0("...downloading records ", as.character(skip+1, scientific = FALSE), " to ", format(skip+batch_size, scientific = FALSE)))
 
     #fetch the batch of records
-    df.i <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/cases",
-                          "/?filter={%22limit%22:",format(batch_size, scientific = FALSE),",%22skip%22:",format(skip, scientific = FALSE),"}"),
-                   add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " "))) %>%
+    df.i <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/lab-results/aggregate",
+                       "/?filter={%22limit%22:",format(batch_size, scientific = FALSE),",%22skip%22:",format(skip, scientific = FALSE),"}"),
+                add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " "))) %>%
       content(as='text') %>%
       fromJSON( flatten=TRUE) %>%
       as_tibble()

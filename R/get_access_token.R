@@ -1,4 +1,4 @@
-#' Title
+#' Get an access oauth access token
 #'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
@@ -14,6 +14,7 @@
 #'
 #' @import httr
 #' @importFrom jsonlite fromJSON
+#' @export
 
 get_access_token <- function(url=url, username=username, password=password) {
 
