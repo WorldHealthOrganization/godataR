@@ -28,3 +28,17 @@ d <- get_followups(url, username, password, outbreak_id)
 
 e <- get_labresults(url, username, password, outbreak_id)
 f <- get_labresults2(url, username, password, outbreak_id)
+
+
+export.request <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/cases/export",
+                             "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22dontTranslateValues%22%3A%22true%22%2C%20%22jsonReplaceUndefinedWithNull%22%3A%22true%22%20%7D%7D",
+                             "&access_token=",get_access_token(url=url, username=username, password=password)))
+
+export.request.id <- export.request %>%
+  content() %>%
+  pluck("exportLogId")
+
+export.request.status <- GET(paste0(url,"api/export-logs/",export.request.id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
+  content()
+
+result <- export.request.status[c("statusStep","totalNo","processedNo")]
