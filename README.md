@@ -16,5 +16,5 @@ password <- "mypassword" #your password to login
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b" #the outbreak id number
 
 #Get a data frame of cases
-cases <- get_cases2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+cases <- godataR::get_cases2(url=url, username=username, password=password, outbreak_id=outbreak_id)
 ```
