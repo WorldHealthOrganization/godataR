@@ -1,0 +1,71 @@
+library(httr)
+library(jsonlite)
+library(tidyverse)
+
+
+# Parameters to connect to Go.Data:
+url <- "http://localhost:3000/"
+username <- "fullerj@who.int" # params$username
+password <- "Monn12345678" # params$pwd
+outbreak <- "995b5a2b-c7c7-48d3-8b67-15261143c4f9" # params$outbreak
+
+# Function to get access token:
+get_token <- function() {
+  login = httr::POST(url = paste0(url,"api/users/login"),
+                     content_type_json(),
+                     body = paste0("{\"email\":\"", 
+                                   username, 
+                                   "\",\"password\":\"", 
+                                   password,
+                                   "\",\"token\":null,\"userid\":null}"))
+  credentials = content(login)
+  token = credentials$id
+  userid = credentials$userId
+  
+  return(token)
+}
+
+# Check that url, username and password are valid and a token is created:
+print(get_token())
+
+
+
+#Get Case Data
+cases <- httr::GET(paste0(url,"api/outbreaks/",outbreak,"/cases"), 
+                   add_headers(Authorization = paste("Bearer", get_token(), sep = " "))) %>%
+  content(as = "text") %>%
+  fromJSON(flatten = TRUE) %>%
+  as_tibble()
+
+
+# Fetch existing lab data from Go.Data database:
+lab_results <- httr::GET(paste0(url,"api/outbreaks/",outbreak,"/lab-results/aggregate"), 
+                         add_headers(Authorization = paste("Bearer", get_token(), sep = " "))) %>%
+  content(as = "text") %>%
+  fromJSON(flatten = TRUE) %>%
+  as_tibble()
+
+
+#Create a new lab record for Test Case 1 (id = 	6dc912c4-e20d-4056-8eab-a9c3fbb83f0a )
+
+new_lab_data <- list(personId = "6dc912c4-e20d-4056-8eab-a9c3fbb83f0a",
+                     personType = "LNG_REFERENCE_DATA_CATEGORY_PERSON_TYPE_CASE",
+                     dateSampleTaken="2021-08-22T12:00:00.000Z",
+                     sampleType = "LNG_REFERENCE_DATA_CATEGORY_TYPE_OF_SAMPLE_BLOOD",
+                     testType = "LNG_REFERENCE_DATA_CATEGORY_TYPE_OF_LAB_TEST_PCR",
+                     result = "LNG_REFERENCE_DATA_CATEGORY_LAB_TEST_RESULT_POSITIVE")
+new_lab_quest <- tibble(lab_question_1 = "50",
+                      lab_question_2 = "testing this out")
+new_lab_quest_nested <- nest(new_lab_quest, questionnaireAnswers=c(lab_question_1, lab_question_2)) %>%
+  mutate(personId = "6dc912c4-e20d-4056-8eab-a9c3fbb83f0a")
+
+new_lab_data <- new_lab_quest_nested %>% left_join(as_tibble(new_lab_data), by="personId")
+
+post_request <- POST(paste0(url,"api/outbreaks/",outbreak,"/cases/","6dc912c4-e20d-4056-8eab-a9c3fbb83f0a","/lab-results"),
+                     add_headers(Authorization = paste("Bearer", get_token(), sep=" ")),
+                     body = new_lab_data,
+                     encode = "json") %>%
+  content(as="text")
+
+delete_request <- DELETE(paste0(url,"api/outbreaks/",outbreak,"/cases/","6dc912c4-e20d-4056-8eab-a9c3fbb83f0a","/lab-results/","7c93e97c-7a54-45e7-8426-b1021232a0ab"),
+                         add_headers(Authorization = paste("Bearer", get_token(), sep=" ")))

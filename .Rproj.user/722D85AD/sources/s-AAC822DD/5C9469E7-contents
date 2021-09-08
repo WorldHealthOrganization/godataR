@@ -1,0 +1,66 @@
+library(godataR)
+
+url <- "http://localhost:3000/"
+username <- "fullerj@who.int"
+password <- "Monn12345678"
+# outbreak_id <- "995b5a2b-c7c7-48d3-8b67-15261143c4f9" #API test Push
+# outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b" #COVID-19 Demo
+outbreak_id <- "b4ad8c59-be58-4083-a53e-77380c20e3ba" #Large Outbreak
+# outbreak_id <- "abc554d7-2c19-41d0-b9af-475ad25a3abc" #Bad example
+
+# url <- "http://godatabangladesh.iedcr.gov.bd/"
+# username <- "holliss@who.int"
+# password <- "Benibenitimes1999"
+
+get_active_outbreak(url=url, username=username, password=password)
+set_active_outbreak(url=url, username=username, password=password, outbreak_id=outbreak_id)
+
+check_godata_url(url)
+get_godata_version(url)
+check_godata_version(url)
+get_access_token(url, username, password)
+
+outbreaks <- get_all_outbreaks(url, username, password)
+print(outbreaks$name[outbreaks$id==outbreak_id])
+
+a <- get_cases2(url, username, password, outbreak_id)
+b <- get_cases(url, username, password, outbreak_id, batch_size = 2)
+
+c <- get_contacts2(url, username, password, outbreak_id)
+d <- get_followups(url, username, password, outbreak_id)
+
+e <- get_labresults(url, username, password, outbreak_id)
+f <- get_labresults2(url, username, password, outbreak_id)
+
+
+
+#Push thousands of records up to Go.Data
+n <- 10000
+case.ids <- paste0("CASE-",sprintf("%06d",1:n))
+genders <- sample(c("LNG_REFERENCE_DATA_CATEGORY_GENDER_MALE","LNG_REFERENCE_DATA_CATEGORY_GENDER_FEMALE"),n, replace = TRUE)
+classifications <- sample(c("LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_CONFIRMED","LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_SUSPECT"), n, replace=TRUE)
+dateOfReportings <- paste0(sample(seq(as.Date("2021-09-01"),as.Date("2021-09-15"), by=1), n, replace=TRUE),"T00:00:00.000Z")
+firstNames <- sample(LETTERS,n, replace=TRUE)
+lastNames <- sample(LETTERS,n, replace=TRUE)
+df.cases <- data.frame(classification=classifications,
+                       firstName=firstNames,
+                       lastName=lastNames,
+                       gender=genders,
+                       dateOfReporting=dateOfReportings)
+# Push new data to server, case by case
+for (i in 1:n) {
+  message(paste0("Record ", i))
+  
+  newdata <- list(classification=df.cases$classification[i],
+                  firstName=df.cases$firstName[i],
+                  lastName=df.cases$lastName[i],
+                  gender=df.cases$gender[i],
+                  dateOfReporting=df.cases$dateOfReporting[i])
+
+  push.request <- httr::POST(paste0(url,"api/outbreaks/",outbreak_id,"/cases"),
+                       add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " ")),
+                       body=newdata,
+                       encode="json")
+  warn_for_status(push.request)
+}
+

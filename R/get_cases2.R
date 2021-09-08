@@ -46,21 +46,17 @@ get_cases2 <- function(url=url, username=username, password=password, outbreak_i
   #function argument 'wait' determines the number of seconds to wait between iterations
   export.request.status <- get_export_status(url=url, username=username, password=password, request_id=request_id)
 
-  # export.request.status <- GET(paste0(url,"api/export-logs/",export.request.id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-  #   content() %>%
-  #   pluck("statusStep")
   while(export.request.status$statusStep != "LNG_STATUS_STEP_EXPORT_FINISHED") {
     Sys.sleep(wait)
-    export.request.status <- GET(paste0(url,"api/export-logs/",export.request.id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-      content() %>%
-      pluck("statusStep")
+    export.request.status <- GET(paste0(url,"api/export-logs/",request_id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
+      content()
     message(paste0("...processed ",export.request.status$processedNo, " of ", export.request.status$totalNo, " records"))
   }
 
   #Download the export
   message("...beginning download")
-  df <- GET(paste0(url,"api/export-logs/",export.request.id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-    content("text") %>%
+  df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
+    content("text", encoding="UTF-8") %>%
     fromJSON(flatten=TRUE)
   message("...download complete!")
 

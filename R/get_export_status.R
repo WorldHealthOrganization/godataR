@@ -35,7 +35,7 @@
 
 get_export_status <- function(url=url, username=username, password=password, request_id=request_id) {
 
-  export.request.status <- GET(paste0(url,"api/export-logs/",export.request.id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
+  export.request.status <- GET(paste0(url,"api/export-logs/",request_id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
     content()
 
   export.request.status <- export.request.status[c("statusStep","totalNo","processedNo")]
