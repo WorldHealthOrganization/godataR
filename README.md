@@ -7,7 +7,7 @@ An R package to interface with Go.Data software (https://www.who.int/tools/godat
 ```
 
 #Install package
-devtools::install_github("jamesfuller-cdc/godataR")
+devtools::install_github("WorldHealthOrganization/godataR")
 
 #Provide parameters from your instance of Go.Data
 url <- "https://MyGoDataServer.com/" #your Go.Data URL
