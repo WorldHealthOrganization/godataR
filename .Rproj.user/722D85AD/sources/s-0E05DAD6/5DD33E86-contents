@@ -37,14 +37,11 @@ get_cases2 <- function(url=url, username=username, password=password, outbreak_i
     set_active_outbreak(url=url, username=username, password=password, outbreak_id=outbreak_id)
   }
 
+  #Default value of file.type is "json"
+  if (missing(file.type)) file.type <- "json"
+
   #Submit an export request to the system
-  if (missing(file.type)) {
-    request_id <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/cases/export",
-                             "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22dontTranslateValues%22%3A%22true%22%2C%20%22jsonReplaceUndefinedWithNull%22%3A%22true%22%20%7D%7D",
-                             "&access_token=",get_access_token(url=url, username=username, password=password))) %>%
-      content() %>%
-      pluck("exportLogId")
-  } else if (file.type=="json") {
+  if (file.type=="json") {
     request_id <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/cases/export",
                              "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22dontTranslateValues%22%3A%22true%22%2C%20%22jsonReplaceUndefinedWithNull%22%3A%22true%22%20%7D%7D",
                              "&access_token=",get_access_token(url=url, username=username, password=password))) %>%
@@ -72,14 +69,7 @@ get_cases2 <- function(url=url, username=username, password=password, outbreak_i
 
   #Download the export
   message("...beginning download")
-  if (missing(file.type)) {
-    df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-      content("text", encoding="UTF-8") %>%
-      fromJSON(flatten=TRUE)
-
-    # fix one strange variable name
-    names(df)[names(df) %in% "_id"] <- "id"
-  } else if (file.type=="json") {
+  if (file.type=="json") {
     df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
       content("text", encoding="UTF-8") %>%
       fromJSON(flatten=TRUE)

@@ -1,6 +1,13 @@
 library(devtools)
 library(roxygen2)
+
+remove.packages("godataR")
+devtools::install_github("WorldHealthOrganization/godataR", upgrade="never")
+
 library(godataR)
+
+
+
 
 url <- "http://localhost:3000/"
 username <- "fullerj@who.int"
@@ -19,7 +26,6 @@ set_active_outbreak(url=url, username=username, password=password, outbreak_id=o
 
 check_godata_url(url)
 get_godata_version(url)
-check_godata_version(url)
 get_access_token(url, username, password)
 
 outbreaks <- get_all_outbreaks(url, username, password)
@@ -27,7 +33,9 @@ print(outbreaks$name[outbreaks$id==outbreak_id])
 
 users <- get_users(url, username, password)
 
-a <- get_cases2(url, username, password, outbreak_id, wait=0.1, file.type="csv")
+a <- get_cases2(url, username, password, outbreak_id, wait=0.1)
+a. <- get_cases2(url, username, password, outbreak_id, wait=0.1, file.type="json")
+a.. <- get_cases2(url, username, password, outbreak_id)
 b <- get_cases(url, username, password, outbreak_id, batch_size = 2)
 
 c <- get_contacts2(url, username, password, outbreak_id)
