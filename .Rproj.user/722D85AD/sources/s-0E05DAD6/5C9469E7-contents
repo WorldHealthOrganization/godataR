@@ -1,9 +1,11 @@
+library(devtools)
+library(roxygen2)
 library(godataR)
 
 url <- "http://localhost:3000/"
 username <- "fullerj@who.int"
 password <- "Monn12345678"
-# outbreak_id <- "995b5a2b-c7c7-48d3-8b67-15261143c4f9" #API test Push
+outbreak_id <- "995b5a2b-c7c7-48d3-8b67-15261143c4f9" #API test Push
 # outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b" #COVID-19 Demo
 outbreak_id <- "b4ad8c59-be58-4083-a53e-77380c20e3ba" #Large Outbreak
 # outbreak_id <- "abc554d7-2c19-41d0-b9af-475ad25a3abc" #Bad example
@@ -23,7 +25,9 @@ get_access_token(url, username, password)
 outbreaks <- get_all_outbreaks(url, username, password)
 print(outbreaks$name[outbreaks$id==outbreak_id])
 
-a <- get_cases2(url, username, password, outbreak_id)
+users <- get_users(url, username, password)
+
+a <- get_cases2(url, username, password, outbreak_id, wait=0.1, file.type="csv")
 b <- get_cases(url, username, password, outbreak_id, batch_size = 2)
 
 c <- get_contacts2(url, username, password, outbreak_id)

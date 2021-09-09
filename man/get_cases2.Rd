@@ -9,7 +9,8 @@ get_cases2(
   username = username,
   password = password,
   outbreak_id = outbreak_id,
-  wait = 5
+  wait = 5,
+  file.type = c("json", "csv")
 )
 }
 \arguments{
@@ -22,18 +23,21 @@ get_cases2(
 \item{outbreak_id}{The id number for the outbreak for which you want to download cases.}
 
 \item{wait}{The number of seconds to wait in between iterations of checking the status of the download. Default is 5 seconds, but the user can specify a smaller value to speed up the process if the dataset is small.}
+
+\item{file.type}{Whether the API should return a data structure with nested fields (json, the default) or an entirely flat data structure (csv)}
 }
 \value{
-Returns data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
+Returns data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See the tidyr::unnest() function.
 }
 \description{
 Download cases from Go.Data (version 2.38.1 or later)
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
-
 cases <- get_cases2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+}
 }
