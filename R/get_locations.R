@@ -12,7 +12,7 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
-#' users <- get_users(url=url, username=username, password=password)
+#' locations <- get_locations(url=url, username=username, password=password)
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr
