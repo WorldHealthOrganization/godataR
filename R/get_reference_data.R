@@ -28,9 +28,7 @@ get_reference_data <- function(url=url, username=username, password=password) {
                       "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
-    filter(deleted!=TRUE) %>%
-    # select(id, firstName, lastName, email, roleIds, lastLoginDate, institutionName, disregardGeographicRestrictions, activeOutbreakId, createdBy, createdAt) %>%
-    #mutate(institutionName = sub(".*NAME_", "", institutionName))
+    filter(deleted!=TRUE) 
     
     return(reference_data)
   
