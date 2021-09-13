@@ -1,10 +1,11 @@
 # godataR
 An R package to interface with Go.Data software (https://www.who.int/tools/godata). 
 
-There are a range of functions within the `godataR` package to retrieve collections from your Go.Data instance's API. You must have valid user credentials with appropriate roles/permissions to obtain access to the API.
-
+There are a range of functions within the `godataR` package to interact with your Go.Data instance's API. You must have valid Go.Data user credentials with appropriate roles/permissions to obtain access to the API and securely access data. (see *Set Parameters* section). The self-documenting description of the API methods can be viewed using Loopback Explorer by adding `/explorer` to the end of any Go.Data URL.  You can find more information on the Go.Data API [here](https://worldhealthorganization.github.io/godata/api-docs/).
 
 ## Installation
+This package is hosted on the WHO Github Repository here: [https://github.com/WorldHealthOrganization/godataR](https://github.com/WorldHealthOrganization/godataR).
+Install the package within your R console by executing the code below.
 
 ```
 #Install package
@@ -12,9 +13,10 @@ devtools::install_github("WorldHealthOrganization/godataR")
 ```
 
 ## Providing parameters from your instance of Go.Data
+These parameters will be used within each function, and for ease of use you can set them once after installation, alternatively you can change them at each point a function is called (for instance, to modify `outbreak_id`.
 
 ```
-#Set my parameters
+#Set parameters
 url <- "https://MyGoDataServer.com/" #your Go.Data URL
 username <- "myemail@email.com" #your email address to login
 password <- "mypassword" #your password to login
