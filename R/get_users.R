@@ -1,10 +1,8 @@
-
-#' Get a list of all users and their attributes
+#' Get a list of all users and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
 #'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
-#' @param outbreak_id The id number for the outbreak for which you want to download users who are assigned to this outbreak
 #'
 #' @return
 #' Returns data frame of user accounts associated with Go.Data instance.
