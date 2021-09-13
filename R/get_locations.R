@@ -24,7 +24,7 @@
 
 get_locations <- function(url=url, username=username, password=password) {
   
-  users <- GET(paste0(url,"api/locations",
+  locations <- GET(paste0(url,"api/locations",
                       "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
