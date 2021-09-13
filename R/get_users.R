@@ -5,7 +5,7 @@
 #' @param password The password for your Go.Data login
 #'
 #' @return
-#' Returns data frame of user accounts associated with Go.Data instance.
+#' Returns data frame of user accounts associated with Go.Data instance. Some fields, roleIds, will be in list format and may require further un-nesting. See the tidyr::unnest() function.
 #' @export
 #' @examples
 #' url <- "https://MyGoDataServer.com/"
