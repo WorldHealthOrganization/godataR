@@ -38,7 +38,7 @@ relationships <- godataR::get_relationships2(url=url, username=username, passwor
 
 followups <- godataR::get_followups2(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
-# events <- godataR::get_events2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+events <- godataR::get_events2(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
 clusters <- godataR::get_clusters(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
