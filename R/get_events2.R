@@ -7,7 +7,7 @@
 #' @param wait The number of seconds to wait in between iterations of checking the status of the download. Default is 5 seconds, but the user can specify a smaller value to speed up the process if the dataset is small.
 #'
 #' @return
-#' Returns data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
+#' Returns data frame of events Some fields may require further unnesting. See the tidyr::unnest() function.
 #' @export
 #' @examples
 #' url <- "https://MyGoDataServer.com/"
