@@ -1,4 +1,4 @@
-' Download events from Go.Data (version 2.38.0 or earlier)
+#' Download events from Go.Data (version 2.38.0 or earlier)
 #'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.

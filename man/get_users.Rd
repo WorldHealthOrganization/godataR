@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_users.R
 \name{get_users}
 \alias{get_users}
-\title{Get a list of all users and their attributes}
+\title{Get a list of all users and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).}
 \usage{
 get_users(url = url, username = username, password = password)
 }
@@ -12,14 +12,12 @@ get_users(url = url, username = username, password = password)
 \item{username}{The email address for your Go.Data login.}
 
 \item{password}{The password for your Go.Data login}
-
-\item{outbreak_id}{The id number for the outbreak for which you want to download users who are assigned to this outbreak}
 }
 \value{
-Returns data frame of user accounts associated with Go.Data instance.
+Returns data frame of user accounts associated with Go.Data instance. Some fields, roleIds, will be in list format and may require further un-nesting. See the tidyr::unnest() function.
 }
 \description{
-Get a list of all users and their attributes
+Get a list of all users and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
 }
 \examples{
 url <- "https://MyGoDataServer.com/"
