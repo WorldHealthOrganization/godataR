@@ -20,9 +20,11 @@ Returns the Outbreak ID number of the user's active outbreak.
 Get the currently active outbreak id number
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
 active_outbreak_id <- get_active_outbreak(url=url, username=username, password=password)
+}
 }

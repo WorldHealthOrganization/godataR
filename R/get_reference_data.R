@@ -8,11 +8,13 @@
 #' Returns data frame of reference data associated with Go.Data instance.
 #' @export
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
 #' reference_data <- get_reference_data(url=url, username=username, password=password)
+#' }
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr
@@ -23,13 +25,13 @@
 
 
 get_reference_data <- function(url=url, username=username, password=password) {
-  
+
   reference_data <- GET(paste0(url,"api/reference-data",
                       "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
-    filter(deleted!=TRUE) 
-    
+    filter(deleted!=TRUE)
+
     return(reference_data)
-  
+
 }

@@ -33,10 +33,12 @@ Returns data frame of cases. Some fields, such as addresses, hospitalization his
 Download contacts from Go.Data (version 2.38.1 or later)
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
 contacts <- get_contacts2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+}
 }

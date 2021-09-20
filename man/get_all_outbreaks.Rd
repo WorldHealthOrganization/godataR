@@ -20,9 +20,11 @@ Returns data frame of outbreaks. The resulting list is filtered by the user's pe
 Get a list of all outbreaks and their attributes
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
 outbreaks <- get_all_outbreaks(url=url, username=username, password=password)
+}
 }

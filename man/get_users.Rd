@@ -20,9 +20,11 @@ Returns data frame of user accounts associated with Go.Data instance. Some field
 Get a list of all users and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
 users <- get_users(url=url, username=username, password=password)
+}
 }

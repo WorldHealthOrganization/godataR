@@ -6,8 +6,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' get_godata_version(url=url)
+#' }
 #' @import httr
 #' @importFrom jsonlite fromJSON
 #' @importFrom magrittr %>%

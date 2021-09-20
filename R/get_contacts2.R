@@ -11,12 +11,14 @@
 #' Returns data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
 #' @export
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
 #' contacts <- get_contacts2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+#' }
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr

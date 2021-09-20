@@ -8,11 +8,13 @@
 #' Returns data frame of locations associated with Go.Data instance.
 #' @export
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
 #' locations <- get_locations(url=url, username=username, password=password)
+#' }
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr
@@ -23,13 +25,13 @@
 
 
 get_locations <- function(url=url, username=username, password=password) {
-  
+
   locations <- GET(paste0(url,"api/locations",
                       "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
-    filter(deleted!=TRUE) 
-  
+    filter(deleted!=TRUE)
+
   return(locations)
-  
+
 }

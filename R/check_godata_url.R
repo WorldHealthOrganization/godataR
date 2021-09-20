@@ -4,8 +4,10 @@
 #'
 #' @return boolean
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' check_godata_url(url=url)
+#' }
 #' @importFrom magrittr %>%
 #' @import httr
 #' @importFrom purrr pluck

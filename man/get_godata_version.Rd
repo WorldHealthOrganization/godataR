@@ -16,6 +16,8 @@ string
 Quickly check which verison of Go.Data is currently installed.
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 get_godata_version(url=url)
+}
 }

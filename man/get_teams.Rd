@@ -20,9 +20,11 @@ Returns data frame of teams associated with Go.Data instance.
 Get a list of all teams and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
 teams <- get_teams(url=url, username=username, password=password)
+}
 }

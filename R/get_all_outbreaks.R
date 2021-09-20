@@ -8,11 +8,13 @@
 #' Returns data frame of outbreaks. The resulting list is filtered by the user's permissions: only outbreaks for which the user has access will be returned.
 #' @export
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
 #' outbreaks <- get_all_outbreaks(url=url, username=username, password=password)
+#' }
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr

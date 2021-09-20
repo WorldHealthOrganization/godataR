@@ -30,10 +30,12 @@ Returns data frame of contacts-of-contacts. Some fields, such as addresses, hosp
 Download contacts-of-contacts from Go.Data (version 2.38.0 or earlier)
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
 contacts_of_contacts <- get_contacts_of_contacts(url=url, username=username, password=password, outbreak_id=outbreak_id)
+}
 }

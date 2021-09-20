@@ -16,6 +16,8 @@ boolean
 Check if installed verison of Go.Data is 2.38.1 or later
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 check_godata_version(url=url)
+}
 }

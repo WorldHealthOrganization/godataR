@@ -18,17 +18,16 @@ get_export_status(
 
 \item{password}{The password for your Go.Data login}
 
-\item{outbreak_id}{The id number for the outbreak for which you want to download cases.}
-
-\item{wait}{The number of seconds to wait in between iterations of checking the status of the download. Default is 5 seconds, but the user can specify a smaller value to speed up the process if the dataset is small.}
+\item{request_id}{The id number for the export request.}
 }
 \value{
-Returns data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
+Returns the current status of the export request.
 }
 \description{
 Check the status of an export request from Go.Data (version 2.38.1 or later)
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
@@ -44,5 +43,6 @@ request_id <- export.request \%>\%
 
 #Check the status of the export request
 
-cases <- get_cases2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+export.request.status <- get_export_status(url=url, username=username, password=password, request_id=request_id)
+}
 }

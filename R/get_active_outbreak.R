@@ -8,11 +8,13 @@
 #' Returns the Outbreak ID number of the user's active outbreak.
 #' @export
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
 #' active_outbreak_id <- get_active_outbreak(url=url, username=username, password=password)
+#' }
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr

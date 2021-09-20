@@ -20,9 +20,10 @@ string
 Get an access oauth access token
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 get_access_token(url = url, username = username, password = password)
-
+}
 }

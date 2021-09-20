@@ -20,9 +20,11 @@ Returns data frame of reference data associated with Go.Data instance.
 Get a list of all reference data categories and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
 reference_data <- get_reference_data(url=url, username=username, password=password)
+}
 }

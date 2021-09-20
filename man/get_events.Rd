@@ -30,10 +30,12 @@ Returns data frame of events. may require further unnesting. See the tidyr::unne
 Download events from Go.Data (version 2.38.0 or earlier)
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
 events <- get_events(url=url, username=username, password=password, outbreak_id=outbreak_id)
+}
 }

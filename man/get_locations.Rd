@@ -20,9 +20,11 @@ Returns data frame of locations associated with Go.Data instance.
 Get a list of all locations and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
 locations <- get_locations(url=url, username=username, password=password)
+}
 }

@@ -7,11 +7,12 @@
 #' @return string
 #'
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #' get_access_token(url = url, username = username, password = password)
-#'
+#' }
 #' @import httr
 #' @importFrom jsonlite fromJSON
 #' @export

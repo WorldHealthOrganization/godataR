@@ -8,11 +8,13 @@
 #' Returns data frame of user accounts associated with Go.Data instance. Some fields, roleIds, will be in list format and may require further un-nesting. See the tidyr::unnest() function.
 #' @export
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
 #' users <- get_users(url=url, username=username, password=password)
+#' }
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr
@@ -32,7 +34,7 @@ get_users <- function(url=url, username=username, password=password) {
     filter(deleted!=TRUE) %>%
     select(id, firstName, lastName, email, roleIds, lastLoginDate, institutionName, disregardGeographicRestrictions, activeOutbreakId, createdBy, createdAt) %>%
     mutate(institutionName = sub(".*NAME_", "", institutionName))
-  
+
   return(users)
-  
+
 }

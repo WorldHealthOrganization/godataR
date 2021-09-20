@@ -27,10 +27,12 @@ Nothing. A message will indicate whether the active outbreak has been changed in
 Change the currently active outbreak
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
 set_active_outbreak(url=url, username=username, password=password, outbreak_id=outbreak_id)
+}
 }

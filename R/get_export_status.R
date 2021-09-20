@@ -3,13 +3,13 @@
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
-#' @param outbreak_id The id number for the outbreak for which you want to download cases.
-#' @param wait The number of seconds to wait in between iterations of checking the status of the download. Default is 5 seconds, but the user can specify a smaller value to speed up the process if the dataset is small.
+#' @param request_id The id number for the export request.
 #'
 #' @return
-#' Returns data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
+#' Returns the current status of the export request.
 #' @export
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
@@ -25,7 +25,8 @@
 #'
 #' #Check the status of the export request
 #'
-#' cases <- get_cases2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+#' export.request.status <- get_export_status(url=url, username=username, password=password, request_id=request_id)
+#' }
 #' @importFrom magrittr %>%
 #' @import dplyr
 #' @import tidyr

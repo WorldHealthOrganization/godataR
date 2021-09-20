@@ -30,10 +30,12 @@ Returns data frame of clusters.
 Download clusters from Go.Data (version agnostic)
 }
 \examples{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
 clusters <- get_clusters(url=url, username=username, password=password, outbreak_id=outbreak_id)
+}
 }

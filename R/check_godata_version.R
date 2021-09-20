@@ -4,8 +4,10 @@
 #'
 #' @return boolean
 #' @examples
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' check_godata_version(url=url)
+#' }
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_split
 check_godata_version <- function(url=url) {
