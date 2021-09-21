@@ -32,9 +32,7 @@ get_users <- function(url=url, username=username, password=password) {
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
     filter(deleted!=TRUE) %>%
-    select(id, firstName, lastName, email, roleIds, lastLoginDate, institutionName, disregardGeographicRestrictions, activeOutbreakId, createdBy, createdAt) %>%
-    mutate(institutionName = sub(".*NAME_", "", institutionName))
-
+    select(id, firstName, lastName, email, roleIds, lastLoginDate, institutionName, disregardGeographicRestrictions, activeOutbreakId, createdBy, createdAt) 
   return(users)
 
 }
