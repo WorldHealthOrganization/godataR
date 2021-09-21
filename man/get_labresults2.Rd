@@ -9,7 +9,8 @@ get_labresults2(
   username = username,
   password = password,
   outbreak_id = outbreak_id,
-  wait = 5
+  wait = 5,
+  file.type = c("json", "csv")
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ get_labresults2(
 \item{outbreak_id}{The id number for the outbreak for which you want to download lab results.}
 
 \item{wait}{The number of seconds to wait in between iterations of checking the status of the download. Default is 5 seconds, but the user can specify a smaller value to speed up the process if the dataset is small.}
+
+\item{file.type}{Whether the API should return a data structure with nested fields (json, the default) or an entirely flat data structure (csv)}
 }
 \value{
 Returns data frame of lab results. Some fields may require further unnesting. See the tidyr::unnest() function.

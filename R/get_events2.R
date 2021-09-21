@@ -5,6 +5,7 @@
 #' @param password The password for your Go.Data login
 #' @param outbreak_id The id number for the outbreak for which you want to download events.
 #' @param wait The number of seconds to wait in between iterations of checking the status of the download. Default is 5 seconds, but the user can specify a smaller value to speed up the process if the dataset is small.
+#' @param file.type Whether the API should return a data structure with nested fields (json, the default) or an entirely flat data structure (csv)
 #'
 #' @return
 #' Returns data frame of events Some fields may require further unnesting. See the tidyr::unnest() function.
@@ -25,11 +26,11 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 
-get_events2 <- function(url=url, username=username, password=password, outbreak_id=outbreak_id, wait=5) {
+get_events2 <- function(url=url, username=username, password=password, outbreak_id=outbreak_id, wait=5, file.type=c("json","csv")) {
 
   #Check version of Go.Data
   if (check_godata_version(url=url)==FALSE) {
-    stop("Go.Data must be version 2.38.1 or later. Please use the function get_events() instead.")
+    stop("Go.Data must be version 2.38.1 or later. Please use the function get_cases() instead.")
   }
 
   #Check that outbreak_id is active
@@ -37,49 +38,55 @@ get_events2 <- function(url=url, username=username, password=password, outbreak_
     set_active_outbreak(url=url, username=username, password=password, outbreak_id=outbreak_id)
   }
 
-  ##########################
-  # Get Event Data Frame
-  ##########################
+
+  #Default value of file.type is "json"
+  if (missing(file.type)) file.type <- "json"
 
   #Submit an export request to the system
-  export.request <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/events/export",
-                               "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22dontTranslateValues%22%3A%22true%22%2C%20%22jsonReplaceUndefinedWithNull%22%3A%22true%22%20%7D%7D",
-                               "&access_token=",get_access_token(url=url, username=username, password=password)))
-
-  if (export.request$status_code!=200) {
-    stop(paste0('Error code: ', export.request$status_code))
-  } else if (export.request$status_code==200) {
-
-    #Get the Request ID
-    export.request.id <- export.request %>%
+  if (file.type=="json") {
+    request_id <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/events/export",
+                             "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22dontTranslateValues%22%3A%22true%22%2C%20%22jsonReplaceUndefinedWithNull%22%3A%22true%22%20%7D%7D",
+                             "&access_token=",get_access_token(url=url, username=username, password=password))) %>%
       content() %>%
       pluck("exportLogId")
-
-    #Check status of request periodcially, until finished
-    #function argument 'wait' determines the number of seconds to wait between iterations
-    message("...preparing download")
-    export.request.status <- GET(paste0(url,"api/export-logs/",export.request.id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
+  } else if (file.type=="csv") {
+    request_id <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/events/export",
+                             "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22dontTranslateValues%22%3A%22true%22%2C%20%22jsonReplaceUndefinedWithNull%22%3A%22true%22%20%7D%7D",
+                             "&type=csv",
+                             "&access_token=",get_access_token(url=url, username=username, password=password))) %>%
       content() %>%
-      pluck("statusStep")
-    while(export.request.status != "LNG_STATUS_STEP_EXPORT_FINISHED") {
-      Sys.sleep(wait)
-      export.request.status <- GET(paste0(url,"api/export-logs/",export.request.id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-        content() %>%
-        pluck("statusStep")
-      message("...preparing download")
-    }
-
-    #Download the export
-    message("...beginning download")
-    df <- GET(paste0(url,"api/export-logs/",export.request.id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-      content("text") %>%
-      fromJSON(flatten=TRUE)
-    message("...download complete!")
-
-    names(df)[names(df) %in% "_id"] <- "id" # fix one strange variable name
-
-
+      pluck("exportLogId")
   }
+
+  #Check status of request periodcially, until finished
+  #function argument 'wait' determines the number of seconds to wait between iterations
+  export.request.status <- get_export_status(url=url, username=username, password=password, request_id=request_id)
+
+  while(export.request.status$statusStep != "LNG_STATUS_STEP_EXPORT_FINISHED") {
+    Sys.sleep(wait)
+    export.request.status <- GET(paste0(url,"api/export-logs/",request_id,"?access_token=",get_access_token(url=url, username=username, password=password))) %>%
+      content()
+    message(paste0("...processed ",export.request.status$processedNo, " of ", export.request.status$totalNo, " records"))
+  }
+
+  #Download the export
+  message("...beginning download")
+  if (file.type=="json") {
+    df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
+      content("text", encoding="UTF-8") %>%
+      fromJSON(flatten=TRUE)
+
+    # fix one strange variable name
+    names(df)[names(df) %in% "_id"] <- "id"
+  } else if (file.type=="csv") {
+    df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
+      content("text", encoding="UTF-8") %>%
+      textConnection() %>%
+      read.csv()
+    names(df)[names(df) %in% "X_id"] <- "id"
+  }
+
+  message("...download complete!")
   return(df)
 
 }
