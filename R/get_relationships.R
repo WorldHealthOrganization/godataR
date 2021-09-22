@@ -1,5 +1,18 @@
 #' Download relationships from Go.Data (version 2.38.0 or earlier)
 #'
+#' A function to retrieve the relationship data for a
+#' specific `outbreak_id`. This function relies
+#' on the `/outbreaks/{id}/relationships` API endpoint.
+#' Records are imported in iterative batches
+#' and then appended together into a single data
+#' frame.
+#'
+#' This function works on all versions of Go.Data.
+#' However, if you are using version 2.38.1 or
+#' greater, then we recommend using \code{\link{get_relationships2}},
+#' which has additional features and improved
+#' performance.
+#'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
@@ -7,7 +20,7 @@
 #' @param batch_size For large datasets, specify the number of records to retrieve in each iteration.
 #'
 #' @return
-#' Returns data frame of all created relationships. Some fields will require further unnesting. See the tidyr::unnest() function.
+#' Returns a data frame of all created relationships. Some fields will require further unnesting. See the `tidyr::unnest()` function.
 #' @export
 #'
 #' @examples
@@ -17,7 +30,10 @@
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
-#' relationships <- get_relationships(url=url, username=username, password=password, outbreak_id=outbreak_id)
+#' relationships <- get_relationships(url=url,
+#'                                    username=username,
+#'                                    password=password,
+#'                                    outbreak_id=outbreak_id)
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -27,7 +43,11 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 
-get_relationships <- function(url=url, username=username, password=password, outbreak_id=outbreak_id, batch_size=50000) {
+get_relationships <- function(url=url,
+                              username=username,
+                              password=password,
+                              outbreak_id=outbreak_id,
+                              batch_size=50000) {
 
   #Check version of Go.Data
   if (check_godata_version(url=url)==TRUE) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_locations.R
 \name{get_locations}
 \alias{get_locations}
-\title{Get a list of all locations and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).}
+\title{Get location data from Go.Data}
 \usage{
 get_locations(url = url, username = username, password = password)
 }
@@ -14,10 +14,14 @@ get_locations(url = url, username = username, password = password)
 \item{password}{The password for your Go.Data login}
 }
 \value{
-Returns data frame of locations associated with Go.Data instance.
+Returns a data frame of locations associated with Go.Data instance.
 }
 \description{
-Get a list of all locations and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
+A function to retreive a list of all locations
+and their attributes, across all outbreaks on
+the instance (since this is a system-level API
+endpoint). This function relies on the \verb{\\locations}
+API endpoint.
 }
 \examples{
 \dontrun{
@@ -25,6 +29,8 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
-locations <- get_locations(url=url, username=username, password=password)
+locations <- get_locations(url=url,
+                           username=username,
+                           password=password)
 }
 }

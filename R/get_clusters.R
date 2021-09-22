@@ -1,5 +1,14 @@
 #' Download clusters from Go.Data (version agnostic)
 #'
+#' A function to retrieve the cluster data for a
+#' specific `outbreak_id`. This function relies
+#' on the `/outbreaks/{id}/clusters` API endpoint.
+#' Records are imported in iterative batches
+#' and then appended together into a single data
+#' frame.
+#'
+#' This function works on all versions of Go.Data.
+#'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
@@ -17,7 +26,10 @@
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
-#' clusters <- get_clusters(url=url, username=username, password=password, outbreak_id=outbreak_id)
+#' clusters <- get_clusters(url=url,
+#'                          username=username,
+#'                          password=password,
+#'                          outbreak_id=outbreak_id)
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -27,7 +39,11 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 
-get_clusters <- function(url=url, username=username, password=password, outbreak_id=outbreak_id, batch_size=50000) {
+get_clusters <- function(url=url,
+                         username=username,
+                         password=password,
+                         outbreak_id=outbreak_id,
+                         batch_size=50000) {
 
 # no /export endpoint for clusters so no need to check version
 

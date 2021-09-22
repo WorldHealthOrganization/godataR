@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_godata_url.R
 \name{check_godata_url}
 \alias{check_godata_url}
-\title{Check if the provided URL is valid}
+\title{Check if the provided Go.Data URL is valid}
 \usage{
 check_godata_url(url = url)
 }
@@ -10,10 +10,12 @@ check_godata_url(url = url)
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
 }
 \value{
-boolean
+Boolean, where \code{TRUE} indicates a valid URL.
 }
 \description{
-Check if the provided URL is valid
+A function to check whether the provided URL
+is valid. This is a housekeeping function
+used in many of the other \code{godataR} functions.
 }
 \examples{
 \dontrun{

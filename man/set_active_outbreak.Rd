@@ -24,7 +24,14 @@ set_active_outbreak(
 Nothing. A message will indicate whether the active outbreak has been changed in the system.
 }
 \description{
-Change the currently active outbreak
+A function to change the user's active outbreak
+on the Go.Data server. This is a housekeeping
+function used in many of the other \code{godataR}
+functions.
+}
+\details{
+Each Go.Data user can have 1 and only 1 active
+outbreak at a given time.
 }
 \examples{
 \dontrun{
@@ -33,6 +40,9 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-set_active_outbreak(url=url, username=username, password=password, outbreak_id=outbreak_id)
+set_active_outbreak(url=url,
+                    username=username,
+                    password=password,
+                    outbreak_id=outbreak_id)
 }
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_reference_data.R
 \name{get_reference_data}
 \alias{get_reference_data}
-\title{Get a list of all reference data categories and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).}
+\title{Get reference data from Go.Data}
 \usage{
 get_reference_data(url = url, username = username, password = password)
 }
@@ -17,7 +17,11 @@ get_reference_data(url = url, username = username, password = password)
 Returns data frame of reference data associated with Go.Data instance.
 }
 \description{
-Get a list of all reference data categories and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
+A function to retreive a list of all reference
+data and their attributes, across all outbreaks
+on the instance (since this is a system-level API
+endpoint). This function relies on the
+\verb{\\reference-data} API endpoint.
 }
 \examples{
 \dontrun{
@@ -25,6 +29,8 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
-reference_data <- get_reference_data(url=url, username=username, password=password)
+reference_data <- get_reference_data(url=url,
+                                     username=username,
+                                     password=password)
 }
 }

@@ -27,10 +27,18 @@ get_followups2(
 \item{file.type}{Whether the API should return a data structure with nested fields (json, the default) or an entirely flat data structure (csv)}
 }
 \value{
-Returns data frame of follow-ups. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
+Returns data frame of follow-ups.
 }
 \description{
-Download follow-up of contacts from Go.Data (version 2.38.1 or later)
+A function to retrieve the follow-up data for
+a specific \code{outbreak_id}. This function relies
+on the \verb{/outbreaks/\{id\}/follow-ups/export}
+API endpoint.
+}
+\details{
+If \code{file.type="json"}, then some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See the \code{tidyr::unnest()} function.
+
+If \code{file.type="csv"}, then all fields will be unnested resulting in a greater number of fields.
 }
 \examples{
 \dontrun{
@@ -39,6 +47,9 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-followups <- get_followups2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+followups <- get_followups2(url=url,
+                            username=username,
+                            password=password,
+                            outbreak_id=outbreak_id)
 }
 }

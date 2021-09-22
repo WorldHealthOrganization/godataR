@@ -1,4 +1,10 @@
-#' Get a list of all reference data categories and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
+#' Get reference data from Go.Data
+#'
+#' A function to retreive a list of all reference
+#' data and their attributes, across all outbreaks
+#' on the instance (since this is a system-level API
+#' endpoint). This function relies on the
+#' `\reference-data` API endpoint.
 #'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
@@ -13,7 +19,9 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
-#' reference_data <- get_reference_data(url=url, username=username, password=password)
+#' reference_data <- get_reference_data(url=url,
+#'                                      username=username,
+#'                                      password=password)
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -24,7 +32,9 @@
 #' @export
 
 
-get_reference_data <- function(url=url, username=username, password=password) {
+get_reference_data <- function(url=url,
+                               username=username,
+                               password=password) {
 
   reference_data <- GET(paste0(url,"api/reference-data",
                       "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%

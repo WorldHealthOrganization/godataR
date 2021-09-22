@@ -17,7 +17,10 @@ get_all_outbreaks(url = url, username = username, password = password)
 Returns data frame of outbreaks. The resulting list is filtered by the user's permissions: only outbreaks for which the user has access will be returned.
 }
 \description{
-Get a list of all outbreaks and their attributes
+A function to retrieve all outbreaks assigned
+to the provided username. This is a
+housekeeping function used in many of the
+other \code{godataR} functions.
 }
 \examples{
 \dontrun{
@@ -25,6 +28,8 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
-outbreaks <- get_all_outbreaks(url=url, username=username, password=password)
+outbreaks <- get_all_outbreaks(url=url,
+                               username=username,
+                               password=password)
 }
 }

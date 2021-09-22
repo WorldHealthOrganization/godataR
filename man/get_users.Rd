@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_users.R
 \name{get_users}
 \alias{get_users}
-\title{Get a list of all users and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).}
+\title{Get user data from Go.Data}
 \usage{
 get_users(url = url, username = username, password = password)
 }
@@ -14,10 +14,14 @@ get_users(url = url, username = username, password = password)
 \item{password}{The password for your Go.Data login}
 }
 \value{
-Returns data frame of user accounts associated with Go.Data instance. Some fields, roleIds, will be in list format and may require further un-nesting. See the tidyr::unnest() function.
+Returns a data frame of user accounts associated with Go.Data instance. Some fields, roleIds, will be in list format and may require further un-nesting. See the \code{tidyr::unnest()} function.
 }
 \description{
-Get a list of all users and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
+A function to retrieve a list of all user
+data and their attributes, across all outbreaks
+on the instance (since this is a system-level API
+endpoint). This function relies on the
+\verb{\\users} API endpoint.
 }
 \examples{
 \dontrun{
@@ -25,6 +29,8 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
-users <- get_users(url=url, username=username, password=password)
+users <- get_users(url=url,
+                   username=username,
+                   password=password)
 }
 }

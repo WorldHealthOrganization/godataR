@@ -1,8 +1,13 @@
-#' Check if the provided URL is valid
+#' Check if the provided Go.Data URL is valid
+#'
+#' A function to check whether the provided URL
+#' is valid. This is a housekeeping function
+#' used in many of the other `godataR` functions.
 #'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #'
-#' @return boolean
+#' @return
+#' Boolean, where `TRUE` indicates a valid URL.
 #' @examples
 #' \dontrun{
 #' url <- "https://MyGoDataServer.com/"

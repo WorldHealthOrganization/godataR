@@ -1,14 +1,24 @@
 #' Download cases from Go.Data (version 2.38.1 or later)
 #'
+#' A function to retrieve the case data for a
+#' specific `outbreak_id`. This function relies
+#' on the `/outbreaks/{id}/cases/export` API
+#' endpoint.
+#'
+#' If `file.type="json"`, then some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See the `tidyr::unnest()` function.
+#'
+#' If `file.type="csv"`, then all fields will be unnested resulting in a greater number of fields.
+#'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
 #' @param outbreak_id The id number for the outbreak for which you want to download cases.
 #' @param wait The number of seconds to wait in between iterations of checking the status of the download. Default is 5 seconds, but the user can specify a smaller value to speed up the process if the dataset is small.
-#' @param file.type Whether the API should return a data structure with nested fields (json, the default) or an entirely flat data structure (csv)
+#' @param file.type Whether the resulting data frame should contain nested fields (`file.type="json"`, the default) or an entirely flat data structure (`file.type="csv"`)
 #'
 #' @return
-#' Returns data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See the tidyr::unnest() function.
+#' Returns a data frame of cases.
+#'
 #' @export
 #' @examples
 #' \dontrun{
@@ -16,7 +26,10 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
-#' cases <- get_cases2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+#' cases <- get_cases2(url=url,
+#'                     username=username,
+#'                     password=password,
+#'                     outbreak_id=outbreak_id)
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -24,8 +37,14 @@
 #' @import httr
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
+#' @import utils
 
-get_cases2 <- function(url=url, username=username, password=password, outbreak_id=outbreak_id, wait=5, file.type=c("json","csv")) {
+get_cases2 <- function(url=url,
+                       username=username,
+                       password=password,
+                       outbreak_id=outbreak_id,
+                       wait=5,
+                       file.type=c("json","csv")) {
 
   #Check version of Go.Data
   if (check_godata_version(url=url)==FALSE) {

@@ -1,11 +1,17 @@
-#' Get a list of all locations and their attributes, across all outbreaks on the instance (since this is a system-level API endpoint).
+#' Get location data from Go.Data
+#'
+#' A function to retreive a list of all locations
+#' and their attributes, across all outbreaks on
+#' the instance (since this is a system-level API
+#' endpoint). This function relies on the `\locations`
+#' API endpoint.
 #'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
 #'
 #' @return
-#' Returns data frame of locations associated with Go.Data instance.
+#' Returns a data frame of locations associated with Go.Data instance.
 #' @export
 #' @examples
 #' \dontrun{
@@ -13,7 +19,9 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
-#' locations <- get_locations(url=url, username=username, password=password)
+#' locations <- get_locations(url=url,
+#'                            username=username,
+#'                            password=password)
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -24,7 +32,9 @@
 #' @export
 
 
-get_locations <- function(url=url, username=username, password=password) {
+get_locations <- function(url=url,
+                          username=username,
+                          password=password) {
 
   locations <- GET(paste0(url,"api/locations",
                       "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%

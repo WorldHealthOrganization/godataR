@@ -24,7 +24,9 @@ get_export_status(
 Returns the current status of the export request.
 }
 \description{
-Check the status of an export request from Go.Data (version 2.38.1 or later)
+A function to check the status of an export
+request. This is a housekeeping function
+used in many of the other \code{godataR} functions.
 }
 \examples{
 \dontrun{
@@ -32,17 +34,22 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
+access_token <- get_access_token(url=url,
+                                 username=username,
+                                 password=password)
 
 #Submit an export request
 export.request <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/cases/export",
-                               "?filter=\%7B\%22where\%22\%3A\%7B\%22useDbColumns\%22\%3A\%22true\%22\%2C\%20\%22dontTranslateValues\%22\%3A\%22true\%22\%2C\%20\%22jsonReplaceUndefinedWithNull\%22\%3A\%22true\%22\%20\%7D\%7D",
-                               "&access_token=",get_access_token(url=url, username=username, password=password)))
+                               "&access_token=",access_token))
 request_id <- export.request \%>\%
      content() \%>\%
      pluck("exportLogId")
 
 #Check the status of the export request
 
-export.request.status <- get_export_status(url=url, username=username, password=password, request_id=request_id)
+export.request.status <- get_export_status(url=url,
+                                           username=username,
+                                           password=password,
+                                           request_id=request_id)
 }
 }

@@ -27,7 +27,15 @@ get_clusters(
 Returns data frame of clusters.
 }
 \description{
-Download clusters from Go.Data (version agnostic)
+A function to retrieve the cluster data for a
+specific \code{outbreak_id}. This function relies
+on the \verb{/outbreaks/\{id\}/clusters} API endpoint.
+Records are imported in iterative batches
+and then appended together into a single data
+frame.
+}
+\details{
+This function works on all versions of Go.Data.
 }
 \examples{
 \dontrun{
@@ -36,6 +44,9 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-clusters <- get_clusters(url=url, username=username, password=password, outbreak_id=outbreak_id)
+clusters <- get_clusters(url=url,
+                         username=username,
+                         password=password,
+                         outbreak_id=outbreak_id)
 }
 }

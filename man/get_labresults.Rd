@@ -24,10 +24,22 @@ get_labresults(
 \item{batch_size}{For large datasets, specify the number of records to retrieve in each iteration.}
 }
 \value{
-Returns data frame of lab results. Some fields may require further unnesting. See the tidyr::unnest() function.
+Returns a data frame of lab results. Some fields may require further unnesting. See the \code{tidyr::unnest()} function.
 }
 \description{
-Download lab results from Go.Data (version 2.38.0 or earlier)
+A function to retrieve the lab result data for
+a specific \code{outbreak_id}. This function relies
+on the \verb{/lab-results/aggregate-filtered-count}
+API endpoint. Records are imported in iterative
+batches and then appended together into a
+single data frame.
+}
+\details{
+This function works on all versions of Go.Data.
+However, if you are using version 2.38.1 or
+greater, then we recommend using \code{\link{get_labresults2}},
+which has additional features and improved
+performance.
 }
 \examples{
 \dontrun{
@@ -36,6 +48,9 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-labresults <- get_labresults(url=url, username=username, password=password, outbreak_id=outbreak_id)
+labresults <- get_labresults(url=url,
+                             username=username,
+                             password=password,
+                             outbreak_id=outbreak_id)
 }
 }

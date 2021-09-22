@@ -27,10 +27,18 @@ get_contacts_of_contacts2(
 \item{file.type}{Whether the API should return a data structure with nested fields (json, the default) or an entirely flat data structure (csv)}
 }
 \value{
-Returns data frame of contacts-of-contacts. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
+Returns a data frame of contacts-of-contacts.
 }
 \description{
-Download contacts-of-contacts from Go.Data (version 2.38.1 or later)
+A function to retrieve the contact-of-contact
+data for a specific \code{outbreak_id}. This
+function relies on the \verb{/outbreaks/\{id\}/contacts-of-contacts/export}
+API endpoint.
+}
+\details{
+If \code{file.type="json"}, then some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See the \code{tidyr::unnest()} function.
+
+If \code{file.type="csv"}, then all fields will be unnested resulting in a greater number of fields.
 }
 \examples{
 \dontrun{

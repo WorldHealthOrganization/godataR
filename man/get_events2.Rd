@@ -27,10 +27,18 @@ get_events2(
 \item{file.type}{Whether the API should return a data structure with nested fields (json, the default) or an entirely flat data structure (csv)}
 }
 \value{
-Returns data frame of events Some fields may require further unnesting. See the tidyr::unnest() function.
+Returns data frame of events.
 }
 \description{
-Download events from Go.Data (version 2.38.1 or later)
+A function to retrieve the event data for a
+specific \code{outbreak_id}. This function relies
+on the \verb{/outbreaks/\{id\}/events/export}
+API endpoint.
+}
+\details{
+If \code{file.type="json"}, then some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See the \code{tidyr::unnest()} function.
+
+If \code{file.type="csv"}, then all fields will be unnested resulting in a greater number of fields.
 }
 \examples{
 \dontrun{
@@ -39,6 +47,9 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-events <- get_events2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+events <- get_events2(url=url,
+                      username=username,
+                      password=password,
+                      outbreak_id=outbreak_id)
 }
 }

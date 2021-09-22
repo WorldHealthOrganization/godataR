@@ -10,10 +10,13 @@ check_godata_version(url = url)
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
 }
 \value{
-boolean
+Boolean, where \code{TRUE} indicates version 2.38.1 or later.
 }
 \description{
-Check if installed verison of Go.Data is 2.38.1 or later
+A function to check whether the current
+version of Go.Data on the provided URL.
+This is a housekeeping function used in
+many of the other \code{godataR} functions.
 }
 \examples{
 \dontrun{

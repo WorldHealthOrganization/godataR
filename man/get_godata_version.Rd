@@ -13,7 +13,10 @@ get_godata_version(url = url)
 string
 }
 \description{
-Quickly check which verison of Go.Data is currently installed.
+A function to retrieve the current version
+of Go.Data on the provided URL. This is a
+housekeeping function used in many of the
+other \code{godataR} functions.
 }
 \examples{
 \dontrun{

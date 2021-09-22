@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_access_token.R
 \name{get_access_token}
 \alias{get_access_token}
-\title{Get an access oauth access token}
+\title{Get an access oauth access token for Go.Data}
 \usage{
 get_access_token(url = url, username = username, password = password)
 }
@@ -17,13 +17,18 @@ get_access_token(url = url, username = username, password = password)
 string
 }
 \description{
-Get an access oauth access token
+A function to retrieve an access token
+from Go.Data. This is a housekeeping
+function used in many of the other
+\code{godataR} functions.
 }
 \examples{
 \dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
-get_access_token(url = url, username = username, password = password)
+get_access_token(url = url,
+                 username = username,
+                 password = password)
 }
 }

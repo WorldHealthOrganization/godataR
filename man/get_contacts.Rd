@@ -27,7 +27,19 @@ get_contacts(
 Returns data frame of contacts. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the tidyr::unnest() function.
 }
 \description{
-Download contacts from Go.Data (version 2.38.0 or earlier)
+A function to retrieve the contact data for a
+specific \code{outbreak_id}. This function relies
+on the \verb{/outbreaks/\{id\}/contacts} API endpoint.
+Records are imported in iterative batches
+and then appended together into a single data
+frame.
+}
+\details{
+This function works on all versions of Go.Data.
+However, if you are using version 2.38.1 or
+greater, then we recommend using \code{\link{get_contacts2}},
+which has additional features and improved
+performance.
 }
 \examples{
 \dontrun{
@@ -36,6 +48,9 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-contacts <- get_contacts(url=url, username=username, password=password, outbreak_id=outbreak_id)
+contacts <- get_contacts(url=url,
+                         username=username,
+                         password=password,
+                         outbreak_id=outbreak_id)
 }
 }

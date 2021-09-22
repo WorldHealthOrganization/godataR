@@ -1,5 +1,14 @@
 #' Download relationships from Go.Data (version 2.38.1 or later)
 #'
+#' A function to retrieve the relationship data for
+#' a specific `outbreak_id`. This function relies
+#' on the `/outbreaks/{id}/lab-results/export`
+#' API endpoint.
+#'
+#' If `file.type="json"`, then some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See the `tidyr::unnest()` function.
+#'
+#' If `file.type="csv"`, then all fields will be unnested resulting in a greater number of fields.
+#'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
@@ -8,7 +17,7 @@
 #' @param file.type Whether the API should return a data structure with nested fields (json, the default) or an entirely flat data structure (csv)
 #'
 #' @return
-#' Returns data frame of all created relationships. Some fields will require further unnesting. See the tidyr::unnest() function.
+#' Returns data frame of all created relationships.
 #' @export
 #' @examples
 #' \dontrun{
@@ -17,7 +26,10 @@
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
-#' relationships <- get_relationships2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+#' relationships <- get_relationships2(url=url,
+#'                                     username=username,
+#'                                     password=password,
+#'                                     outbreak_id=outbreak_id)
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -25,8 +37,14 @@
 #' @import httr
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
+#' @import utils
 
-get_relationships2 <- function(url=url, username=username, password=password, outbreak_id=outbreak_id, wait=5, file.type=c("json","csv")) {
+get_relationships2 <- function(url=url,
+                               username=username,
+                               password=password,
+                               outbreak_id=outbreak_id,
+                               wait=5,
+                               file.type=c("json","csv")) {
 
   #Check version of Go.Data
   if (check_godata_version(url=url)==FALSE) {

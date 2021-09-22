@@ -1,5 +1,10 @@
 #' Quickly check which verison of Go.Data is currently installed.
 #'
+#' A function to retrieve the current version
+#' of Go.Data on the provided URL. This is a
+#' housekeeping function used in many of the
+#' other `godataR` functions.
+#'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
 #'
 #' @return string
