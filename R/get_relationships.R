@@ -60,7 +60,7 @@ get_relationships <- function(url=url,
   }
 
   #get total number of records
-  df_n <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/relationships/filtered-count"),
+  df_n <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/relationships/count"),
               add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " "))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%

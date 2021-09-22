@@ -67,7 +67,7 @@ get_relationships2 <- function(url=url,
       content() %>%
       pluck("exportLogId")
   } else if (file.type=="csv") {
-    request_id <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/replationships/export",
+    request_id <- GET(paste0(url,"api/outbreaks/",outbreak_id,"/relationships/export",
                              "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22dontTranslateValues%22%3A%22true%22%2C%20%22jsonReplaceUndefinedWithNull%22%3A%22true%22%20%7D%7D",
                              "&type=csv",
                              "&access_token=",get_access_token(url=url, username=username, password=password))) %>%
