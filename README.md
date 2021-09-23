@@ -5,9 +5,9 @@
 
 The `godataR` package was built to allow Go.Data [user community](https://community-godata.who.int/) to more easily interact with their instance's API, especially when dealing with large volumes of data. You can now quickly retrieve a database colleciton in an un-nested format for further cleaning and analysis with one line of code. 
 
-Future iterations will focus on POSTing to the Go.Data API for bulk modifications of case, contact and lab records.
+- For example, `get_cases()` or `get_locations()` provides a painless way to retrieve case data or hierarchical locations by bypassing all of the normal API syntax and authentication required.
 
-- For example, `get_locations()` or `get_clusters()` provides a painless way to retrieve hierarchical locations and clusters by bypassing all of the normal API syntax and authentication required.
+Future iterations will focus on POSTing to the Go.Data API for bulk creation or modification of case, contact and lab records.
 
 ## Installation
 This package is hosted on the WHO Github Repository here: [https://github.com/WorldHealthOrganization/godataR](https://github.com/WorldHealthOrganization/godataR).
