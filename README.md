@@ -3,7 +3,9 @@
 ## Overview
 [Go.Data](https://www.who.int/tools/godata) is a software for outbreak response and contact tracing developed by WHO in collaboration with partners in the Global Outbreak Alert and Response Network (GOARN). Go.Data focusses on case and contact data including laboratory data, hospitalization and other variables collected through investigation forms. It generates contact follow-up lists and visualisation of chains of transmission.
 
-The `godataR` package was built to allow Go.Data users to more easily interact with their Go.Data instance's API; and in direct response to country feedback that the API retrieval process was error prone and complicated for R beginners. You can now retrieve a database collecitons in an un-nested formats for further cleaning and analysis with one command. Future iterations will focus on POSTing to the Go.Data API for bulk modifications of case, contact and lab records.
+The `godataR` package was built to allow Go.Data [user community](https://community-godata.who.int/) to more easily interact with their instance's API, especially when dealing with large volumes of data. You can now quickly retrieve a database colleciton in an un-nested format for further cleaning and analysis with one line of code. 
+
+Future iterations will focus on POSTing to the Go.Data API for bulk modifications of case, contact and lab records.
 
 - For example, `get_locations()` or `get_clusters()` provides a painless way to retrieve hierarchical locations and clusters by bypassing all of the normal API syntax and authentication required.
 
@@ -79,6 +81,6 @@ Go.Data is running on [LoopBack](https://loopback.io/doc/index.html). You can ac
 You can find more information on the Go.Data API [here](https://worldhealthorganization.github.io/godata/api-docs/).
 
 ## How to provide feedback our contribute
-Bug reports and feature requests should be posted on github under [_issues_](https://github.com/WorldHealthOrganization/godataR/issues). All other questions and feedback, feel free to email us at godata@who.int.
+Bug reports and feature requests should be posted on github under [_issues_](https://github.com/WorldHealthOrganization/godataR/issues). All other questions and feedback, feel free to email us at godata@who.int or post a query in the [Go.Data Community of Practice](https://community-godata.who.int/) 
 
 Contributions are welcome via pull requests.
