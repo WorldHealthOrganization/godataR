@@ -19,7 +19,7 @@ devtools::install_github("WorldHealthOrganization/godataR")
 
 ### Provide parameters (your Go.Data credentials)
 You must have valid Go.Data user credentials with appropriate roles/permissions to successfully receive an access token to make any API calls. 
-You can set your parameters at the outset of your R session, to call them easily when fetching your collections. 
+You can set your parameters at the outset of your R session, to call them more easily when fetching your collections. You can also specify ad-hoc if you are working across various outbreaks.
 
 ```
 #Set parameters
