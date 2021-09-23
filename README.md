@@ -1,4 +1,4 @@
-# godataR: easier interfacing with with [Go.Data](https://www.who.int/tools/godata) <img src="assets/hex-godataR_nourl.png" align="right" height="139"/>
+# godataR: easier interfacing with with [Go.Data](https://www.who.int/tools/godata) <img src="assets/hex-godataR_nourl.png" align="right" height="175"/>
 
 There are a range of functions within the `godataR` package to interact with your Go.Data instance's API. You must have valid Go.Data user credentials with appropriate roles/permissions to obtain access to the API and securely access data. (see *Set Parameters* section). The self-documenting description of the API methods can be viewed using Loopback Explorer by adding `/explorer` to the end of any Go.Data URL.  You can find more information on the Go.Data API [here](https://worldhealthorganization.github.io/godata/api-docs/).
 
