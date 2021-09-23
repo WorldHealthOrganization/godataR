@@ -50,6 +50,7 @@ events <- godataR::get_events2(url=url, username=username, password=password, ou
 clusters <- godataR::get_clusters(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
 ```
+
 ### The below collections are outbreak-agnostic and applied at system-level.
 ```
 users <- godataR::get_users(url=url, username=username, password=password) 
@@ -60,6 +61,17 @@ locations <- godataR::get_locations(url=url, username=username, password=passwor
 
 reference_data <- godataR::get_reference_data(url=url, username=username, password=password)
 ```
+
+## Handling versioning across Go.Data releases
+There were significant changes to most API endpoints at the release of V38.1, in order to increase performance during export and in-app visualization.
+
+This applies across cases, contacts, contacts of contacts, lab results, relationships, followups, events and clusters. 
+
+For these functions, we have 2 versions labelled 1 and 2 accordingly (i.e. `get_cases()` vs. `get_cases2()`.
+
+We recommend upgrading to the latest Go.Data version and utilizing ***version 2*** if possible.
+The function `check_godata_version()` spits out errors if you are utilizing the wrong version of the function.
+
 
 ## API documentation
 Go.Data is running on [LoopBack](https://loopback.io/doc/index.html). You can access the self-documenting description of all available API methods in using Loopback Explorer by adding `/explorer` to the end of any Go.Data URL.  
