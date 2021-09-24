@@ -35,44 +35,45 @@ outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b" #the outbreak id number
 
 ### The below collections require access to and specification of Outbreak.
 ```
-cases <- godataR::get_cases2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+cases <- get_cases(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
-contacts <- godataR::get_contacts2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+contacts <- get_contacts(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
-contacts_of_contacts <- godataR::get_contacts_of_contacts2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+contacts_of_contacts <- get_contacts_of_contacts(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
-lab_results <- godataR::get_labresults2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+lab_results <- get_labresults(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
-relationships <- godataR::get_relationships2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+relationships <- get_relationships(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
-followups <- godataR::get_followups2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+followups <- get_followups(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
-events <- godataR::get_events2(url=url, username=username, password=password, outbreak_id=outbreak_id)
+events <- get_events(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
-clusters <- godataR::get_clusters(url=url, username=username, password=password, outbreak_id=outbreak_id)
+clusters <- get_clusters(url=url, username=username, password=password, outbreak_id=outbreak_id)
 
 ```
 
 ### The below collections are outbreak-agnostic and applied at system-level.
+Some require extra parameters, like language tokens (_specify "english_us" for English, otherwise find your token_id in the URL when language token is selected in web-app_).
 ```
-users <- godataR::get_users(url=url, username=username, password=password) 
+users <- get_users(url=url, username=username, password=password) 
 
-teams <- godataR::get_teams(url=url, username=username, password=password)
+teams <- get_teams(url=url, username=username, password=password)
 
-locations <- godataR::get_locations(url=url, username=username, password=password)
+locations <- get_locations(url=url, username=username, password=password)
 
-reference_data <- godataR::get_reference_data(url=url, username=username, password=password)
+reference_data <- get_reference_data(url=url, username=username, password=password)
+
+language_tokens <- get_language_tokens(url=url, username=username, password=password, language="english_us")
 ```
 
 ## Handling versioning across Go.Data releases
-There were significant changes to most API endpoints at the release of V38.1, in order to increase performance during export and in-app visualization.
+There were significant changes to most API endpoints at the release of V38.1, in order to increase performance during export and in-app visualization. There are two methods for downloading the data to accomodate version history:
+ - `method="export"` will only work on Go.Data versions 2.38.1 or newer. This method relies on the GET outbreak/{id}/cases/export API endpoint. An export request is submitted to the server, and then when the export is ready, it will be downloaded. Due to better performance and more options, `method="export"` will be the default if you are using Go.Data version 2.38.1 or newer.
+ - `method="batches"` will work on all versions of Go.Data. This method relies on the API endpoints such as `GET outbreak/{id}/cases` or `GET outbreak/{id}/contacts` API endpoint. Records are then retrieved in batches based on `batch_size` and appended together into a final dataset. `method="batches"` will be the default and only available method for Go.Data version 2.38.0 or older.
 
-This applies across cases, contacts, contacts of contacts, lab results, relationships, followups, events and clusters. 
 
-For these functions, we have 2 versions labelled 1 and 2 accordingly (i.e. `get_cases()` vs. `get_cases2()`.
-
-We recommend upgrading to the latest Go.Data version and utilizing ***version 2*** if possible.
-The function `check_godata_version()` spits out errors if you are utilizing the wrong version of the function.
+We recommend always upgrading to the latest Go.Data version to benefit from ongoing performance enhancements, when handling large amounts of data.
 
 
 ## API documentation

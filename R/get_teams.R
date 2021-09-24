@@ -37,7 +37,7 @@ get_teams <- function(url=url,
                       password=password) {
 
   teams <- GET(paste0(url,"api/teams",
-                      "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%
+                      "?access_token=",get_access_token(url=url, username=username, password=password))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
     filter(deleted!=TRUE)

@@ -37,7 +37,7 @@ get_reference_data <- function(url=url,
                                password=password) {
 
   reference_data <- GET(paste0(url,"api/reference-data",
-                      "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%
+                      "?access_token=",get_access_token(url=url, username=username, password=password))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
     filter(deleted!=TRUE)
