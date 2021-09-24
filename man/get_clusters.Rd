@@ -24,7 +24,7 @@ get_clusters(
 \item{batch_size}{For large datasets, specify the number of records to retrieve in each iteration.}
 }
 \value{
-Returns data frame of clusters.
+Returns data frame.
 }
 \description{
 A function to retrieve the cluster data for a

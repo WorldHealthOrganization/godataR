@@ -2,14 +2,17 @@
 % Please edit documentation in R/get_followups.R
 \name{get_followups}
 \alias{get_followups}
-\title{Download follow-up of contacts from Go.Data (version 2.38.0 or earlier)}
+\title{Download contact follow-ups from Go.Data}
 \usage{
 get_followups(
   url = url,
   username = username,
   password = password,
   outbreak_id = outbreak_id,
-  batch_size = 50000
+  method = c("export", "batch"),
+  batch_size = 50000,
+  wait = 2,
+  file.type = c("json", "csv")
 )
 }
 \arguments{
@@ -19,27 +22,42 @@ get_followups(
 
 \item{password}{The password for your Go.Data login}
 
-\item{outbreak_id}{The id number for the outbreak for which you want to download follow-ups.}
+\item{outbreak_id}{The id number for the outbreak for which you want to download data.}
 
-\item{batch_size}{For large datasets, specify the number of records to retrieve in each iteration.}
+\item{method}{The method to download data. \code{method="export"} is the preferred and default method for Go.Data version 2.38.1 or later. See Details.}
+
+\item{batch_size}{If \code{method="batches"}, then \code{batch_size} specifies the number of records to retrieve in each iteration.}
+
+\item{wait}{If \code{method="export"}, then \code{wait} is the number of seconds to wait in between iterations of checking the status of the export.}
+
+\item{file.type}{If \code{method="export"}, then \code{file.type} determines Whether the resulting data frame should contain nested fields (\code{file.type="json"}, the default) or an entirely flat data structure (\code{file.type="csv"})}
 }
 \value{
-Returns a data frame of daily follow-ups of contacts. Some fields may require further unnesting. See the \code{tidyr::unnest()} function.
+Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the \code{\link[tidyr]{unnest}} function.
 }
 \description{
-A function to retrieve the contact follow-up
-data for a specific \code{outbreak_id}. This
-function relies on the \verb{/outbreaks/\{id\}/follow-ups}
-API endpoint. Records are imported in
-iterative batches and then appended together
-into a single data frame.
+A function to retrieve the follow-up data for a
+specific \code{outbreak_id}.
 }
 \details{
-This function works on all versions of Go.Data.
-However, if you are using version 2.38.1 or
-greater, then we recommend using \code{\link{get_followups2}},
-which has additional features and improved
-performance.
+This function works on all versions of Go.Data. There
+are two methods for downloading the data:
+
+\code{method="batches"} will work on all versions of
+Go.Data. This method relies on the GET outbreak/{id}/follow-ups
+API endpoint. Records are then retrieved in batches
+based on \code{batch_size} and appended together into
+a final dataset. \code{method="batches"} will be the default and
+only available method for Go.Data version 2.38.0 or older.
+
+\code{method="export"} will only work on Go.Data versions
+2.38.1 or newer. This method relies on the GET
+outbreak/{id}/follow-ups/export API endpoint. An export
+request is submitted to the server, and then when the
+export is ready, it will be downloaded. Due to better
+performance and more options, \code{method="export"} will
+be the default if you are using Go.Data version 2.38.1
+or newer.
 }
 \examples{
 \dontrun{

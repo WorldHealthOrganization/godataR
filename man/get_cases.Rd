@@ -22,7 +22,7 @@ get_cases(
 
 \item{password}{The password for your Go.Data login}
 
-\item{outbreak_id}{The id number for the outbreak for which you want to download cases.}
+\item{outbreak_id}{The id number for the outbreak for which you want to download data.}
 
 \item{method}{The method to download data. \code{method="export"} is the preferred and default method for Go.Data version 2.38.1 or later. See Details.}
 
@@ -33,21 +33,22 @@ get_cases(
 \item{file.type}{If \code{method="export"}, then \code{file.type} determines Whether the resulting data frame should contain nested fields (\code{file.type="json"}, the default) or an entirely flat data structure (\code{file.type="csv"})}
 }
 \value{
-Returns a data frame of cases. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the \code{\link[tidyr]{unnest}} function.
+Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the \code{\link[tidyr]{unnest}} function.
 }
 \description{
 A function to retrieve the case data for a
 specific \code{outbreak_id}.
 }
 \details{
-This function works on all versions of Go.Data.There
+This function works on all versions of Go.Data. There
 are two methods for downloading the data:
 
 \code{method="batches"} will work on all versions of
 Go.Data. This method relies on the GET outbreak/{id}/cases
-API endpoint. Cases are then retrieved in batches
+API endpoint. Records are then retrieved in batches
 based on \code{batch_size} and appended together into
-a final dataset.
+a final dataset. \code{method="batches"} will be the default and
+only available method for Go.Data version 2.38.0 or older.
 
 \code{method="export"} will only work on Go.Data versions
 2.38.1 or newer. This method relies on the GET
@@ -55,7 +56,7 @@ outbreak/{id}/cases/export API endpoint. An export
 request is submitted to the server, and then when the
 export is ready, it will be downloaded. Due to better
 performance and more options, \code{method="export"} will
-be the default if you are using Go.Data version 2.28.1
+be the default if you are using Go.Data version 2.38.1
 or newer.
 }
 \examples{
