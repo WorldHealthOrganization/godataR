@@ -69,7 +69,7 @@ language_tokens <- get_language_tokens(url=url, username=username, password=pass
 
 ## Handling versioning across Go.Data releases
 There were significant changes to most API endpoints at the release of V38.1, in order to increase performance during export and in-app visualization. There are two methods for downloading the data to accomodate version history:
- - `method="export"` will only work on Go.Data versions 2.38.1 or newer. This method relies on the GET outbreak/{id}/cases/export API endpoint. An export request is submitted to the server, and then when the export is ready, it will be downloaded. Due to better performance and more options, `method="export"` will be the default if you are using Go.Data version 2.38.1 or newer.
+ - `method="export"` will only work on Go.Data versions 2.38.1 or newer. This method relies on the `GET outbreak/{id}/cases/export` API endpoint. An export request is submitted to the server, and then when the export is ready, it will be downloaded. Due to better performance and more options, `method="export"` will be the default if you are using Go.Data version 2.38.1 or newer.
  - `method="batches"` will work on all versions of Go.Data. This method relies on the API endpoints such as `GET outbreak/{id}/cases` or `GET outbreak/{id}/contacts` API endpoint. Records are then retrieved in batches based on `batch_size` and appended together into a final dataset. `method="batches"` will be the default and only available method for Go.Data version 2.38.0 or older.
 
 
