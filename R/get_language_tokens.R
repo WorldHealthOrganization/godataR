@@ -27,9 +27,7 @@
 #' @import httr
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
-#' @export
-#'
-#' #Default value of language is "english_us"
+
 
 get_language_tokens <- function(url=url,
                               username=username,
