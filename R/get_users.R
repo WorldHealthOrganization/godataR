@@ -11,7 +11,7 @@
 #' @param password The password for your Go.Data login
 #'
 #' @return
-#' Returns a data frame of user accounts associated with Go.Data instance. Some fields, roleIds, will be in list format and may require further un-nesting. See the `tidyr::unnest()` function.
+#' Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See \code{\link[tidyr]{nest}} for assitance with unnesting.
 #' @export
 #' @examples
 #' \dontrun{

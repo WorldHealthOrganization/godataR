@@ -33,9 +33,9 @@ username <- "myemail@email.com"
 password <- "mypassword"
 language <- "english_us"
 
-language_tokens <- get_all_outbreaks(url=url,
-                               username=username,
-                               password=password,
-                               language=language)
+language_tokens <- get_language_tokens(url=url,
+                                       username=username,
+                                       password=password,
+                                       language=language)
 }
 }

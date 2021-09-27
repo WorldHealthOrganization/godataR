@@ -33,7 +33,7 @@ get_relationships(
 \item{file.type}{If \code{method="export"}, then \code{file.type} determines Whether the resulting data frame should contain nested fields (\code{file.type="json"}, the default) or an entirely flat data structure (\code{file.type="csv"})}
 }
 \value{
-Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the \code{\link[tidyr]{unnest}} function.
+Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See \code{\link[tidyr]{nest}} for assitance with unnesting.
 }
 \description{
 A function to retrieve the relationship data for a

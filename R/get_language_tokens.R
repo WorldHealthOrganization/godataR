@@ -16,10 +16,10 @@
 #' password <- "mypassword"
 #' language <- "english_us"
 #'
-#' language_tokens <- get_all_outbreaks(url=url,
-#'                                username=username,
-#'                                password=password,
-#'                                language=language)
+#' language_tokens <- get_language_tokens(url=url,
+#'                                        username=username,
+#'                                        password=password,
+#'                                        language=language)
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -30,9 +30,9 @@
 
 
 get_language_tokens <- function(url=url,
-                              username=username,
-                              password=password,
-                              language=language) {
+                                username=username,
+                                password=password,
+                                language=language) {
 
   df <- GET(paste0(url,"api/languages/",language,"/language-tokens",
                           "?access_token=",get_access_token(url=url, username=username, password=password))) %>%

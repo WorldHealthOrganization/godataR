@@ -27,7 +27,7 @@ batch_downloader(
 \item{batch_size}{Specifies the number of records to retrieve in each iteration.}
 }
 \value{
-Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields will require further unnesting. See the \code{\link[tidyr]{unnest}} function.
+Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See \code{\link[tidyr]{nest}} for assitance with unnesting.
 }
 \description{
 A housekeeping function to do batch downloads.
