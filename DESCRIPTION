@@ -9,5 +9,5 @@ Imports: httr, jsonlite, tidyverse, tidyr, dplyr, magrittr, purrr, tibble, strin
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
