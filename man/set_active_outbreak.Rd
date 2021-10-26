@@ -21,7 +21,7 @@ set_active_outbreak(
 \item{outbreak_id}{The id number for the outbreak to set to active.}
 }
 \value{
-Nothing. A message will indicate whether the active outbreak has been changed in the system.
+Nothing
 }
 \description{
 A function to change the user's active outbreak
