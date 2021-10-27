@@ -40,25 +40,36 @@ set_active_outbreak <- function(url=url,
                                 outbreak_id=outbreak_id) {
 
 
-  #Get List of Available Outbreaks
+  #Get User ID & Active Outbreak ID
   user.details <- GET(paste0(url,"api/users",
                       "?access_token=",get_access_token(url=url, username=username, password=password))) %>%
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
     filter(email==username)
 
-  # available.outbreaks <- user.details %>%
-  #   pluck("outbreakIds") %>%
-  #   unlist()
-
   current.active.outbreak <- user.details$activeOutbreakId
-
   user.id <- user.details$id
 
-  new.data <- list("activeOutbreakId"=outbreak_id)
-  patch.active.outbreak <- PATCH(paste0(url,"api/users/",user.id),
-                                 add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " ")),
-                                 body=new.data,
-                                 encode="json")
+  #Get List of Available Outbreak IDs
+  available.outbreaks <- get_all_outbreaks(url=url, username=username, password=password) %>%
+    select(id) %>% unlist()
+
+  if (current.active.outbreak == outbreak_id) {   #Is outbreak_id already active?
+    text <- paste0("Active outbreak not changed. ", outbreak_id, " is already active.")
+  } else if (!(outbreak_id %in% available.outbreaks)) {
+    stop(paste0("Active outbreak not changed. ",outbreak_id, " not in list of user's available outbreaks. Make sure the id number is correct & that the user has proper access."))
+  } else {
+
+    new.data <- list("activeOutbreakId"=outbreak_id)
+    patch.active.outbreak <- PATCH(paste0(url,"api/users/",user.id),
+                                   add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " ")),
+                                   body=new.data,
+                                   encode="json")
+    text <- paste0("Active outbreak changed! ", outbreak_id, " is now active.")
+  }
+
+  message(text)
+
+
 
 }
