@@ -63,17 +63,17 @@ export_downloader <- function(url = url,
   #Download the export
   message("...beginning download")
   if (file.type=="json") {
-    df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-      content("text", encoding="UTF-8") %>%
-      fromJSON(flatten=TRUE)
+    df.request <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) 
+    df.content <- content(df.request, as="text", encoding="UTF-8")
+    df <- fromJSON(df.content, flatten=TRUE)
 
     # fix one strange variable name
     names(df)[names(df) %in% "_id"] <- "id"
   } else if (file.type=="csv") {
-    df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-      content("text", encoding="UTF-8") %>%
-      textConnection() %>%
-      read.csv()
+    df.request <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password)))
+    df.content <- content(df.request, as="text", encoding="UTF-8")
+    df.textConnection <- textConnection(df.content)
+    df <- read.csv(df.textConnection)
     names(df)[names(df) %in% "X_id"] <- "id"
   }
 
