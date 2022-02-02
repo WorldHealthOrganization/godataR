@@ -39,7 +39,7 @@ get_all_outbreaks <- function(url=url,
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
     filter(deleted!=TRUE) %>%
-    select(id, name, description, createdBy, createdAt)
+    select(any_of(c("id", "name", "description","createdBy","createdAt")))
 
   return(outbreaks)
 
