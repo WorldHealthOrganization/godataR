@@ -72,12 +72,9 @@ match_lab2cases <- function(labdata,
     # Check that birthdates in lab data are formatted as dates, convert if not:
     labdata = labdata %>% 
       
-      mutate(dob = if_else(condition = any(class(dates) %in% c("Date", "POSIXt")), 
-                           true = dob, 
-                           false = lubridate::parse_date_time(x = birthdate, 
-                                                              orders = c("ymd", 
-                                                                         "dmy", 
-                                                                         "mdy"))))
+      mutate(dob = lubridate::parse_date_time(x = dob, orders = c("ymd", 
+                                                                  "dmy", 
+                                                                  "mdy")))
   
   }
   
@@ -246,9 +243,253 @@ match_lab2cases <- function(labdata,
   
   if(matchmethod == "exact" & matchcols == "names & age"){
     
+    #####################################################################
+    ### First iteration: assume firstname and surname in correct columns:
     
+    # Check if any first names match exactly:
+    labdata[, dscore_fn := match(x = firstName, table = casedata$firstName)]
+    
+    # Check if any surnames match exactly:
+    labdata[, dscore_sn := match(x = lastName, table = casedata$lastName)]
+    
+    # Check if ages match exactly:
+    labdata[, dscore_age := match(x = age_years, table = casedata$age_years)]
+    
+    # Return case match index if all three columns match, else NA:
+    labdata[, casematch := fifelse(test = !is.na(any(dscore_fn, 
+                                                     dscore_sn, 
+                                                     dscore_age)) & 
+                                     var(c(dscore_fn, 
+                                           dscore_sn, 
+                                           dscore_age)) == 0, 
+                                   yes = dscore_fn, 
+                                   no = NA_real_), 
+            by = 1:nrow(labdata)]
+    
+    # Add the Go.Data visualId (visual case ID) to the lab data for matches:
+    labdata[, caseid := casedata$visualId[casematch]]
+    
+    ####################################################################
+    ### Second iteration with first and surname swapped for non matches:
+    
+    # Check if any first names match with surnames exactly:
+    labdata[is.na(caseid), dscore_fn := match(x = firstName, 
+                                              table = casedata$lastName)]
+    
+    # Check if any surnames match with first names exactly:
+    labdata[is.na(caseid), dscore_sn := match(x = lastName, 
+                                              table = casedata$firstName)]
+    
+    # Return case match index if all three columns match, else NA:
+    labdata[is.na(caseid), casematch := fifelse(test = !is.na(any(dscore_fn, 
+                                                                  dscore_sn, 
+                                                                  dscore_age)) & 
+                                                  var(c(dscore_fn, 
+                                                        dscore_sn, 
+                                                        dscore_age)) == 0, 
+                                                yes = dscore_fn, 
+                                                no = NA_real_), 
+            by = 1:nrow(labdata)]
+    
+    # Add Go.Data visualId (visual caseid) for any additional matches:
+    labdata[is.na(caseid), caseid := casedata$visualId[casematch]]
+
+  }
+  
+  if(matchmethod == "fuzzy" & matchcols == "names & age"){
+    
+    #####################################################################
+    ### First iteration: assume firstname and surname in correct columns:
+    
+    # Check if any first names match by soundex codes:
+    labdata[, dscore_fn := stringdist::amatch(x = firstName, 
+                                              table = casedata$firstName, 
+                                              method = "soundex")]
+    
+    # Check if any surnames match by soundex codes:
+    labdata[, dscore_sn := stringdist::amatch(x = lastName, 
+                                              table = casedata$lastName, 
+                                              method = "soundex")]
+    
+    # Check if ages match exactly (too few digits for fuzzy match):
+    labdata[, dscore_age := match(x = age_years, 
+                                  table = casedata$age_years)]
+    
+    # Return case match index if all three columns match, else NA:
+    labdata[, casematch := fifelse(test = !is.na(any(dscore_fn, 
+                                                     dscore_sn, 
+                                                     dscore_age)) & 
+                                     var(c(dscore_fn, 
+                                           dscore_sn, 
+                                           dscore_age)) == 0, 
+                                   yes = dscore_fn, 
+                                   no = NA_real_), 
+            by = 1:nrow(labdata)]
+    
+    # Add the Go.Data visualId (visual case ID) to the lab data for matches:
+    labdata[, caseid := casedata$visualId[casematch]]
+    
+    ####################################################################
+    ### Second iteration with first and surname swapped for non matches:
+    
+    # Check if any first names match with surnames by soundex codes:
+    labdata[is.na(caseid), dscore_fn := stringdist::amatch(x = firstName, 
+                                                           table = casedata$lastName, 
+                                                           method = "soundex")]
+    
+    # Check if any surnames match with first names by soundex codes:
+    labdata[is.na(caseid), dscore_sn := stringdist::amatch(x = lastName, 
+                                                           table = casedata$firstName, 
+                                                           method = "soundex")]
+    
+    # Return case match index if all three columns match, else NA:
+    labdata[is.na(caseid), casematch := fifelse(test = !is.na(any(dscore_fn, 
+                                                                  dscore_sn, 
+                                                                  dscore_age)) & 
+                                                  var(c(dscore_fn, 
+                                                        dscore_sn, 
+                                                        dscore_age)) == 0, 
+                                                yes = dscore_fn, 
+                                                no = NA_real_), 
+            by = 1:nrow(labdata)]
+    
+    # Add Go.Data visualId (visual caseid) for any additional matches:
+    labdata[is.na(caseid), caseid := casedata$visualId[casematch]]
     
   }
+  
+  if(matchmethod == "exact" & matchcols == "names"){
+    
+    #####################################################################
+    ### First iteration: assume firstname and surname in correct columns:
+    
+    # Check if any first names match exactly:
+    labdata[, dscore_fn := match(x = firstName, table = casedata$firstName)]
+    
+    # Check if any surnames match exactly:
+    labdata[, dscore_sn := match(x = lastName, table = casedata$lastName)]
+    
+    # Return case match index if all three columns match, else NA:
+    labdata[, casematch := fifelse(test = !is.na(any(dscore_fn, 
+                                                     dscore_sn)) & 
+                                     var(c(dscore_fn, 
+                                           dscore_sn)) == 0, 
+                                   yes = dscore_fn, 
+                                   no = NA_real_), 
+            by = 1:nrow(labdata)]
+    
+    # Add the Go.Data visualId (visual case ID) to the lab data for matches:
+    labdata[, caseid := casedata$visualId[casematch]]
+    
+    ####################################################################
+    ### Second iteration with first and surname swapped for non matches:
+    
+    # Check if any first names match with surnames exactly:
+    labdata[is.na(caseid), dscore_fn := match(x = firstName, 
+                                              table = casedata$lastName)]
+    
+    # Check if any surnames match with first names exactly:
+    labdata[is.na(caseid), dscore_sn := match(x = lastName, 
+                                              table = casedata$firstName)]
+    
+    # Return case match index if all three columns match, else NA:
+    labdata[is.na(caseid), casematch := fifelse(test = !is.na(any(dscore_fn, 
+                                                                  dscore_sn)) & 
+                                                  var(c(dscore_fn, 
+                                                        dscore_sn)) == 0, 
+                                                yes = dscore_fn, 
+                                                no = NA_real_), 
+            by = 1:nrow(labdata)]
+    
+    # Add Go.Data visualId (visual caseid) for any additional matches:
+    labdata[is.na(caseid), caseid := casedata$visualId[casematch]]
+
+  }
+  
+  if(matchmethod == "fuzzy" & matchcols == "names"){
+    
+    #####################################################################
+    ### First iteration: assume firstname and surname in correct columns:
+    
+    # Check if any first names match by soundex codes:
+    labdata[, dscore_fn := stringdist::amatch(x = firstName, 
+                                              table = casedata$firstName, 
+                                              method = "soundex")]
+    
+    # Check if any surnames match by soundex codes:
+    labdata[, dscore_sn := stringdist::amatch(x = lastName, 
+                                              table = casedata$lastName, 
+                                              method = "soundex")]
+    
+    # Return case match index if all three columns match, else NA:
+    labdata[, casematch := fifelse(test = !is.na(any(dscore_fn, 
+                                                     dscore_sn)) & 
+                                     var(c(dscore_fn, 
+                                           dscore_sn)) == 0, 
+                                   yes = dscore_fn, 
+                                   no = NA_real_), 
+            by = 1:nrow(labdata)]
+    
+    # Add the Go.Data visualId (visual case ID) to the lab data for matches:
+    labdata[, caseid := casedata$visualId[casematch]]
+    
+    ####################################################################
+    ### Second iteration with first and surname swapped for non matches:
+    
+    # Check if any first names match with surnames by soundex codes:
+    labdata[is.na(caseid), dscore_fn := stringdist::amatch(x = firstName, 
+                                                           table = casedata$lastName, 
+                                                           method = "soundex")]
+    
+    # Check if any surnames match with first names by soundex codes:
+    labdata[is.na(caseid), dscore_sn := stringdist::amatch(x = lastName, 
+                                                           table = casedata$firstName, 
+                                                           method = "soundex")]
+    
+    # Return case match index if all three columns match, else NA:
+    labdata[is.na(caseid), casematch := fifelse(test = !is.na(any(dscore_fn, 
+                                                                  dscore_sn)) & 
+                                                  var(c(dscore_fn, 
+                                                        dscore_sn)) == 0, 
+                                                yes = dscore_fn, 
+                                                no = NA_real_), 
+            by = 1:nrow(labdata)]
+    
+    # Add Go.Data visualId (visual caseid) for any additional matches:
+    labdata[is.na(caseid), caseid := casedata$visualId[casematch]]
+
+  }
+  
+  if(matchmethod == "exact" & matchcols == "doc ID"){
+    
+    # Check if any document ID numbers match exactly:
+    labdata[, dscore_did := match(x = documents_number, 
+                                  table = casedata$documents_number)]
+    
+    # Add the returned case row index to the casematch column:
+    labdata[, casematch := dscore_did]
+    
+    # Add the Go.Data visualId (visual case ID) to the lab data for matches:
+    labdata[, caseid := casedata$visualId[casematch]]
+
+  }
+  
+  if(matchmethod == "fuzzy" & matchcols == "doc ID"){
+    
+    # Check if any document ID numbers match by Daperau-Levenshtein D1:
+    labdata[, dscore_did := stringdist::amatch(x = documents_number, 
+                                               table = casedata$documents_number, 
+                                               method = "dl", 
+                                               maxDist = 1)]
+    
+    # Add the returned case row index to the casematch column:
+    labdata[, casematch := dscore_did]
+    
+    # Add the Go.Data visualId (visual case ID) to the lab data for matches:
+    labdata[, caseid := casedata$visualId[casematch]]
+    
+  }
+  
   
   
   # Return updated lab data with Go.Data visual case IDs added for matches:

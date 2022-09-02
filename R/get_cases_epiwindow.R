@@ -26,6 +26,7 @@
 #' @param url URL (web address) for Go.Data instance
 #' @param username User email address used to log in to Go.Data
 #' @param password User password used to log in to Go.Data
+#' @param outbreak Outbreak to use; either "active" (default) or outbreak ID
 #' @param epiwindow User defined illness episode window in days (integer)
 #' @param mindate Earliest specimen collection date from lab results to match
 #' @param maxdate Latest specimen collection date from lab results to match
@@ -46,6 +47,7 @@
 #' cases <- get_cases_epiwindow(url = url, 
 #'                              username = username, 
 #'                              password = password, 
+#'                              outbreak = "active",
 #'                              mindate = as.Date("2022-07-01"), 
 #'                              maxdate = as.Date("2022-07-25"), 
 #'                              epiwindow = 30)
@@ -56,7 +58,8 @@
 #' @export
 get_cases_epiwindow <- function(url, 
                                 username, 
-                                password, 
+                                password,
+                                outbreak = "active",
                                 epiwindow, 
                                 mindate, 
                                 maxdate){
@@ -116,10 +119,20 @@ get_cases_epiwindow <- function(url,
   # 03. Get active outbreak ID:
   ####################################
   
-  # Get the active outbreak ID:
-  outbreak_id = get_active_outbreak(url = url, 
-                                    username = username, 
-                                    password = password)
+  if(outbreak == "active"){
+    
+    # Get the active outbreak ID:
+    outbreak_id = get_active_outbreak(url = url, 
+                                      username = username, 
+                                      password = password)
+    
+  } else {
+    
+    # Set outbreak ID to that supplied by user:
+    outbreak_id = outbreak
+    
+  }
+  
   
   ####################################
   # 04. Send query to Go.Data:
@@ -151,7 +164,52 @@ get_cases_epiwindow <- function(url,
   
   
   ####################################
-  # 05. Fetch query results:
+  # 05. Wait for download to compile:
+  ####################################
+  
+  # Check status of request periodically, until finished
+  er_status = httr::GET(paste0(url,
+                               "api/export-logs/",
+                               elid,
+                               "?access_token=",
+                               get_access_token(url = url,
+                                                username = username,
+                                                password = password))) %>% 
+    # Extract content:
+    content() 
+  
+  # Subset content to extract necessary messages:
+  er_status = er_status[c("statusStep",
+                          "totalNo",
+                          "processedNo")]
+  
+  # Set waiting time to allow download to complete:
+  while(er_status$statusStep != "LNG_STATUS_STEP_EXPORT_FINISHED") {
+    
+    # Wait for request to complete:
+    Sys.sleep(2)
+    
+    # Get export request status again:
+    er_status = hhtr::GET(paste0(url,
+                                 "api/export-logs/",
+                                 elid,
+                                 "?access_token=",
+                                 get_access_token(url = url,
+                                                  username = username,
+                                                  password = password))) %>% 
+      # Extract content again:
+      content()
+    
+    # Set user progress message:
+    message(paste0("...processed ",
+                   er_status$processedNo,
+                   " of ", 
+                   er_status$totalNo, " records"))
+    
+    }
+  
+  ####################################
+  # 06. Fetch query results:
   ####################################
   
   # Now import query results to R using export log ID from the previous step:
@@ -185,7 +243,7 @@ get_cases_epiwindow <- function(url,
   
   
   ####################################
-  # 06. Return cases to match on:
+  # 07. Return cases to match on:
   ####################################
   
   # Return data.frame of filtered cases:
