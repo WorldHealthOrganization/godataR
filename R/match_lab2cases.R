@@ -73,6 +73,8 @@
 #' @param dobcol name of lab column containing dates of birth (character)
 #' @param agecol name of lab column containing age in years (character)
 #' @param docidcol name of lab column containing document ID numbers (character)
+#' @param sampledatecol name of lab column containing specimen collection dates
+#' @param casereportdatecol name of case column containing case report dates
 #' @param matchmethod one of "fuzzy" or "exact"
 #' 
 #' @return updated lab data with Go.data case IDs for identified matches as 
@@ -83,13 +85,9 @@
 #' @import EmilMisc
 #' 
 #' @examples 
-#' # Load libraries:
-#' library(data.table)
-#' library(dplyr)
-#' library(dtplyr)
 #' 
 #' # Create example case data:
-#' casedata <- data.table(visualId = c("C001", 
+#' casedata <- data.frame(visualId = c("C001", 
 #'                                     "C002", 
 #'                                     "C003", 
 #'                                     "c004", 
@@ -132,35 +130,31 @@
 #'                                                             NA, 
 #'                                                             "2022-07-29"))
 #'                                                             
-#' # Convert date columns:
-#' casedata <- casedata %>% 
-#'   mutate(across(.cols = c(dob, contains("date")), .fns = as.Date))
-#' 
 #' # Create example lab data: 
-#' labdata <- data.table(documents_number = c("N099", "N052", "N088", "N091"), 
-#'                       firstName = c("Sam", "Lila", "Jim", "Ena"), 
-#'                       lastName = c("Tracik", "Crowther", "Dutto", "Lotuto"),
+#' labdata <- data.frame(documents_number = c("N099", "N052", "N088", "N091"), 
+#'                       firstname = c("Sam", "Lila", "Jim", "Ena"), 
+#'                       surname = c("Tracik", "Crowther", "Dutto", "Lotuto"),
 #'                       dob = c("2001-11-04", 
 #'                               "1980-07-15", 
 #'                               "2019-08-12", 
 #'                               "1978-12-23"), 
-#'                       age_years = c(23, 45, 19, 44), 
+#'                       age = c(23, 45, 19, 44), 
 #'                       result = c("neg", "pos", "neg", "pos"), 
 #'                       sampledate = c("2022-08-02", 
 #'                                      "2022-08-03", 
 #'                                      "2022-08-01", 
 #'                                      "2022-08-02"))
 #' 
-#' # Convert date columns:
-#' labdata <- labdata %>% 
-#'   mutate(across(.cols = c(dob, contains("date")), .fns = as.Date)) 
-#' 
 #' #############################################
 #' # Exact match on names and dates of birth:
 #' updatelab <- match_lab2cases(labdata = labdata, 
 #'                              casedata = casedata, 
 #'                              epiwindow = 30,
-#'                              matchcols = "names & dob", 
+#'                              matchcols = "names & dob",
+#'                              sampledatecol = "sampledate", 
+#'                              firstnamecol = "firstname",
+#'                              lastnamecol = "surname",
+#'                              dobcol = "dob",
 #'                              matchmethod = "exact")
 #' 
 #' # There is one match for the last case (after firstName and lastName columns 
@@ -171,6 +165,10 @@
 #'                              casedata = casedata, 
 #'                              epiwindow = 30,
 #'                              matchcols = "names & dob", 
+#'                              sampledatecol = "sampledate",
+#'                              firstnamecol = "firstname",
+#'                              lastnamecol = "surname",
+#'                              dobcol = "dob",
 #'                              matchmethod = "fuzzy")
 #' 
 #' # Now 3/4 lab records are fuzzy matched to a case in casedata
@@ -195,6 +193,8 @@ match_lab2cases <- function(labdata,
                             dobcol = NULL,
                             agecol = NULL,
                             docidcol = NULL,
+                            sampledatecol,
+                            casereportdatecol = "dateOfReporting",
                             matchmethod = c("fuzzy", 
                                             "exact")){
   
@@ -221,54 +221,67 @@ match_lab2cases <- function(labdata,
   if(matchcols == "names & dob" 
      & (is.null(firstnamecol) 
         | is.null(lastnamecol) 
-        | is.null(dobcol))){
+        | is.null(dobcol)
+        | is.null(sampledatecol))){
        
-       stop("Column names to match on are missing.\n If you want to match on 'names & dob', specify firstnamecol, lastnamecol and dobcol.")
+       stop("Column names to match on are missing.\n If you want to match on 'names & dob', specify firstnamecol, lastnamecol, dobcol and sampledatecol.")
        
   } else if(matchcols == "names & age" 
             & (is.null(firstnamecol) 
                | is.null(lastnamecol) 
-               | is.null(agecol))){
+               | is.null(agecol)
+               | is.null(sampledatecol))){
     
-    stop("Column names to match on are missing.\n If you want to match on 'names & age', specify firstnamecol, lastnamecol and agecol.")
+    stop("Column names to match on are missing.\n If you want to match on 'names & age', specify firstnamecol, lastnamecol, agecol and sampledatecol.")
     
   } else if(matchcols == "names" 
             & (is.null(firstnamecol) 
-               | is.null(lastnamecol))){
+               | is.null(lastnamecol)
+               | is.null(sampledatecol))){
     
-    stop("Column names to match on are missing.\n If you want to match on 'names' only, specify firstnamecol and lastnamecol.")
+    stop("Column names to match on are missing.\n If you want to match on 'names' only, specify firstnamecol, lastnamecol and sampledatecol.")
     
   } else if(matchcols == "doc ID" 
-            & (is.null(docidcol))){
+            & (is.null(docidcol)
+               | is.null(sampledatecol))){
     
-    stop("Column names to match on are missing.\n If you want to match on 'doc ID' only, specify docidcol.")
+    stop("Column names to match on are missing.\n If you want to match on 'doc ID' only, specify docidcol and sampledatecol.")
     
   } else {
+    
+    # Map case report date column if case data is not from Go.Data:
+    if(casereportdatecol != "dateOfReporting"){
+      
+      data.table::setnames(x = casedata, 
+                           old = casereportdatecol, 
+                           new = "dateOfReporting")
+      
+    } 
     
     # Map lab column names to facilitate rest of code:
     if(matchcols == "names & dob"){
       
       data.table::setnames(x = labdata, 
-                           old = c(firstnamecol, lastnamecol, dobcol), 
-                           new = c("firstName", "lastName", "dob"))
+                           old = c(firstnamecol, lastnamecol, dobcol, sampledatecol), 
+                           new = c("firstName", "lastName", "dob", "sampledate"))
       
     } else if(matchcols == "names & age"){
       
       data.table::setnames(x = labdata, 
-                           old = c(firstnamecol, lastnamecol, agecol), 
-                           new = c("firstName", "lastName", "age_years"))
+                           old = c(firstnamecol, lastnamecol, agecol, sampledatecol), 
+                           new = c("firstName", "lastName", "age_years", "sampledate"))
       
     } else if(matchcols == "names"){
       
       data.table::setnames(x = labdata, 
-                           old = c(firstnamecol, lastnamecol), 
-                           new = c("firstName", "lastName"))
+                           old = c(firstnamecol, lastnamecol, sampledatecol), 
+                           new = c("firstName", "lastName", "sampledate"))
       
     } else if(matchcols == "doc ID"){
       
       data.table::setnames(x = labdata, 
-                           old = c(docidcol), 
-                           new = c("documents_number"))
+                           old = c(docidcol, sampledatecol), 
+                           new = c("documents_number", "sampledate"))
       
     }
     
@@ -276,6 +289,22 @@ match_lab2cases <- function(labdata,
   
   ########################################################################
   # Check that supplied columns are in the correct format:
+  
+  # Check sample dates are in the correct format and convert if not:
+  labdata[, sampledate := lubridate::parse_date_time(x = sampledate, 
+                                                     orders = c("ymd", 
+                                                                "dmy", 
+                                                                "mdy"))]
+  # Convert sample date from POSIXct to date:
+  labdata[, sampledate := as.Date(sampledate)]
+  
+  # Check that dateOfReporting is in the correct format and convert if not:
+  casedata[, dateOfReporting := lubridate::parse_date_time(x = dateOfReporting, 
+                                                           orders = c("ymd", 
+                                                                      "dmy", 
+                                                                      "mdy"))]
+  # Convert dateOfReporting from POSIXct to date:
+  casedata[, dateOfReporting := as.Date(dateOfReporting)]
   
   
   if(matchcols == "names & dob"){
@@ -333,8 +362,13 @@ match_lab2cases <- function(labdata,
                                               dob)]
     
     # Next, check that specimen dates are within range of epiwindow:
-    labdata[, epicheck := abs(sampledate - casedata$dateOfReporting[casematch])
-            <= epiwindow]
+    labdata[, epidatediff := abs(sampledate - 
+                                   casedata$dateOfReporting[casematch])]
+    
+    # Compare epidatediff with epiwindow:
+    labdata[, epicheck := fifelse(test = epidatediff <= epiwindow, 
+                                  yes = TRUE, 
+                                  no = FALSE)]
     
     # Finally add the Go.Data visual case ID for full matches:
     labdata[, godata_cid := fifelse(test = !is.na(casematch) & epicheck == TRUE, 
@@ -393,8 +427,12 @@ match_lab2cases <- function(labdata,
     
     
     # Next, check that specimen dates are within range of epiwindow:
-    labdata[, epicheck := abs(sampledate - casedata$dateOfReporting[casematch])
-            <= epiwindow]
+    labdata[, epidatediff := abs(sampledate - casedata$dateOfReporting[casematch])]
+    
+    # Compare epidatediff with epiwindow:
+    labdata[, epicheck := fifelse(test = epidatediff <= epiwindow, 
+                                  yes = TRUE, 
+                                  no = FALSE)]
     
     # Finally add the Go.Data visual case ID for full matches:
     labdata[, godata_cid := fifelse(test = !is.na(casematch) & epicheck == TRUE, 
@@ -414,9 +452,14 @@ match_lab2cases <- function(labdata,
                                               age_years)]
     
     # Next, check that specimen dates are within range of epiwindow:
-    labdata[, epicheck := abs(sampledate - casedata$dateOfReporting[casematch])
-            <= epiwindow]
+    labdata[, epidatediff := abs(sampledate - 
+                                   casedata$dateOfReporting[casematch])]
     
+    # Compare epidatediff with epiwindow:
+    labdata[, epicheck := fifelse(test = epidatediff <= epiwindow, 
+                                  yes = TRUE, 
+                                  no = FALSE)]
+
     # Finally add the Go.Data visual case ID for full matches:
     labdata[, godata_cid := fifelse(test = !is.na(casematch) & epicheck == TRUE, 
                                     yes = casedata$visualId[casematch],
@@ -468,11 +511,15 @@ match_lab2cases <- function(labdata,
                                                   unlist(ln), 
                                                   unlist(am)))]
     
-    
     # Next, check that specimen dates are within range of epiwindow:
-    labdata[, epicheck := abs(sampledate - casedata$dateOfReporting[casematch])
-            <= epiwindow]
+    labdata[, epidatediff := abs(sampledate - 
+                                   casedata$dateOfReporting[casematch])]
     
+    # Compare epidatediff with epiwindow:
+    labdata[, epicheck := fifelse(test = epidatediff <= epiwindow, 
+                                  yes = TRUE, 
+                                  no = FALSE)]
+
     # Finally add the Go.Data visual case ID for full matches:
     labdata[, godata_cid := fifelse(test = !is.na(casematch) & epicheck == TRUE, 
                                     yes = casedata$visualId[casematch],
@@ -490,8 +537,13 @@ match_lab2cases <- function(labdata,
                                               lastName = firstName)]
     
     # Next, check that specimen dates are within range of epiwindow:
-    labdata[, epicheck := abs(sampledate - casedata$dateOfReporting[casematch])
-            <= epiwindow]
+    labdata[, epidatediff := abs(sampledate - 
+                                   casedata$dateOfReporting[casematch])]
+    
+    # Compare epidatediff with epiwindow:
+    labdata[, epicheck := fifelse(test = epidatediff <= epiwindow, 
+                                  yes = TRUE, 
+                                  no = FALSE)]
     
     # Finally add the Go.Data visual case ID for full matches:
     labdata[, godata_cid := fifelse(test = !is.na(casematch) & epicheck == TRUE, 
@@ -539,10 +591,14 @@ match_lab2cases <- function(labdata,
     labdata[, casematch := Reduce(intersect, list(unlist(fn), 
                                                   unlist(ln)))]
     
-    
     # Next, check that specimen dates are within range of epiwindow:
-    labdata[, epicheck := abs(sampledate - casedata$dateOfReporting[casematch])
-            <= epiwindow]
+    labdata[, epidatediff := abs(sampledate - 
+                                   casedata$dateOfReporting[casematch])]
+    
+    # Compare epidatediff with epiwindow:
+    labdata[, epicheck := fifelse(test = epidatediff <= epiwindow, 
+                                  yes = TRUE, 
+                                  no = FALSE)]
     
     # Finally add the Go.Data visual case ID for full matches:
     labdata[, godata_cid := fifelse(test = !is.na(casematch) & epicheck == TRUE, 
@@ -555,10 +611,15 @@ match_lab2cases <- function(labdata,
     
     # Return exact matches on document number:
     labdata[casedata, casematch := .I, on = .(documents_number)]
-
+    
     # Next, check that specimen dates are within range of epiwindow:
-    labdata[, epicheck := abs(sampledate - casedata$dateOfReporting[casematch])
-            <= epiwindow]
+    labdata[, epidatediff := abs(sampledate - 
+                                   casedata$dateOfReporting[casematch])]
+    
+    # Compare epidatediff with epiwindow:
+    labdata[, epicheck := fifelse(test = epidatediff <= epiwindow, 
+                                  yes = TRUE, 
+                                  no = FALSE)]
     
     # Finally add the Go.Data visual case ID for full matches:
     labdata[, godata_cid := fifelse(test = !is.na(casematch) & epicheck == TRUE, 
@@ -585,10 +646,14 @@ match_lab2cases <- function(labdata,
                                    list(NA_real_)), 
             by = 1:nrow(labdata)]
     
-    
     # Next, check that specimen dates are within range of epiwindow:
-    labdata[, epicheck := abs(sampledate - casedata$dateOfReporting[casematch])
-            <= epiwindow]
+    labdata[, epidatediff := abs(sampledate - 
+                                   casedata$dateOfReporting[casematch])]
+    
+    # Compare epidatediff with epiwindow:
+    labdata[, epicheck := fifelse(test = epidatediff <= epiwindow, 
+                                  yes = TRUE, 
+                                  no = FALSE)]
     
     # Finally add the Go.Data visual case ID for full matches:
     labdata[, godata_cid := fifelse(test = !is.na(casematch) & epicheck == TRUE, 
