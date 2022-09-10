@@ -65,7 +65,7 @@
 #' @param maxdate Maximum case notification date for date range
 #' 
 #' @return 
-#' Returns data.frame of cases to match on, including Go.Data case ID  
+#' Returns data.frame of case data, including Go.Data case ID  
 #' 
 #' @import lubridate
 #' @import jsonlite
