@@ -410,7 +410,7 @@ get_labresults_epiwindow <- function(url,
                   godata_caseid = person_visualId) %>% 
     
     # Reorder columns with compulsory ones first:
-    dplyr::relocate(godata_systemlid, 
+    dplyr::relocate(godata_system_lid, 
                     godata_labupdatedat, 
                     godata_caseid, 
                     godata_sampledate,
