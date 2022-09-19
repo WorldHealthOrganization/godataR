@@ -16,15 +16,19 @@ knitr::opts_chunk$set(eval = FALSE,
                       #out.height = "20%")
 ```
 
-![](images/hex-godataR_nourl.png?raw=true)
+![](inst/app/www/godataR_logo.png)
 
 ## Overview
 
-[Go.Data](https://www.who.int/tools/godata) is a software for outbreak response and contact tracing developed by WHO in collaboration with partners in the Global Outbreak Alert and Response Network (GOARN). Go.Data focusses on case and contact data including laboratory data, hospitalization and other variables collected through investigation forms. It generates contact follow-up lists and visualisation of chains of transmission.
+[Go.Data](https://www.who.int/tools/godata) is a software for outbreak response and contact tracing developed by WHO in collaboration with partners in the Global Outbreak Alert and Response Network (GOARN). Go.Data focusses on case and contact data including laboratory data, hospitalization and other variables collected through investigation forms. It generates contact follow-up lists and allows visualisation of chains of transmission.
 
-The `godataR` package was built to allow Go.Data [user community](https://community-godata.who.int/) to more easily interact with their instance's API, especially when dealing with large volumes of data. You can now quickly retrieve a database colleciton in an un-nested format for further cleaning and analysis with one line of code. 
+The `godataR` package was built to allow the Go.Data [user community](https://community-godata.who.int/) to more easily retrieve or send data from or to a particular instance of Go.Data via its API, especially when dealing with large volumes of data. You can now quickly retrieve a database colleciton in an un-nested format for further cleaning and analysis with one line of R code. 
 
-- For example, `get_cases()` or `get_locations()` provides a painless way to retrieve case data or hierarchical locations by bypassing all of the normal API syntax and authentication required.
+For example, the functions `get_cases()` or `get_locations()` provides a painless way to retrieve case data or hierarchical locations by bypassing all of the normal API syntax and authenticating with Go.Data user login credentials from objects already stored in the R environment.
+
+Users can also retrieve cases or laboratory records that fall within a specific date range, using `get_cases_epiwindow()` or `get_labresults_epiwindow()` respectively.
+
+It is now possible to create a Go.Data bulk import-ready file of new or updated laboratory records matched to cases or existing lab records in Go.Data respectively, using the `lab2godata_wrapper()` function. If preferred, users not familiar with R can enter the parameters for this function by using the `lab2godata` shiny app.  The app can be launched from within the godataR package with `runlab2godata()`.  
 
 Future iterations will focus on POSTing to the Go.Data API for bulk creation or modification of case, contact and lab records.
 
@@ -73,7 +77,7 @@ outbreak_id <- godataR::get_active_outbreak(url = url,
 
 ## Execute functions to retrieve desired collections
 
-### The below collections require access to and specification of Outbreak.
+### These collections require access to and specification of the outbreak ID:
 
 ```{r example_code}
 
@@ -125,12 +129,37 @@ clusters <- get_clusters(url = url,
                          password = password,
                          outbreak_id = outbreak_id)
 
+# Match new lab results to cases in Go.Data within a date window:
+
+# - lab results are in a data.frame called 'mylabdata'
+# - cases will be matched to lab results if the case report date is within 30 
+#   days of the specimen collection date in the lab data (epiwindow)
+# - Cases and lab results will be matched with fuzzy matching on names & dob
+# - The relevant column names from lab data to use when matching are supplied;
+#   (in this case first name, last name and date of birth)
+
+labmatched <- godataR::lab2godata_wrapper(url = url,
+                                          username = username,
+                                          password = password,
+                                          outbreak = "active",
+                                          reason = "link new",
+                                          daterangeformat = "dmy",
+                                          epiwindow = 30,
+                                          method = "fuzzy",
+                                          matchcols = "names & dob",
+                                          labdata = mylabdata,
+                                          basedatecol = "specimen_date",
+                                          firstnamecol = "firstname",
+                                          lastnamecol = "surname",
+                                          dobcol = "birthdate")
+
+
 ```
 
 
 ### The below collections are outbreak-agnostic and applied at system-level:
 
-Some require extra parameters, like language tokens (_specify "english_us" for English, otherwise find your token_id in the URL when the language token is selected in the web-app_).
+Note that some require extra parameters, like language tokens (*specify "english_us" for English, otherwise find your token_id in the URL when the language token is selected in the web-app*).
 
 ```{r outbreak_agnostic_examples}
 

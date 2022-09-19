@@ -5,23 +5,23 @@
 \title{Wrapper function to link lab data to Go.Data cases and lab records}
 \usage{
 lab2godata_wrapper(
-  url,
+  url = "http://localhost:3000/",
   username,
   password,
   outbreak = "active",
-  source_basedata,
-  datequery = c("date range", "epiwindow", "epibuffer", "sampledates"),
+  reason = c("link new", "edit lab", "add sequencing"),
+  datequery = "epibuffer",
   daterangeformat = c("ymd", "dmy", "mdy"),
   epiwindow,
+  method = c("fuzzy", "exact"),
   matchcols = c("names & dob", "names & age", "names", "doc ID"),
+  labdata,
+  basedatecol,
   firstnamecol = NULL,
   lastnamecol = NULL,
   dobcol = NULL,
   agecol = NULL,
-  docidcol = NULL,
-  basedatecol,
-  method = c("fuzzy", "exact"),
-  reason = c("link new", "edit lab", "add sequencing")
+  docidcol = NULL
 )
 }
 \arguments{
@@ -33,15 +33,22 @@ lab2godata_wrapper(
 
 \item{outbreak}{Default is your active outbreak; else enter the outbreak ID}
 
-\item{source_basedata}{File path to the lab data you want to match}
+\item{reason}{Match reason: one of "link new", "edit lab" or "add sequencing"}
 
-\item{datequery}{One of "date range", "epiwindow", "epibuffer", "sampledates"}
+\item{datequery}{Default is "epibuffer"; else choose from "date range",
+"epiwindow", or "sampledates"}
 
 \item{daterangeformat}{One of "ymd", "dmy" or "mdy" (y=year, m=month, d=day)}
 
-\item{epiwindow}{limit in days between dates from basedata and lookuptable}
+\item{epiwindow}{limit in days between dates from labdata and lookuptable}
+
+\item{method}{Method to match on; one of "fuzzy" or "exact"}
 
 \item{matchcols}{One of "names & dob", "names & age", "names", or "doc ID"}
+
+\item{labdata}{Lab data for matching; either data.frame or data.table}
+
+\item{basedatecol}{Name of lab column containing sample dates (mandatory)}
 
 \item{firstnamecol}{Name of lab column containing first names, if needed}
 
@@ -52,12 +59,6 @@ lab2godata_wrapper(
 \item{agecol}{Name of lab column containing age in years, if needed}
 
 \item{docidcol}{Name of lab column containing document ID, if needed}
-
-\item{basedatecol}{Name of lab column containing sample dates (mandatory)}
-
-\item{method}{Method to match on; one of "fuzzy" or "exact"}
-
-\item{reason}{Match reason: one of "link new", "edit lab" or "add sequencing"}
 }
 \value{
 matched lab results in \code{match_report} and \code{matched_data}
@@ -83,17 +84,17 @@ labmatches <- lab2godata_wrapper(url = url,
                                  username = username,
                                  password = password,
                                  outbreak = "active",
-                                 source_basedata = labdata_path,
+                                 reason = "link new",
                                  datequery = "epibuffer",
                                  daterangeformat = "ymd",
                                  epiwindow = 30,
+                                 method = "fuzzy",
                                  matchcols = "names & dob",
+                                 labdata = mylabdata,
+                                 basedatecol = "sample_collection_date",
                                  firstnamecol = "firstname",
                                  lastnamecol = "surname",
-                                 dobcol = "birthdate",
-                                 basedatecol = "sample_collection_date",
-                                 method = "fuzzy",
-                                 reason = "link new")
+                                 dobcol = "birthdate")
 }
 
 }

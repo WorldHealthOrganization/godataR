@@ -37,23 +37,22 @@
 #' @param username Your Go.Data username (email address used for logging in)
 #' @param password Your Go.Data password
 #' @param outbreak Default is your active outbreak; else enter the outbreak ID
-#' @param source_basedata File path to the lab data you want to match
-#' @param datequery One of "date range", "epiwindow", "epibuffer", "sampledates"
+#' @param reason Match reason: one of "link new", "edit lab" or "add sequencing"
+#' @param datequery Default is "epibuffer"; else choose from "date range",
+#' "epiwindow", or "sampledates"
 #' @param daterangeformat One of "ymd", "dmy" or "mdy" (y=year, m=month, d=day)
-#' @param epiwindow limit in days between dates from basedata and lookuptable
+#' @param epiwindow limit in days between dates from labdata and lookuptable
+#' @param method Method to match on; one of "fuzzy" or "exact"
 #' @param matchcols One of "names & dob", "names & age", "names", or "doc ID"
+#' @param labdata Lab data for matching; either data.frame or data.table
+#' @param basedatecol Name of lab column containing sample dates (mandatory)
 #' @param firstnamecol Name of lab column containing first names, if needed
 #' @param lastnamecol Name of lab column containing last names, if needed
 #' @param dobcol Name of lab column containing birthdates, if needed
 #' @param agecol Name of lab column containing age in years, if needed
 #' @param docidcol Name of lab column containing document ID, if needed
-#' @param basedatecol Name of lab column containing sample dates (mandatory)
-#' @param method Method to match on; one of "fuzzy" or "exact"
-#' @param reason Match reason: one of "link new", "edit lab" or "add sequencing"
 #'
 #' @return matched lab results in `match_report` and `matched_data`
-#'
-#' @import rio
 #'
 #' @examples
 #' \dontrun{
@@ -65,66 +64,57 @@
 #'                                  username = username,
 #'                                  password = password,
 #'                                  outbreak = "active",
-#'                                  source_basedata = labdata_path,
+#'                                  reason = "link new",
 #'                                  datequery = "epibuffer",
 #'                                  daterangeformat = "ymd",
 #'                                  epiwindow = 30,
+#'                                  method = "fuzzy",
 #'                                  matchcols = "names & dob",
+#'                                  labdata = mylabdata,
+#'                                  basedatecol = "sample_collection_date",
 #'                                  firstnamecol = "firstname",
 #'                                  lastnamecol = "surname",
-#'                                  dobcol = "birthdate",
-#'                                  basedatecol = "sample_collection_date",
-#'                                  method = "fuzzy",
-#'                                  reason = "link new")
+#'                                  dobcol = "birthdate")
 #' }
 #'
 #' @export
 lab2godata_wrapper <- function(# Go.Data user credentials:
-                               url,
+                               url = "http://localhost:3000/",
                                username,
                                password,
                                outbreak = "active",
-                               # Source data set for matching:
-                               source_basedata,
+                               # Define purpose of output:
+                               reason = c("link new",
+                                          "edit lab",
+                                          "add sequencing"),
                                # Define date range for match data:
-                               datequery = c("date range",
-                                             "epiwindow",
-                                             "epibuffer",
-                                             "sampledates"),
+                               datequery = "epibuffer",
                                daterangeformat = c("ymd", "dmy", "mdy"),
                                epiwindow,
-                               # Define columns to match on:
+                               # Define match method:
+                               method = c("fuzzy",
+                                          "exact"),
+                               # Combination of columns to match on:
                                matchcols = c("names & dob",
                                              "names & age",
                                              "names",
                                              "doc ID"),
+                               # lab data to match:
+                               labdata,
+                               basedatecol,
                                firstnamecol = NULL,
                                lastnamecol = NULL,
                                dobcol = NULL,
                                agecol = NULL,
-                               docidcol = NULL,
-                               # Define columns to use for epiwindow:
-                               basedatecol,
-                               # Define match method:
-                               method = c("fuzzy",
-                                          "exact"),
-                               # Define purpose of output:
-                               reason = c("link new",
-                                          "edit lab",
-                                          "add sequencing")){
+                               docidcol = NULL){
 
   ########################################################################
-  # 01. Import the data you want to match:
+  # 01. Get date range for base data:
 
-  basedata = rio::import(source_basedata)
-
-  ########################################################################
-  # 02. Get date range for base data:
-
-  daterange = get_date_range(dates = basedata[, basedatecol])
+  daterange = get_date_range(dates = labdata[, basedatecol])
 
   ########################################################################
-  # 03. Import the Go.Data data you want to retrieve matches from:
+  # 02. Import the Go.Data data you want to retrieve matches from:
 
   if(reason == "link new" & datequery == "date range"){
 
@@ -197,12 +187,12 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
                                          cols2return = "identifiers",
                                          datequery = datequery,
                                          daterangeformat = daterangeformat,
-                                         sampledates = basedata[, basedatecol])
+                                         sampledates = labdata[, basedatecol])
 
   }
 
   ########################################################################
-  # 04. Match data with Go.Data case or lab records:
+  # 03. Match data with Go.Data case or lab records:
 
 
   if(reason == "link new"){
@@ -221,7 +211,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
 
   if(reason == "link new" & matchcols == "names & dob"){
 
-    labmatched = match_cases(basedata = basedata,
+    labmatched = match_cases(basedata = labdata,
                              lookuptable = caselookup,
                              epiwindow = epiwindow,
                              matchcols = matchcols,
@@ -236,7 +226,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
 
   } else if(reason == "link new" & matchcols == "names & age"){
 
-    labmatched = match_cases(basedata = basedata,
+    labmatched = match_cases(basedata = labdata,
                              lookuptable = caselookup,
                              epiwindow = epiwindow,
                              matchcols = matchcols,
@@ -251,7 +241,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
 
   } else if(reason == "link new" & matchcols == "names"){
 
-    labmatched = match_cases(basedata = basedata,
+    labmatched = match_cases(basedata = labdata,
                              lookuptable = caselookup,
                              epiwindow = epiwindow,
                              matchcols = matchcols,
@@ -265,7 +255,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
 
   } else if(reason == "link new" & matchcols == "doc ID"){
 
-    labmatched = match_cases(basedata = basedata,
+    labmatched = match_cases(basedata = labdata,
                              lookuptable = caselookup,
                              epiwindow = epiwindow,
                              matchcols = matchcols,
@@ -279,7 +269,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
   } else if(reason %in% c("edit lab", "add sequencing") &
             matchcols == "names & dob"){
 
-    labmatched = match_cases(basedata = basedata,
+    labmatched = match_cases(basedata = labdata,
                              lookuptable = lablookup,
                              epiwindow = epiwindow,
                              matchcols = matchcols,
@@ -295,7 +285,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
   } else if(reason %in% c("edit lab", "add sequencing") &
             matchcols == "names & age"){
 
-    labmatched = match_cases(basedata = basedata,
+    labmatched = match_cases(basedata = labdata,
                              lookuptable = lablookup,
                              epiwindow = epiwindow,
                              matchcols = matchcols,
@@ -311,7 +301,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
   } else if(reason %in% c("edit lab", "add sequencing") &
             matchcols == "names"){
 
-    labmatched = match_cases(basedata = basedata,
+    labmatched = match_cases(basedata = labdata,
                              lookuptable = lablookup,
                              epiwindow = epiwindow,
                              matchcols = matchcols,
@@ -326,7 +316,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
   } else if(reason %in% c("edit lab", "add sequencing") &
             matchcols == "doc ID"){
 
-    labmatched = match_cases(basedata = basedata,
+    labmatched = match_cases(basedata = labdata,
                              lookuptable = lablookup,
                              epiwindow = epiwindow,
                              matchcols = matchcols,
@@ -339,23 +329,9 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
 
   }
 
-  ########################################################################
-  # 05. Export matched lab data to Microsoft Excel files:
-
-  # Export the match report:
-  rio::export(x = labmatched$match_report,
-              file = paste0("Go.Data lab match report_",
-                            Sys.Date(),
-                            ".xlsx"))
-
-  # Export the matched data ready to bulk import to Go.Data:
-  rio::export(x = labmatched$matched_data,
-              file = paste0("Go.Data lab matched data_",
-                            Sys.Date(),
-                            ".xlsx"))
 
   ########################################################################
-  # 06. Return match report and matched data to R environment:
+  # 04. Return match report and matched data to R environment:
 
   # Return outputs to R environment:
   return(labmatched)
