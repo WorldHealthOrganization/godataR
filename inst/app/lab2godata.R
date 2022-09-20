@@ -137,9 +137,10 @@ ui <- fluidPage(
                            ".xlsx")),
 
       # Ask user to select the column in labdata that contains sample dates:
-      selectInput(inputId = "labdata_sdatecol",
-                  label = "Select column containing sample dates",
-                  choices = ""),
+      shinyjs::hidden(
+        selectInput(inputId = "labdata_sdatecol",
+                    label = "Select column containing sample dates",
+                    choices = "")),
 
 
       # Ask user for Go.Data URL conditional on them choosing "server":
@@ -174,21 +175,23 @@ ui <- fluidPage(
 
       # Create submit button:
       actionButton(inputId = "submit",
-                   label = "Submit parameters",
-                   width = '100%'),
+                   label = HTML("<b>Submit parameters</b>"),
+                   width = '75%',
+                   style = "display:left-align",
+                   class = "btn-success"),
 
       ###################################################################
       # LAB2GODATA OUTPUTS:
 
       # Download button for match report:
-      downloadButton(outputId = "dl_matchreport",
-                     label = "Download match report",
-                     width = '100%'),
+      shinyjs::hidden(downloadButton(outputId = "dl_matchreport",
+                      label = "Download match report",
+                      width = '100%')),
 
       # Download button for matched data:
-      downloadButton(outputId = "dl_matchdata",
-                     label = "Download matched data",
-                     width = '100%')
+      shinyjs::hidden(downloadButton(outputId = "dl_matchdata",
+                      label = "Download matched data",
+                      width = '100%'))
 
 
     ),
@@ -301,6 +304,9 @@ server <- function(input, output, session) {
 
   # Create conditional input for lab data columns containing first & last names:
   observeEvent(input$matchcols, {
+
+    shinyjs::toggle(id = "labdata_sdatecol",
+                    condition = input$matchcols %in% c(namecols, "doc ID"))
 
     shinyjs::toggle(id = "labdata_firstnamecol",
                     condition = input$matchcols %in% namecols)
@@ -420,18 +426,26 @@ server <- function(input, output, session) {
     # Write table to Shiny dashboard:
     output$matchdata <- renderTable({md()})
 
+    #########################################################################
+    # EXPORT MATCHED LAB DATA WITH DOWNLOAD HANDLER:
 
+    ##########################################
+    # Create export file for match report:
 
-  #########################################################################
-  # EXPORT MATCHED LAB DATA WITH DOWNLOAD HANDLER:
+    observe({
 
-  ##########################################
-  # Create export file for match report:
+      if(!is.null(mr())){
 
-  # Next add the download handler:
-  output$dl_matchreport <- downloadHandler(
+        shinyjs::show(id = "dl_matchreport")
 
-    filename = function(){
+      }
+
+    })
+
+    # Next add the download handler:
+    output$dl_matchreport <- downloadHandler(
+
+      filename = function(){
 
       # Create the file name:
       paste0("Go.Data lab match report_", Sys.Date(), ".xlsx")
@@ -446,36 +460,43 @@ server <- function(input, output, session) {
       }
   )
 
+    ##########################################
+    # Create export file for matched lab data:
 
-  ##########################################
-  # Create export file for matched lab data:
+    observe({
 
+      if(!is.null(md())){
 
-  # Next add the download handler:
-  output$dl_matchdata <- downloadHandler(
+        shinyjs::show(id = "dl_matchdata")
 
-    filename = function(){
+      }
 
-      # Create the file name:
-      paste0("Go.Data lab matched data_", Sys.Date(), ".xlsx")
+    })
 
-    },
+    # Next add the download handler:
+    output$dl_matchdata <- downloadHandler(
 
-    content = function(file){
+      filename = function(){
 
-      # Export the data with rio::export():
-      rio::export(x = md(), file = file)
+        # Create the file name:
+        paste0("Go.Data lab matched data_", Sys.Date(), ".xlsx")
 
-    }
-  )
+        },
 
+      content = function(file){
 
+        # Export the data with rio::export():
+        rio::export(x = md(), file = file)
 
-  ##########################################################################
-  # STOP THE APP WHEN THE SESSION ENDS:
+        }
 
-  if (!interactive()) {
-    session$onSessionEnded(function() {
+      )
+
+    ##########################################################################
+    # STOP THE APP WHEN THE SESSION ENDS:
+
+    if (!interactive()) {
+      session$onSessionEnded(function() {
       stopApp()
       q("no")
     })

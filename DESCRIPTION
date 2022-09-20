@@ -18,7 +18,7 @@ Authors@R:
 Maintainer: The WHO Go.Data Team <godata@who.int>
 Description: A set of functions to connect R to Go.Data.
 Remotes:
-    EmilBode/EmilMisc
+    github::EmilBode/EmilMisc
 Imports: 
     data.table,
     dplyr, 
