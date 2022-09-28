@@ -4,7 +4,7 @@ godataR: easier wrangling with the Go.Data API
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-![](inst/app/www/godataR_logo.png)
+![](inst/app/www/godataR_logo.png) 
 
 ## Overview
 
