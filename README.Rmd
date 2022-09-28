@@ -16,7 +16,7 @@ knitr::opts_chunk$set(eval = FALSE,
                       #out.height = "20%")
 ```
 
-![](inst/app/www/godataR_logo.png)
+<img src="assets/hex-godataR_nourl.png" align="right" height="260"/>
 
 ## Overview
 
