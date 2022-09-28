@@ -40,6 +40,7 @@ get_data_model <- function(url=url,
                      add_headers(Authorization = paste("Bearer", get_access_token(url=url, username=username, password=password), sep = " "))) %>%
      content(as="text") %>%
      fromJSON(flatten=TRUE) %>%
+     nested_cols_to_df() %>%
      as_tibble()
 
    return(data_model)

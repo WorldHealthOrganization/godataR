@@ -65,10 +65,11 @@ export_downloader <- function(url = url,
   if (file.type=="json") {
     df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
       content("text", encoding="UTF-8") %>%
-      fromJSON(flatten=TRUE)
+      fromJSON(flatten=TRUE, simplifyDataFrame = TRUE)
 
     # fix one strange variable name
     names(df)[names(df) %in% "_id"] <- "id"
+
   } else if (file.type=="csv") {
     df <- GET(paste0(url,"api/export-logs/",request_id,"/download?access_token=",get_access_token(url=url, username=username, password=password))) %>%
       content("text", encoding="UTF-8") %>%
