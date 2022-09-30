@@ -42,7 +42,7 @@ get_users <- function(url=url,
     content(as="text") %>%
     fromJSON(flatten=TRUE) %>%
     filter(deleted!=TRUE) %>%
-    select(id, firstName, lastName, email, roleIds, lastLoginDate, institutionName, disregardGeographicRestrictions, activeOutbreakId, createdBy, createdAt)
+    #select(id, firstName, lastName, email, roleIds, lastLoginDate, institutionName, disregardGeographicRestrictions, activeOutbreakId, createdBy, createdAt)
   return(users)
 
 }
