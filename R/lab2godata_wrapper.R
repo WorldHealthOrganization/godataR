@@ -54,6 +54,9 @@
 #'
 #' @return matched lab results in `match_report` and `matched_data`
 #'
+#' @import data.table
+#' @import purrr
+#'
 #' @examples
 #' \dontrun{
 #' # Set file path of lab data to import:
@@ -116,6 +119,9 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
   ########################################################################
   # 02. Import the Go.Data data you want to retrieve matches from:
 
+  ############################################################
+  # A. Fetch Go.Data cases and contacts to match on:
+
   if(reason == "link new" & datequery == "date range"){
 
     # Import case data from Go.Data within date range:
@@ -129,7 +135,18 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
                                      mindate = daterange$mindate,
                                      maxdate = daterange$maxdate)
 
-  } else if(reason == "link new" & datequery == "epiwindow"){
+    # Import contact data from Go.Data within date range:
+    contactlookup = get_contacts_epiwindow(url = url,
+                                           username = username,
+                                           password = password,
+                                           outbreak = "active",
+                                           cols2return = "identifiers",
+                                           datequery = datequery,
+                                           daterangeformat = daterangeformat,
+                                           mindate = daterange$mindate,
+                                           maxdate = daterange$maxdate)
+
+      } else if(reason == "link new" & datequery == "epiwindow"){
 
     # Import case data from Go.Data within epiwindow:
     caselookup = get_cases_epiwindow(url = url,
@@ -139,6 +156,16 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
                                      cols2return = "identifiers",
                                      datequery = datequery,
                                      epiwindow = epiwindow)
+
+    # Import contact data from Go.Data within epiwindow:
+    contactlookup = get_contacts_epiwindow(url = url,
+                                           username = username,
+                                           password = password,
+                                           outbreak = "active",
+                                           cols2return = "identifiers",
+                                           datequery = datequery,
+                                           epiwindow = epiwindow)
+
 
   } else if(reason == "link new" & datequery == "epibuffer"){
 
@@ -153,46 +180,105 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
                                      maxdate = daterange$maxdate,
                                      epiwindow = epiwindow)
 
-  } else if(reason %in% c("edit lab", "add sequencing") &
-            datequery == "date range"){
+    contactlookup = get_contacts_epiwindow(url = url,
+                                           username = username,
+                                           password = password,
+                                           outbreak = "active",
+                                           cols2return = "identifiers",
+                                           datequery = datequery,
+                                           daterangeformat = daterangeformat,
+                                           mindate = daterange$mindate,
+                                           maxdate = daterange$maxdate,
+                                           epiwindow = epiwindow)
 
-    lablookup = get_labresults_epiwindow(url = url,
-                                         username = username,
-                                         password = password,
-                                         outbreak = "active",
-                                         cols2return = "identifiers",
-                                         datequery = datequery,
-                                         daterangeformat = daterangeformat,
-                                         mindate = daterange$mindate,
-                                         maxdate = daterange$maxdate)
+    # Bind case and contact lookup tables together:
+    godata_res = data.table::rbindlist(Filter(
+      f = is.data.frame,
+      x = list(caselookup, contactlookup)), fill = TRUE)
+
+    # Replace cclookup with no match statement if it is empty:
+    if(purrr::is_empty(godata_res)){godata_res = "no matches"}
+
+
+  ############################################################
+  # B. Fetch Go.Data lab records to match on:
+
+  } else if(reason %in% c("edit lab", "add sequencing") &
+            datequery %in% c("date range", "epibuffer")){
+
+    godata_res = get_labresults_epiwindow(url = url,
+                                          username = username,
+                                          password = password,
+                                          outbreak = "active",
+                                          cols2return = "identifiers",
+                                          datequery = "date range",
+                                          daterangeformat = daterangeformat,
+                                          mindate = daterange$mindate,
+                                          maxdate = daterange$maxdate)
 
   } else if(reason %in% c("edit lab", "add sequencing") &
             datequery == "epiwindow"){
 
-    lablookup = get_labresults_epiwindow(url = url,
-                                         username = username,
-                                         password = password,
-                                         outbreak = "active",
-                                         cols2return = "identifiers",
-                                         datequery = datequery,
-                                         epiwindow = epiwindow)
+    godata_res = get_labresults_epiwindow(url = url,
+                                          username = username,
+                                          password = password,
+                                          outbreak = "active",
+                                          cols2return = "identifiers",
+                                          datequery = "epiwindow",
+                                          epiwindow = epiwindow)
 
   } else if(reason %in% c("edit lab", "add sequencing") &
-            datequery == "sampledates"){
+            datequery == "sample dates"){
 
-    lablookup = get_labresults_epiwindow(url = url,
-                                         username = username,
-                                         password = password,
-                                         outbreak = "active",
-                                         cols2return = "identifiers",
-                                         datequery = datequery,
-                                         daterangeformat = daterangeformat,
-                                         sampledates = labdata[, basedatecol])
-
+    godata_res = get_labresults_epiwindow(url = url,
+                                          username = username,
+                                          password = password,
+                                          outbreak = "active",
+                                          cols2return = "identifiers",
+                                          datequery = "sample dates",
+                                          daterangeformat = daterangeformat,
+                                          sampledates = basedatecol)
   }
 
   ########################################################################
-  # 03. Match data with Go.Data case or lab records:
+  # 03. Check that columns to match on are not all NA:
+
+  # For date of birth:
+  if(matchcols == "names & dob" &
+     is.data.frame(godata_res) &
+     all(is.na(godata_res$dob))){
+
+    stop("You are trying to match on dates of birth, \n
+         but there are no dates of birth in your active outbreak in Go.Data.\n
+         Please select different columns to match on and try again.")
+
+  }
+
+  # For age in years:
+  if(matchcols == "names & age" &
+     is.data.frame(godata_res) &
+     all(is.na(godata_res$age_years))){
+
+    stop("You are trying to match on age in years, \n
+         but there are no ages recorded in your active outbreak in Go.Data.\n
+         Please select different columns to match on and try again.")
+
+  }
+
+  # For document ID:
+  if(matchcols == "doc ID" &
+     is.data.frame(godata_res) &
+     all(is.na(godata_res$documents))){
+
+    stop("You are trying to match on document ID numbers, \n
+         but there are no document IDs in your active outbreak in Go.Data.\n
+         Please select different columns to match on and try again.")
+
+  }
+
+
+  ########################################################################
+  # 04. Match data with Go.Data case or lab records:
 
 
   if(reason == "link new"){
@@ -209,129 +295,79 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
 
   }
 
-  if(reason == "link new" & matchcols == "names & dob"){
+  # Start matching provided godata_res is not empty:
+  if(!purrr::is_empty(godata_res) & is.data.frame(godata_res)){
 
-    labmatched = match_cases(basedata = labdata,
-                             lookuptable = caselookup,
-                             epiwindow = epiwindow,
-                             matchcols = matchcols,
-                             firstnamecol = firstnamecol,
-                             lastnamecol = lastnamecol,
-                             dobcol = dobcol,
-                             basedatecol = basedatecol,
-                             lookupdatecol = lookupdatecol,
-                             lookupmatchcol = lookupmatchcol,
-                             method = method,
-                             reason = reason)
+    if(matchcols == "names & dob"){
 
-  } else if(reason == "link new" & matchcols == "names & age"){
+      labmatched = match_cases(basedata = labdata,
+                               lookuptable = godata_res,
+                               epiwindow = epiwindow,
+                               matchcols = matchcols,
+                               firstnamecol = firstnamecol,
+                               lastnamecol = lastnamecol,
+                               dobcol = dobcol,
+                               basedatecol = basedatecol,
+                               lookupdatecol = lookupdatecol,
+                               lookupmatchcol = lookupmatchcol,
+                               method = method,
+                               reason = reason)
 
-    labmatched = match_cases(basedata = labdata,
-                             lookuptable = caselookup,
-                             epiwindow = epiwindow,
-                             matchcols = matchcols,
-                             firstnamecol = firstnamecol,
-                             lastnamecol = lastnamecol,
-                             agecol = agecol,
-                             basedatecol = basedatecol,
-                             lookupdatecol = lookupdatecol,
-                             lookupmatchcol = lookupmatchcol,
-                             method = method,
-                             reason = reason)
+    } else if(matchcols == "names & age"){
 
-  } else if(reason == "link new" & matchcols == "names"){
+      labmatched = match_cases(basedata = labdata,
+                               lookuptable = godata_res,
+                               epiwindow = epiwindow,
+                               matchcols = matchcols,
+                               firstnamecol = firstnamecol,
+                               lastnamecol = lastnamecol,
+                               agecol = agecol,
+                               basedatecol = basedatecol,
+                               lookupdatecol = lookupdatecol,
+                               lookupmatchcol = lookupmatchcol,
+                               method = method,
+                               reason = reason)
 
-    labmatched = match_cases(basedata = labdata,
-                             lookuptable = caselookup,
-                             epiwindow = epiwindow,
-                             matchcols = matchcols,
-                             firstnamecol = firstnamecol,
-                             lastnamecol = lastnamecol,
-                             basedatecol = basedatecol,
-                             lookupdatecol = lookupdatecol,
-                             lookupmatchcol = lookupmatchcol,
-                             method = method,
-                             reason = reason)
+    } else if(matchcols == "names"){
 
-  } else if(reason == "link new" & matchcols == "doc ID"){
+      labmatched = match_cases(basedata = labdata,
+                               lookuptable = godata_res,
+                               epiwindow = epiwindow,
+                               matchcols = matchcols,
+                               firstnamecol = firstnamecol,
+                               lastnamecol = lastnamecol,
+                               basedatecol = basedatecol,
+                               lookupdatecol = lookupdatecol,
+                               lookupmatchcol = lookupmatchcol,
+                               method = method,
+                               reason = reason)
 
-    labmatched = match_cases(basedata = labdata,
-                             lookuptable = caselookup,
-                             epiwindow = epiwindow,
-                             matchcols = matchcols,
-                             docidcol = docidcol,
-                             basedatecol = basedatecol,
-                             lookupdatecol = lookupdatecol,
-                             lookupmatchcol = lookupmatchcol,
-                             method = method,
-                             reason = reason)
+    } else if(matchcols == "doc ID"){
 
-  } else if(reason %in% c("edit lab", "add sequencing") &
-            matchcols == "names & dob"){
+      labmatched = match_cases(basedata = labdata,
+                               lookuptable = godata_res,
+                               epiwindow = epiwindow,
+                               matchcols = matchcols,
+                               docidcol = docidcol,
+                               basedatecol = basedatecol,
+                               lookupdatecol = lookupdatecol,
+                               lookupmatchcol = lookupmatchcol,
+                               method = method,
+                               reason = reason)
 
-    labmatched = match_cases(basedata = labdata,
-                             lookuptable = lablookup,
-                             epiwindow = epiwindow,
-                             matchcols = matchcols,
-                             firstnamecol = firstnamecol,
-                             lastnamecol = lastnamecol,
-                             dobcol = dobcol,
-                             basedatecol = basedatecol,
-                             lookupdatecol = lookupdatecol,
-                             lookupmatchcol = lookupmatchcol,
-                             method = method,
-                             reason = reason)
+    }
 
-  } else if(reason %in% c("edit lab", "add sequencing") &
-            matchcols == "names & age"){
 
-    labmatched = match_cases(basedata = labdata,
-                             lookuptable = lablookup,
-                             epiwindow = epiwindow,
-                             matchcols = matchcols,
-                             firstnamecol = firstnamecol,
-                             lastnamecol = lastnamecol,
-                             agecol = agecol,
-                             basedatecol = basedatecol,
-                             lookupdatecol = lookupdatecol,
-                             lookupmatchcol = lookupmatchcol,
-                             method = method,
-                             reason = reason)
+  } else {
 
-  } else if(reason %in% c("edit lab", "add sequencing") &
-            matchcols == "names"){
-
-    labmatched = match_cases(basedata = labdata,
-                             lookuptable = lablookup,
-                             epiwindow = epiwindow,
-                             matchcols = matchcols,
-                             firstnamecol = firstnamecol,
-                             lastnamecol = lastnamecol,
-                             basedatecol = basedatecol,
-                             lookupdatecol = lookupdatecol,
-                             lookupmatchcol = lookupmatchcol,
-                             method = method,
-                             reason = reason)
-
-  } else if(reason %in% c("edit lab", "add sequencing") &
-            matchcols == "doc ID"){
-
-    labmatched = match_cases(basedata = labdata,
-                             lookuptable = lablookup,
-                             epiwindow = epiwindow,
-                             matchcols = matchcols,
-                             docidcol = docidcol,
-                             basedatecol = basedatecol,
-                             lookupdatecol = lookupdatecol,
-                             lookupmatchcol = lookupmatchcol,
-                             method = method,
-                             reason = reason)
+    labmatched = "no matches"
 
   }
 
 
+
   ########################################################################
-  # 04. Return match report and matched data to R environment:
+  # 05. Return match report and matched data to R environment:
 
   # Return outputs to R environment:
   return(labmatched)

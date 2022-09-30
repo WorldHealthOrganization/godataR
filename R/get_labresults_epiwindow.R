@@ -67,6 +67,7 @@
 #' @import lubridate
 #' @import jsonlite
 #' @import httr
+#' @import data.table
 #' @import dplyr
 #' @import tidyr
 #' @import purrr
@@ -89,7 +90,7 @@
 #'                                    username = username,
 #'                                    password = password,
 #'                                    cols2return = "identifiers",
-#'                                    datequery = "sampledates",
+#'                                    datequery = "sample dates",
 #'                                    daterangeformat = "ymd",
 #'                                    sampledates = mysampledates)
 #'
@@ -104,7 +105,7 @@ get_labresults_epiwindow <- function(url,
                                      cols2return = c("identifiers", "all"),
                                      datequery = c("date range",
                                                    "epiwindow",
-                                                   "sampledates"),
+                                                   "sample dates"),
                                      epiwindow = NULL,
                                      daterangeformat = c("ymd", "dmy", "mdy"),
                                      mindate = NULL,
@@ -127,12 +128,12 @@ get_labresults_epiwindow <- function(url,
     stop("Some arguments required to perform the date query are missing.
          For 'epiwindow', specify the epiwindow in days.")
 
-  } else if(datequery == "sampledates" &
+  } else if(datequery == "sample dates" &
             (is.null(daterangeformat)
              | is.null(sampledates))){
 
     stop("Some arguments required to perform the date query are missing.
-         For 'sampledates', specify daterangeformat and provide sampledates")
+         For 'sample dates', specify daterangeformat and provide sampledates")
 
   }
 
@@ -164,7 +165,7 @@ get_labresults_epiwindow <- function(url,
     # Use today's date/time (right now) as the maximum date:
     maxdate = mongify_date(Sys.time())
 
-  } else if(datequery == "sampledates"){
+  } else if(datequery == "sample dates"){
 
     # Convert the vector of sample dates to Mongo DB date-time format:
     sampledates = mongify_date(sampledates, dateformat = daterangeformat)
@@ -177,7 +178,7 @@ get_labresults_epiwindow <- function(url,
   ####################################
 
   # Build the query between two dates with restricted fields to return:
-  if(cols2return == "identifiers" & datequery != "sampledates"){
+  if(cols2return == "identifiers" & datequery != "sample dates"){
 
     # Build the query as an R list object:
     query_list_l <- list(filter =
@@ -206,7 +207,7 @@ get_labresults_epiwindow <- function(url,
 
 
     # Build the query to search for a vector of dates with restricted fields:
-  } else if(cols2return == "identifiers" & datequery == "sampledates"){
+  } else if(cols2return == "identifiers" & datequery == "sample dates"){
 
     # Build the query as an R list object:
     query_list_l <- list(filter =
@@ -232,7 +233,7 @@ get_labresults_epiwindow <- function(url,
                                          "sequence.hasSequence")))# Boolean
 
     # Build the query to search between two dates and return all fields:
-  } else if(cols2return == "all" & datequery != "sampledates"){
+  } else if(cols2return == "all" & datequery != "sample dates"){
 
     # Build the query as an R list object:
     query_list_l <- list(filter =
@@ -251,7 +252,7 @@ get_labresults_epiwindow <- function(url,
                                      jsonReplaceUndefinedWithNull = "true")))
 
     # Build the query to search for a vector of dates and return all fields:
-  } else if(cols2return == "all" & datequery == "sampledates"){
+  } else if(cols2return == "all" & datequery == "sample dates"){
 
     # Build the query as an R list object:
     query_list_l <- list(filter =
@@ -388,131 +389,116 @@ get_labresults_epiwindow <- function(url,
     httr::content("text", encoding = "UTF-8") %>%
 
     # Convert json to flat data.frame:
-    jsonlite::fromJSON(flatten = TRUE) %>%
+    jsonlite::fromJSON(flatten = TRUE)
 
-    # Convert date columns from mongodb format to R POSIXct:
-    dplyr::mutate(across(.cols = c(starts_with("date"), "updatedAt"),
-                         .fns = lubridate::ymd_hms)) %>%
+  # Check at least one record is returned, if true, format:
+  if(!purrr::is_empty(labresults)){
 
-    # Remove language token from lab name for readability:
-    dplyr::mutate(labName = gsub(pattern = "LNG_REFERENCE_DATA_CATEGORY_LAB_NAME_",
-                                 replacement = "",
-                                 x = labName)) %>%
+    labresults = labresults %>%
 
-    # Rename columns:
-    dplyr::rename_with( ~ gsub(pattern = ".",
-                               replacement = "_",
-                               x = .x,
-                               fixed = TRUE)) %>%
+      # Convert date columns from mongodb format to R POSIXct:
+      dplyr::mutate(across(.cols = c(starts_with("date"), "updatedAt"),
+                           .fns = lubridate::ymd_hms)) %>%
 
-    # Rename columns for export:
-    dplyr::rename(godata_system_lid = '_id',
-                  godata_labupdatedat = updatedAt,
-                  godata_sampledate = dateSampleTaken,
-                  sample_id = sampleIdentifier,
-                  sequenced = sequence_hasSequence,
-                  godata_caseid = person_visualId) %>%
+      # Remove language token from lab name for readability:
+      dplyr::mutate(labName = gsub(
+        pattern = "LNG_REFERENCE_DATA_CATEGORY_LAB_NAME_",
+        replacement = "",
+        x = labName)) %>%
 
-    # Reorder columns with compulsory ones first:
-    dplyr::relocate(godata_system_lid,
-                    godata_labupdatedat,
-                    godata_caseid,
-                    godata_sampledate,
-                    sample_id,
-                    sequenced,
-                    labName)
+      # Rename columns:
+      dplyr::rename_with( ~ gsub(pattern = ".",
+                                 replacement = "_",
+                                 x = .x,
+                                 fixed = TRUE)) %>%
 
+      # Rename columns for export:
+      dplyr::rename(godata_system_lid = '_id',
+                    godata_labupdatedat = updatedAt,
+                    godata_sampledate = dateSampleTaken,
+                    sample_id = sampleIdentifier,
+                    sequenced = sequence_hasSequence,
+                    godata_caseid = person_visualId) %>%
 
-  #########################################
-  # 07. Retrieve Go.Data case identifiers:
-  #########################################
+      # Reorder columns with compulsory ones first:
+      dplyr::relocate(godata_system_lid,
+                      godata_labupdatedat,
+                      godata_caseid,
+                      godata_sampledate,
+                      sample_id,
+                      sequenced,
+                      labName)
 
-  # Build the query to retrieve case identifiers with Go.Data case IDs
-  # from the previous step (labresults$godata_caseid):
-  query_list_c <- list(filter =
+    #########################################
+    # 07. Retrieve Go.Data case identifiers:
+    #########################################
 
-                         # Add where clause:
-                         list(where =
+    # Build the query to retrieve case identifiers with Go.Data case IDs
+    # from the previous step (labresults$godata_caseid):
+    query_list_c <- list(filter =
 
-                                # Filter results by date range:
-                                list(visualId =
-                                       list('$in' = labresults$godata_caseid),
+                           # Add where clause:
+                           list(where =
 
-                                     # Define format of column names and values:
-                                     useDbColumns = "true",
-                                     dontTranslateValues = "true",
-                                     jsonReplaceUndefinedWithNull = "true"),
+                                  # Filter results by date range:
+                                  list(visualId =
+                                         list('$in' = labresults$godata_caseid),
 
-                              # Define columns to return:
-                              fields = c("id",                # System case ID
-                                         "visualId",          # Visible case ID
-                                         "firstName",         # Case first name
-                                         "lastName",          # Case last name
-                                         "dob",               # Case birth date
-                                         "age.years",         # Case age (years)
-                                         "dateOfReporting",   # Case report date
-                                         "dateOfOnset",       # Case onset date
-                                         "documents.number")))# Case document ID
+                                       # Define format of column names and values:
+                                       useDbColumns = "true",
+                                       dontTranslateValues = "true",
+                                       jsonReplaceUndefinedWithNull = "true"),
 
-  ##############################################
-  # Convert the Go.Data case ID query to JSON:
-  query_json_c <- jsonlite::toJSON(x = query_list_c,
-                                   # Do not indent or space out elements
-                                   pretty = FALSE,
-                                   # Do not enclose single values in square braces
-                                   auto_unbox = TRUE)
+                                # Define columns to return:
+                                fields = c("id",                # System case ID
+                                           "visualId",          # Visible case ID
+                                           "firstName",         # First name
+                                           "lastName",          # Last name
+                                           "dob",               # Birth date
+                                           "age.years",         # Age (years)
+                                           "dateOfReporting",   # Report date
+                                           "dateOfOnset",       # Onset date
+                                           "documents.number",  # Document ID
+                                           "type")))            # Type is case
 
-  ##############################################
-  # Send the Go.Data case ID query to Go.Data and fetch the export log ID:
-  elid = httr::POST(url =
+    ##############################################
+    # Convert the Go.Data case ID query to JSON:
+    query_json_c <- jsonlite::toJSON(x = query_list_c,
+                                     # Do not indent or space out elements
+                                     pretty = FALSE,
+                                     # Do not enclose single values in square braces
+                                     auto_unbox = TRUE)
 
-                      # Construct request API URL:
-                      paste0(url,
-                             "api/outbreaks/",
-                             outbreak_id,
-                             "/cases/export?access_token=",
-                             get_access_token(url = url,
-                                              username = username,
-                                              password = password)),
-                    # Set the content type:
-                    httr::content_type_json(),
+    ##############################################
 
-                    # Add query:
-                    body = query_json_c,
-                    encode = "raw") %>%
+    # Send the Go.Data case ID query to Go.Data and fetch the export log ID:
+    elid = httr::POST(url =
 
-    # Fetch content:
-    httr::content() %>%
-
-    # Extract export log ID from content:
-    purrr::pluck("exportLogId")
-
-  ##############################################
-  # Check the status of the case download periodically:
-
-  # Check status of request periodically, until finished
-  er_status = httr::GET(paste0(url,
-                               "api/export-logs/",
-                               elid,
-                               "?access_token=",
+                        # Construct request API URL:
+                        paste0(url,
+                               "api/outbreaks/",
+                               outbreak_id,
+                               "/cases/export?access_token=",
                                get_access_token(url = url,
                                                 username = username,
-                                                password = password))) %>%
-    # Extract content:
-    content()
+                                                password = password)),
+                      # Set the content type:
+                      httr::content_type_json(),
 
-  # Subset content to extract necessary messages:
-  er_status = er_status[c("statusStep",
-                          "totalNo",
-                          "processedNo")]
+                      # Add query:
+                      body = query_json_c,
+                      encode = "raw") %>%
 
-  # Set waiting time to allow download to complete:
-  while(er_status$statusStep != "LNG_STATUS_STEP_EXPORT_FINISHED") {
+      # Fetch content:
+      httr::content() %>%
 
-    # Wait for request to complete:
-    Sys.sleep(2)
+      # Extract export log ID from content:
+      purrr::pluck("exportLogId")
 
-    # Get export request status again:
+    ##############################################
+    # Check the status of the case download periodically:
+
+    # Check status of request periodically, until finished
     er_status = httr::GET(paste0(url,
                                  "api/export-logs/",
                                  elid,
@@ -520,66 +506,299 @@ get_labresults_epiwindow <- function(url,
                                  get_access_token(url = url,
                                                   username = username,
                                                   password = password))) %>%
-      # Extract content again:
+      # Extract content:
       content()
 
-    # Set user progress message:
-    message(paste0("...processed ",
-                   er_status$processedNo,
-                   " of ",
-                   er_status$totalNo, " records"))
+    # Subset content to extract necessary messages:
+    er_status = er_status[c("statusStep",
+                            "totalNo",
+                            "processedNo")]
+
+    # Set waiting time to allow download to complete:
+    while(er_status$statusStep != "LNG_STATUS_STEP_EXPORT_FINISHED") {
+
+      # Wait for request to complete:
+      Sys.sleep(2)
+
+      # Get export request status again:
+      er_status = httr::GET(paste0(url,
+                                   "api/export-logs/",
+                                   elid,
+                                   "?access_token=",
+                                   get_access_token(url = url,
+                                                    username = username,
+                                                    password = password))) %>%
+        # Extract content again:
+        content()
+
+      # Set user progress message:
+      message(paste0("...processed ",
+                     er_status$processedNo,
+                     " of ",
+                     er_status$totalNo, " records"))
+
+    }
+
+    ##############################################
+    # Retrieve the case data:
+
+    cases = httr::GET(url =
+                        paste0(url,
+                               "api/export-logs/",
+                               elid,
+                               "/download?access_token=",
+                               get_access_token(url = url,
+                                                username = username,
+                                                password = password))) %>%
+
+      # Fetch content of downloaded file:
+      httr::content("text", encoding = "UTF-8") %>%
+
+      # Convert json to flat data.frame:
+      jsonlite::fromJSON(flatten = TRUE)
+
+    # Check if at least one record is returned, if true, format:
+    if(!purrr::is_empty(cases)){
+
+      cases = cases %>%
+
+        # Unnest nested variables:
+        tidyr::unnest(cols = documents, names_sep = "_") %>%
+
+        # Convert date columns from mongodb format to R POSIXct:
+        dplyr::mutate(across(.cols = c(starts_with("date"), "dob"),
+                             .fns = lubridate::ymd_hms)) %>%
+
+        # Remove language token from person type:
+        dplyr::mutate(type = tolower(gsub(
+          pattern = "LNG_REFERENCE_DATA_CATEGORY_PERSON_TYPE_",
+          replacement = "",
+          x = type))) %>%
+
+        # Rename columns:
+        dplyr::rename_with( ~ gsub(pattern = ".",
+                                   replacement = "_",
+                                   x = .x,
+                                   fixed = TRUE)) %>%
+
+        # Rename first column:
+        dplyr::rename(godata_system_cid = '_id',
+                      godata_caseid = visualId)
+
+
+    } else {
+
+      cases = "no matches"
+
+    }
+
+
+
+    ####################################
+    # 08. Repeat query for contacts:
+    ####################################
+
+    ###########################################################################
+    # Send the Go.Data contact ID query to Go.Data and fetch the export log ID:
+    elid = httr::POST(url =
+
+                        # Construct request API URL:
+                        paste0(url,
+                               "api/outbreaks/",
+                               outbreak_id,
+                               "/contacts/export?access_token=",
+                               get_access_token(url = url,
+                                                username = username,
+                                                password = password)),
+                      # Set the content type:
+                      httr::content_type_json(),
+
+                      # Add query:
+                      body = query_json_c,
+                      encode = "raw") %>%
+
+      # Fetch content:
+      httr::content() %>%
+
+      # Extract export log ID from content:
+      purrr::pluck("exportLogId")
+
+    #########################################################
+    # Check the status of the contact download periodically:
+
+    # Check status of request periodically, until finished
+    er_status = httr::GET(paste0(url,
+                                 "api/export-logs/",
+                                 elid,
+                                 "?access_token=",
+                                 get_access_token(url = url,
+                                                  username = username,
+                                                  password = password))) %>%
+      # Extract content:
+      content()
+
+    # Subset content to extract necessary messages:
+    er_status = er_status[c("statusStep",
+                            "totalNo",
+                            "processedNo")]
+
+    # Set waiting time to allow download to complete:
+    while(er_status$statusStep != "LNG_STATUS_STEP_EXPORT_FINISHED") {
+
+      # Wait for request to complete:
+      Sys.sleep(2)
+
+      # Get export request status again:
+      er_status = httr::GET(paste0(url,
+                                   "api/export-logs/",
+                                   elid,
+                                   "?access_token=",
+                                   get_access_token(url = url,
+                                                    username = username,
+                                                    password = password))) %>%
+        # Extract content again:
+        content()
+
+      # Set user progress message:
+      message(paste0("...processed ",
+                     er_status$processedNo,
+                     " of ",
+                     er_status$totalNo, " records"))
+
+    }
+
+    ##############################################
+    # Retrieve the contact data:
+
+    contacts = httr::GET(url =
+                           paste0(url,
+                                  "api/export-logs/",
+                                  elid,
+                                  "/download?access_token=",
+                                  get_access_token(url = url,
+                                                   username = username,
+                                                   password = password))) %>%
+
+      # Fetch content of downloaded file:
+      httr::content("text", encoding = "UTF-8") %>%
+
+      # Convert json to flat data.frame:
+      jsonlite::fromJSON(flatten = TRUE)
+
+    # Check that at least one record is returned, format if so:
+    if(!purrr::is_empty(contacts)){
+
+      contacts = contacts %>%
+
+        # Unnest nested variables:
+        tidyr::unnest(cols = documents, names_sep = "_") %>%
+
+        # Convert date columns from mongodb format to R POSIXct:
+        dplyr::mutate(across(.cols = c(starts_with("date"), "dob"),
+                             .fns = lubridate::ymd_hms)) %>%
+
+        # Remove language token from person type:
+        dplyr::mutate(type = tolower(gsub(
+          pattern = "LNG_REFERENCE_DATA_CATEGORY_PERSON_TYPE_",
+          replacement = "",
+          x = type))) %>%
+
+        # Rename columns:
+        dplyr::rename_with( ~ gsub(pattern = ".",
+                                   replacement = "_",
+                                   x = .x,
+                                   fixed = TRUE)) %>%
+
+        # Rename first column:
+        dplyr::rename(godata_system_cid = '_id',
+                      godata_caseid = visualId)
+
+
+    } else {
+
+      contacts = "no matches"
+
+    }
+
+
+  } else {
+
+    labresults = "no matches"
 
   }
 
-  ##############################################
-  # Retrieve the case data:
 
-  cases = httr::GET(url =
-                      paste0(url,
-                             "api/export-logs/",
-                             elid,
-                             "/download?access_token=",
-                             get_access_token(url = url,
-                                              username = username,
-                                              password = password))) %>%
+  ###########################################
+  # 09. Merge lab with case and contact data:
+  ###########################################
 
-    # Fetch content of downloaded file:
-    httr::content("text", encoding = "UTF-8") %>%
+  # Bind case and contact data:
+  ccdata = data.table::rbindlist(Filter(
+    f = is.data.frame,
+    x = list(cases, contacts)))
 
-    # Convert json to flat data.frame:
-    jsonlite::fromJSON(flatten = TRUE) %>%
+  # Replace cclookup with no match statement if it is empty:
+  if(is.data.frame(labresults) & !purrr::is_empty(ccdata)){
 
-    # Unnest nested variables:
-    tidyr::unnest(cols = documents, names_sep = "_") %>%
+    # Merge lab with case and contact data using a left join:
+    labout = dplyr::left_join(x = labresults,
+                              y = ccdata,
+                              by = "godata_caseid")
 
-    # Convert date columns from mongodb format to R POSIXct:
-    dplyr::mutate(across(.cols = c(starts_with("date"), "dob"),
-                         .fns = lubridate::ymd_hms)) %>%
+    # Reorder columns depending on doc ID presence:
+    if("documents_number" %in% names(labout)){
 
-    # Rename columns:
-    dplyr::rename_with( ~ gsub(pattern = ".",
-                               replacement = "_",
-                               x = .x,
-                               fixed = TRUE)) %>%
+      labout = labout %>%
 
-    # Rename first column:
-    dplyr::rename(godata_system_cid = '_id',
-                  godata_caseid = visualId)
+        dplyr::relocate(godata_system_lid,
+                        godata_labupdatedat,
+                        godata_caseid,
+                        godata_sampledate,
+                        sample_id,
+                        sequenced,
+                        labName,
+                        godata_system_cid,
+                        dateOfReporting,
+                        dateOfOnset,
+                        firstName,
+                        lastName,
+                        dob,
+                        age_years,
+                        documents_number,
+                        type)
 
+    } else if("documents" %in% names(labout)){
+
+      labout = labout %>%
+
+        dplyr::relocate(godata_system_lid,
+                        godata_labupdatedat,
+                        godata_caseid,
+                        godata_sampledate,
+                        sample_id,
+                        sequenced,
+                        labName,
+                        godata_system_cid,
+                        dateOfReporting,
+                        dateOfOnset,
+                        firstName,
+                        lastName,
+                        dob,
+                        age_years,
+                        documents,
+                        type)
+
+
+    }
+
+  } else {
+
+    labout = "no matches"
+
+  }
 
   ####################################
-  # 08. Merge lab and case data:
-  ####################################
-
-  # Merge lab and case data with a left join:
-  labout = dplyr::left_join(x = labresults,
-                            y = cases,
-                            by = "godata_caseid")
-
-
-
-  ####################################
-  # 09. Return cases to match on:
+  # 10. Return cases to match on:
   ####################################
 
   # Return data.frame of filtered lab results with case identifiers:

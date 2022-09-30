@@ -5,6 +5,7 @@
 # Load libraries:
 library(godataR)
 library(rio)
+library(dplyr)
 library(shiny)
 library(shinyjs)
 library(shinyvalidate)
@@ -13,9 +14,10 @@ library(shinyvalidate)
 # List of matchcols choices with first name and surname:
 namecols <- c("names & dob", "names & age", "names")
 
-hidden(span(id = "a"), div(id = "b"))
-hidden(tagList(span(id = "a"), div(id = "b")))
-hidden(list(span(id = "a"), div(id = "b")))
+# Function to check if columns are in date format:
+is.Date <- function(x) {
+  inherits(x, c("Date", "POSIXt"))
+}
 
 
 ##########################################################
@@ -30,15 +32,16 @@ ui <- fluidPage(
   # ADD GO.DATA ICON TO APP:
 
   # Add title panel and Go.Data logo:
-  titlePanel(div(column(width = 1.5, tags$img(src = "godataR_logo_small.png",
-                                            align = "left",
-                                            style = "width: 100px")),
-                 column(width = 10.5, h2("_LAB2GODATA",
-                                      align = "left"))),
-             windowTitle = "Titlepage"),
+  titlePanel(div(img(height = 100,
+                     width = 100,
+                     src = "godataR_logo_small.png"),
+                 "Lab2GoData")),
 
   ###########################################################################
   # USER INPUTS:
+
+  h3(),
+  hr(),
 
   sidebarLayout(
 
@@ -91,7 +94,7 @@ ui <- fluidPage(
                    choices = list("Year, then month, then day" = "ymd",
                                   "Day, then month, then year" = "dmy",
                                   "Month, then day, then year" = "mdy"),
-                   selected = character(0),
+                   selected = "ymd",
                    inline = FALSE,
                    width = '100%'),
 
@@ -177,7 +180,7 @@ ui <- fluidPage(
       actionButton(inputId = "submit",
                    label = HTML("<b>Submit parameters</b>"),
                    width = '75%',
-                   style = "display:left-align",
+                   style = 'display:left-align',
                    class = "btn-success"),
 
       ###################################################################
@@ -198,11 +201,13 @@ ui <- fluidPage(
 
     mainPanel(
 
-      # Add viewer for match report table:
-      tableOutput(outputId = "matchreport"),
+      tabsetPanel(
 
-      # Add viewer for match ID table:
-      tableOutput(outputId = "matchdata")
+        # Add viewer for match report table:
+        tabPanel(title = "Match report",
+                 dataTableOutput(outputId = "shortreport"))
+
+      )
 
     )
 
@@ -375,10 +380,8 @@ server <- function(input, output, session) {
   ##############################################################
   # Run lab2godata function as soon as submit button is pressed:
 
-  # Create match report:
+  # Create full match report for export:
   mr <- eventReactive(input$submit, {
-
-    # Create and extract match report:
     godataR::lab2godata_wrapper(
       url = url(),
       username = username(),
@@ -394,40 +397,59 @@ server <- function(input, output, session) {
       lastnamecol = lastnamecol(),
       dobcol = dobcol(),
       agecol = agecol(),
-      docidcol = docidcol())[1]
+      docidcol = docidcol())$match_report
+  })
+
+  # Create short match report to display in shiny app:
+  sr <- eventReactive(input$submit, {
+     godataR::lab2godata_wrapper(
+      url = url(),
+      username = username(),
+      password = password(),
+      reason = reason(),
+      daterangeformat = daterangeformat(),
+      epiwindow = epiwindow(),
+      method = method(),
+      matchcols = matchcols(),
+      labdata = labdata(),
+      basedatecol = basedatecol(),
+      firstnamecol = firstnamecol(),
+      lastnamecol = lastnamecol(),
+      dobcol = dobcol(),
+      agecol = agecol(),
+      docidcol = docidcol())$short_report %>%
+
+      # Format dates in rendered table (not automatic):
+      mutate(across(.cols = where(is.Date),
+                    ~format(.,"%Y-%m-%d")))
+  })
+
+
+  # Create matched lab data ready for import to Go.Data:
+  md <- eventReactive(input$submit, {
+    godataR::lab2godata_wrapper(
+      url = url(),
+      username = username(),
+      password = password(),
+      reason = reason(),
+      daterangeformat = daterangeformat(),
+      epiwindow = epiwindow(),
+      method = method(),
+      matchcols = matchcols(),
+      labdata = labdata(),
+      basedatecol = basedatecol(),
+      firstnamecol = firstnamecol(),
+      lastnamecol = lastnamecol(),
+      dobcol = dobcol(),
+      agecol = agecol(),
+      docidcol = docidcol())$matched_data
   })
 
   # Write table to Shiny dashboard:
-  output$matchreport <- renderTable({mr()})
+  output$shortreport <- renderDataTable({sr()})
 
-  # Create matched data:
-  md <- eventReactive(input$submit, {
-
-    # Create and extract matched data:
-    godataR::lab2godata_wrapper(
-      url = url(),
-      username = username(),
-      password = password(),
-      reason = reason(),
-      daterangeformat = daterangeformat(),
-      epiwindow = epiwindow(),
-      method = method(),
-      matchcols = matchcols(),
-      labdata = labdata(),
-      basedatecol = basedatecol(),
-      firstnamecol = firstnamecol(),
-      lastnamecol = lastnamecol(),
-      dobcol = dobcol(),
-      agecol = agecol(),
-      docidcol = docidcol())[2]
-  })
-
-
-    # Write table to Shiny dashboard:
-    output$matchdata <- renderTable({md()})
-
-    #########################################################################
-    # EXPORT MATCHED LAB DATA WITH DOWNLOAD HANDLER:
+  #########################################################################
+  # EXPORT MATCHED LAB DATA WITH DOWNLOAD HANDLER:
 
     ##########################################
     # Create export file for match report:

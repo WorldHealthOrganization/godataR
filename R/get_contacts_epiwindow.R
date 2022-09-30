@@ -1,9 +1,9 @@
-#' Import cases from Go.Data notified within a specific date range
+#' Import contacts from Go.Data notified within a specific date range
 #'
 #' @author Amy Mikhail, \email{amy.mikhail@@gmail.com}
 #'
 #' @description
-#' This function imports cases to R from Go.Data with case notification dates
+#' This function imports contacts to R from Go.Data with contact report dates
 #' that fall within a specific date range.  There are three options for
 #' specifying the date ranges:
 #'   1. "date range": user specifies a minimum and maximum date
@@ -11,15 +11,15 @@
 #'   3. "epibuffer": adds the epiwindow to the minimum and maximum date
 #'
 #' The date that is queried is the date that cases were notified on (a mandatory
-#' field in all case investigation forms in Go.Data called dateOfReporting)
+#' field in all contact investigation forms in Go.Data called dateOfReporting)
 #'
 #' Users can also specify whether to return "all" available columns in the case
 #' data export API, or only "identifiers" (a subset of columns comprising only
 #' case identifying data such as first names, last names and dates of birth).
 #' Selecting "identifiers" is recommended for record linkage with another data
-#' set (such as linking lab results to Go.Data case IDs) as this smaller subset
+#' set (such as linking lab results to Go.Data contact IDs) as this smaller subset
 #' of 9 columns will be returned much faster and use less memory in R for date
-#' ranges that include a lot of cases.
+#' ranges that include a lot of contacts.
 #'
 #' @details
 #' **Defining the epiwindow:**
@@ -45,10 +45,10 @@
 #' **Prerequisites:**
 #' Note that this function requires Go.Data user credentials (username,
 #' password and the URL or web address of the Go.Data instance).  Users must
-#' have permission to export case data within Go.Data.  By default, cases will
-#' be returned for the user's active outbreak.  If the user wishes to query a
-#' different outbreak, the Go.Data outbreak ID for the outbreak of interest
-#' should be supplied.  To obtain the IDs of non-active outbreaks, use
+#' have permission to export case data within Go.Data.  By default, contacts
+#' will be returned for the user's active outbreak.  If the user wishes to
+#' query a different outbreak, the Go.Data outbreak ID for the outbreak of
+#' interest should be supplied.  To obtain the IDs of non-active outbreaks, use
 #' `godataR::get_all_outbreaks()` before running this function.
 #'
 #' @md
@@ -61,8 +61,8 @@
 #' @param datequery Date query method; "date range", "epiwindow" or "epibuffer"
 #' @param daterangeformat Min & max date element order; "ymd", "dmy" or "mdy"
 #' @param epiwindow User-defined illness episode window in days (integer)
-#' @param mindate Minimum case notification date for date range
-#' @param maxdate Maximum case notification date for date range
+#' @param mindate Minimum contact reporting date for date range
+#' @param maxdate Maximum contact reporting date for date range
 #'
 #' @return
 #' Returns data.frame of case data, including Go.Data case ID
@@ -76,44 +76,44 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Get cases from the active outbreak notified within the last 30 days:
-#' cases <- get_cases_epiwindow(url = url,
-#'                              username = username,
-#'                              password = password,
-#'                              cols2return = "all",
-#'                              datequery = "epiwindow",
-#'                              epiwindow = 30)
+#' # Get contacts from the active outbreak notified within the last 30 days:
+#' contacts <- get_contacts_epiwindow(url = url,
+#'                                    username = username,
+#'                                    password = password,
+#'                                    cols2return = "all",
+#'                                    datequery = "epiwindow",
+#'                                    epiwindow = 30)
 #'
-#' # Get cases from 01 August to 25 September 2022 with a 30-day buffer:
-#' cases <- get_cases_epiwindow(url = url,
-#'                              username = username,
-#'                              password = password,
-#'                              cols2return = "identifiers",
-#'                              datequery = "epibuffer",
-#'                              epiwindow = 30,
-#'                              daterangeformat = "dmy",
-#'                              mindate = "01/08/2022",
-#'                              maxdate = "25/09/2022")
+#' # Get contacts from 01 August to 25 September 2022 with a 30-day buffer:
+#' contacts <- get_contacts_epiwindow(url = url,
+#'                                    username = username,
+#'                                    password = password,
+#'                                    cols2return = "identifiers",
+#'                                    datequery = "epibuffer",
+#'                                    epiwindow = 30,
+#'                                    daterangeformat = "dmy",
+#'                                    mindate = "01/08/2022",
+#'                                    maxdate = "25/09/2022")
 #'
 #' # View the result:
-#' cases
+#' contacts
 #' }
 #' @export
-get_cases_epiwindow <- function(url,
-                                username,
-                                password,
-                                outbreak = "active",
-                                cols2return = c("identifiers",
-                                                "all"),
-                                datequery = c("date range",
-                                              "epiwindow",
-                                              "epibuffer"),
-                                daterangeformat = c("ymd",
-                                                    "dmy",
-                                                    "mdy"),
-                                epiwindow,
-                                mindate = NULL,
-                                maxdate = NULL){
+get_contacts_epiwindow <- function(url,
+                                   username,
+                                   password,
+                                   outbreak = "active",
+                                   cols2return = c("identifiers",
+                                                   "all"),
+                                   datequery = c("date range",
+                                                 "epiwindow",
+                                                 "epibuffer"),
+                                   daterangeformat = c("ymd",
+                                                       "dmy",
+                                                       "mdy"),
+                                   epiwindow,
+                                   mindate = NULL,
+                                   maxdate = NULL){
 
 
   # Check if requisite arguments are supplied, exit with an error if not:
@@ -216,7 +216,7 @@ get_cases_epiwindow <- function(url,
                                          "dateOfReporting",   # Report date
                                          "dateOfOnset",       # Onset date
                                          "documents.number",  # Document ID
-                                         "type")))            # Type is case
+                                         "type")))            # Type is contact
 
   } else if(cols2return == "all"){
 
@@ -273,14 +273,14 @@ get_cases_epiwindow <- function(url,
   # Create the case export request and fetch the export log ID:
   elid = httr::POST(url =
 
-                     # Construct request API URL:
-                     paste0(url,
-                            "api/outbreaks/",
-                            outbreak_id,
-                            "/cases/export?access_token=",
-                            get_access_token(url = url,
-                                             username = username,
-                                             password = password)),
+                      # Construct request API URL:
+                      paste0(url,
+                             "api/outbreaks/",
+                             outbreak_id,
+                             "/contacts/export?access_token=",
+                             get_access_token(url = url,
+                                              username = username,
+                                              password = password)),
                     # Set the content type:
                     httr::content_type_json(),
 
@@ -338,14 +338,14 @@ get_cases_epiwindow <- function(url,
                    " of ",
                    er_status$totalNo, " records"))
 
-    }
+  }
 
   ####################################
   # 06. Fetch query results:
   ####################################
 
   # Now import query results to R using export log ID from the previous step:
-  cases = httr::GET(url =
+  contacts = httr::GET(url =
                       paste0(url,
                              "api/export-logs/",
                              elid,
@@ -361,9 +361,9 @@ get_cases_epiwindow <- function(url,
     jsonlite::fromJSON(flatten = TRUE)
 
   # Check that at least one record is returned, format if so:
-  if(is.data.frame(cases)){
+  if(is.data.frame(contacts)){
 
-    cases = cases %>%
+    contacts = contacts %>%
 
       # Unnest nested variables:
       tidyr::unnest(cols = documents, names_sep = "_") %>%
@@ -386,10 +386,9 @@ get_cases_epiwindow <- function(url,
 
   } else {
 
-    cases = "no matches"
+    contacts = "no matches"
 
   }
-
 
 
   ####################################
@@ -397,6 +396,6 @@ get_cases_epiwindow <- function(url,
   ####################################
 
   # Return data.frame of filtered cases:
-  return(cases)
+  return(contacts)
 
 }

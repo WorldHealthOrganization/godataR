@@ -10,7 +10,7 @@ get_labresults_epiwindow(
   password,
   outbreak = "active",
   cols2return = c("identifiers", "all"),
-  datequery = c("date range", "epiwindow", "sampledates"),
+  datequery = c("date range", "epiwindow", "sample dates"),
   epiwindow = NULL,
   daterangeformat = c("ymd", "dmy", "mdy"),
   mindate = NULL,
@@ -111,7 +111,7 @@ labres <- get_labresults_epiwindow(url = url,
                                    username = username,
                                    password = password,
                                    cols2return = "identifiers",
-                                   datequery = "sampledates",
+                                   datequery = "sample dates",
                                    daterangeformat = "ymd",
                                    sampledates = mysampledates)
 

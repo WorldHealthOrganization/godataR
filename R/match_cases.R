@@ -255,7 +255,7 @@ match_cases <- function(basedata,
   # Convert lookup and base data to data.table
   # to improve speed and memory consumption of matching process
 
-  # Convert lookup table to data.table:
+  # Convert Go.Data lookup table to data.table:
   lookuptable =  as.data.table(lookuptable)
 
   # Convert base data to data.table:
@@ -312,29 +312,35 @@ match_cases <- function(basedata,
                          old = lookupmatchcol,
                          new = "match_id")
 
+    # Create ID column lists to include:
+    option1cols = c(firstnamecol, lastnamecol, dobcol, basedatecol)
+    option2cols = c(firstnamecol, lastnamecol, agecol, basedatecol)
+    option3cols = c(firstnamecol, lastnamecol, basedatecol)
+    option4cols = c(docidcol, basedatecol)
+
     # Map base column names to facilitate rest of code:
     if(matchcols == "names & dob"){
 
       data.table::setnames(x = basedata,
-                           old = c(firstnamecol, lastnamecol, dobcol, basedatecol),
+                           old = option1cols,
                            new = c("firstName", "lastName", "dob", "basedate"))
 
     } else if(matchcols == "names & age"){
 
       data.table::setnames(x = basedata,
-                           old = c(firstnamecol, lastnamecol, agecol, basedatecol),
+                           old = option2cols,
                            new = c("firstName", "lastName", "age_years", "basedate"))
 
     } else if(matchcols == "names"){
 
       data.table::setnames(x = basedata,
-                           old = c(firstnamecol, lastnamecol, basedatecol),
+                           old = option3cols,
                            new = c("firstName", "lastName", "basedate"))
 
     } else if(matchcols == "doc ID"){
 
       data.table::setnames(x = basedata,
-                           old = c(docidcol, basedatecol),
+                           old = option4cols,
                            new = c("documents_number", "basedate"))
 
     }
@@ -434,6 +440,11 @@ match_cases <- function(basedata,
                                      yes = lookuptable$match_id[casematch],
                                      no = "no match")]
 
+    # Add column indicating whether lab result is for a case or a contact:
+    basedata[, match_type := fifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[casematch],
+                                     no = "no match")]
+
   } else if(method == "fuzzy" & matchcols == "names & dob"){
 
     #####################################################################
@@ -499,6 +510,12 @@ match_cases <- function(basedata,
                                      yes = lookuptable$match_id[casematch],
                                      no = "no match")]
 
+    # Add column indicating whether lab result is for a case or a contact:
+    basedata[, match_type := fifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[casematch],
+                                     no = "no match")]
+
+
   } else if(method == "exact" & matchcols == "names & age"){
 
     #####################################################################
@@ -524,6 +541,12 @@ match_cases <- function(basedata,
     basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
                                      yes = lookuptable$match_id[casematch],
                                      no = "no match")]
+
+    # Add column indicating whether lab result is for a case or a contact:
+    basedata[, match_type := fifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[casematch],
+                                     no = "no match")]
+
 
   } else if(method == "fuzzy" & matchcols == "names & age"){
 
@@ -586,6 +609,12 @@ match_cases <- function(basedata,
                                      yes = lookuptable$match_id[casematch],
                                      no = "no match")]
 
+    # Add column indicating whether lab result is for a case or a contact:
+    basedata[, match_type := fifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[casematch],
+                                     no = "no match")]
+
+
   } else if(method == "exact" & matchcols == "names"){
 
     #####################################################################
@@ -610,6 +639,12 @@ match_cases <- function(basedata,
     basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
                                      yes = lookuptable$match_id[casematch],
                                      no = "no match")]
+
+    # Add column indicating whether lab result is for a case or a contact:
+    basedata[, match_type := fifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[casematch],
+                                     no = "no match")]
+
 
   } else if(method == "fuzzy" & matchcols == "names"){
 
@@ -667,6 +702,12 @@ match_cases <- function(basedata,
                                      yes = lookuptable$match_id[casematch],
                                      no = "no match")]
 
+    # Add column indicating whether lab result is for a case or a contact:
+    basedata[, match_type := fifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[casematch],
+                                     no = "no match")]
+
+
   } else if(method == "exact" & matchcols == "doc ID"){
 
     ####################################################################
@@ -687,6 +728,12 @@ match_cases <- function(basedata,
     basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
                                      yes = lookuptable$match_id[casematch],
                                      no = "no match")]
+
+    # Add column indicating whether lab result is for a case or a contact:
+    basedata[, match_type := fifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[casematch],
+                                     no = "no match")]
+
 
 
   } else if(method == "fuzzy" & matchcols == "doc ID"){
@@ -721,6 +768,12 @@ match_cases <- function(basedata,
     basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
                                      yes = lookuptable$match_id[casematch],
                                      no = "no match")]
+
+    # Add column indicating whether lab result is for a case or a contact:
+    basedata[, match_type := fifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[casematch],
+                                     no = "no match")]
+
 
   }
 
@@ -775,7 +828,8 @@ match_cases <- function(basedata,
                      "casematch",
                      "epidatediff",
                      "epicheck",
-                     "match_id")
+                     "match_id",
+                     "match_type")
 
     # More user-friendly col names for output:
     reportcolsout = c("match_firstname",
@@ -784,7 +838,8 @@ match_cases <- function(basedata,
                       "match_index",
                       "epidatediff",
                       "match_epiwindow",
-                      "match_id")
+                      "match_id",
+                      "match_type")
 
 
   } else if(matchcols == "names & age" & method == "fuzzy"){
@@ -796,7 +851,8 @@ match_cases <- function(basedata,
                      "casematch",
                      "epidatediff",
                      "epicheck",
-                     "match_id")
+                     "match_id",
+                     "match_type")
 
     # More user-friendly col names for output:
     reportcolsout = c("match_firstname",
@@ -805,7 +861,8 @@ match_cases <- function(basedata,
                       "match_index",
                       "epidatediff",
                       "match_epiwindow",
-                      "match_id")
+                      "match_id",
+                      "match_type")
 
   } else if(matchcols == "names" & method == "fuzzy"){
 
@@ -815,7 +872,8 @@ match_cases <- function(basedata,
                      "casematch",
                      "epidatediff",
                      "epicheck",
-                     "match_id")
+                     "match_id",
+                     "match_type")
 
     # More user-friendly col names for output:
     reportcolsout = c("match_firstname",
@@ -823,7 +881,8 @@ match_cases <- function(basedata,
                       "match_index",
                       "epidatediff",
                       "match_epiwindow",
-                      "match_id")
+                      "match_id",
+                      "match_type")
 
   } else if(matchcols == "doc ID" & method == "fuzzy"){
 
@@ -832,31 +891,40 @@ match_cases <- function(basedata,
                      "casematch",
                      "epidatediff",
                      "epicheck",
-                     "match_id")
+                     "match_id",
+                     "match_type")
 
     # More user friendly col names for output:
     reportcolsout = c("match_documentid",
                       "match_index",
                       "epidatediff",
                       "match_epiwindow",
-                      "match_id")
+                      "match_id",
+                      "match_type")
 
   } else if(method == "exact"){
 
     reportcolsin = c("casematch",
                      "epidatediff",
                      "epicheck",
-                     "match_id")
+                     "match_id",
+                     "match_type")
 
     reportcolsout = c("match_index",
                       "epidatediff",
                       "match_epiwindow",
-                      "match_id")
+                      "match_id",
+                      "match_type")
   }
 
 
   # Create match report:
   match_report = basedata
+
+  # Unlist columns in match report to ensure single values are in cells:
+  match_report[, names(match_report) := lapply(.SD, unlist),
+               .SDcols = names(match_report)]
+
 
   # Revert columns from input basedata data back to their original names:
   data.table::setnames(x = match_report,
@@ -865,7 +933,7 @@ match_cases <- function(basedata,
 
 
   # Update match report column names to user friendly ones:
-  data.table::setnames(match_report,
+  data.table::setnames(x = match_report,
                        old = reportcolsin,
                        new = reportcolsout)
 
@@ -873,26 +941,52 @@ match_cases <- function(basedata,
   godatacols = names(match_report)[!names(match_report) %in% original_names &
                                      !names(match_report) %in% reportcolsout]
 
+  # Created Go.Data import-ready output:
   if(length(godatacols) > 0){
 
-    # Created Go.Data import-ready output:
     matched_data = subset(match_report,
-                          select = c(original_names, "match_id", godatacols))
+                          select = c(original_names,
+                                     "match_id",
+                                     godatacols,
+                                     "match_type"))
 
   } else {
 
     matched_data = subset(match_report,
-                          select = c(original_names, "match_id"))
+                          select = c(original_names,
+                                     "match_id",
+                                     "match_type"))
 
   }
 
-  # Unlist columns in match report to ensure single values are in cells:
-  match_report[, names(match_report) := lapply(.SD, unlist),
-               .SDcols = names(match_report)]
+  # Create customised short report for shiny app:
+  if(matchcols == "names & dob"){
+
+    short_report = subset(x = match_report,
+                          select = c(option1cols, reportcolsout))
+
+  } else if(matchcols == "names & age"){
+
+    short_report = subset(x = match_report,
+                          select = c(option2cols, reportcolsout))
+
+  } else if(matchcols == "names"){
+
+    short_report = subset(x = match_report,
+                          select = c(option3cols, reportcolsout))
+
+  } else if(matchcols == "doc ID"){
+
+    short_report = subset(x = match_report,
+                          select = c(option4cols, reportcolsout))
+
+  }
 
 
   # Create list object to export:
-  gdmatches = list(match_report = match_report, matched_data = matched_data)
+  gdmatches = list(match_report = match_report,
+                   short_report = short_report,
+                   matched_data = matched_data)
 
   # Return updated lab data with Go.Data visual case IDs added for matches:
   return(gdmatches)
