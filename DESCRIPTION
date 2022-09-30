@@ -1,7 +1,7 @@
 Package: godataR
 Type: Package
 Title: Connecting R with the Go.Data Application
-Version: 1.1.0
+Version: 2.0.0
 Authors@R:
     c(person(given = "James", 
              family = "Fuller", 
