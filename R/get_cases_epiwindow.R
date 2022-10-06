@@ -213,9 +213,9 @@ get_cases_epiwindow <- function(url,
                                          "lastName",          # Last name
                                          "dob",               # Birth date
                                          "age.years",         # Age (years)
+                                         "documents.number",  # Document ID
                                          "dateOfReporting",   # Report date
                                          "dateOfOnset",       # Onset date
-                                         "documents.number",  # Document ID
                                          "type")))            # Type is case
 
   } else if(cols2return == "all"){
@@ -360,13 +360,22 @@ get_cases_epiwindow <- function(url,
     # Convert json to flat data.frame:
     jsonlite::fromJSON(flatten = TRUE)
 
+  #################################
+  # Tidy up output table:
+
   # Check that at least one record is returned, format if so:
-  if(is.data.frame(cases)){
+  if(!purrr::is_empty(cases) & is.data.frame(cases)){
 
     cases = cases %>%
 
+      # Replace any NULL values with NA:
+      dplyr::mutate(across(.cols = everything(),
+                           .fns = null2na)) %>%
+
       # Unnest nested variables:
-      tidyr::unnest(cols = documents, names_sep = "_") %>%
+      tidyr::unnest(cols = documents,
+                    names_sep = "_",
+                    keep_empty = TRUE) %>%
 
       # Convert date columns from mongodb format to R POSIXct:
       dplyr::mutate(across(.cols = c(starts_with("date"), "dob"),
@@ -383,6 +392,34 @@ get_cases_epiwindow <- function(url,
                                  replacement = "_",
                                  x = .x,
                                  fixed = TRUE))
+
+    # Check if documents_number col is present and rename column otherwise:
+    if("documents" %in% names(cases)){
+
+      cases = cases %>%
+
+        dplyr::rename(documents_number = documents)
+
+    }
+
+    # List of column names in final order:
+    colorder <- c("_id",
+                  "visualId",
+                  "firstName",
+                  "lastName",
+                  "dob",
+                  "age_years",
+                  "documents_number",
+                  "dateOfReporting",
+                  "dateOfOnset",
+                  "type")
+
+    # Update order of columns:
+    cases = cases %>%
+
+      dplyr::mutate(documents_number = as.character(documents_number)) %>%
+
+      dplyr::relocate(all_of(colorder))
 
   } else {
 

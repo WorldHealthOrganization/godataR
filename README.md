@@ -1,5 +1,5 @@
 godataR: easier wrangling with the Go.Data API
-<img src='inst/app/www/godataR_logo.png' align='centre' height='20%' width='20%'/>
+<img src='inst/images/godataR_logo.png' align='centre' height='20%' width='20%'/>
 ================
 05 October 2022
 

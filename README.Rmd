@@ -1,5 +1,5 @@
 ---
-title: "godataR: easier wrangling with the Go.Data API <img src='inst/app/www/godataR_logo.png' align='centre' height='20%' width='20%'/>"
+title: "godataR: easier wrangling with the Go.Data API <img src='inst/images/godataR_logo.png' align='centre' height='20%' width='20%'/>"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: github_document
 ---
@@ -10,12 +10,9 @@ output: github_document
 knitr::opts_chunk$set(eval = FALSE, 
                       collapse = TRUE, 
                       comment = "#>", 
-                      fig.path = "man/figures/README-", 
+                      fig.path = "inst/images", 
                       fig.align = "right") 
 ```
-
-
-
 
 
 ## Overview

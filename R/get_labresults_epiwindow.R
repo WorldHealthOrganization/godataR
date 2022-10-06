@@ -207,7 +207,9 @@ get_labresults_epiwindow <- function(url,
 
 
     # Build the query to search for a vector of dates with restricted fields:
-  } else if(cols2return == "identifiers" & datequery == "sample dates"){
+  } else if(cols2return == "identifiers" &
+            datequery == "sample dates" &
+            length(sampledates) > 1){
 
     # Build the query as an R list object:
     query_list_l <- list(filter =
@@ -215,7 +217,7 @@ get_labresults_epiwindow <- function(url,
                          # Add where clause:
                          list(where =
 
-                                # Filter results by date range:
+                                # Filter results by list of sample dates:
                                 list(dateSampleTaken = list('$in' = sampledates),
 
                                      # Define format of column names and values:
@@ -231,6 +233,34 @@ get_labresults_epiwindow <- function(url,
                                          "sampleIdentifier",  # Lab sample ID
                                          "dateSampleTaken",   # Lab sample date
                                          "sequence.hasSequence")))# Boolean
+
+    # Build the query to search between two dates and return all fields:
+  } else if(cols2return == "identifiers" &
+            datequery == "sample dates" &
+            length(sampledates) == 1){
+
+    # Build the query as an R list object:
+    query_list_l <- list(filter =
+
+                           # Add where clause:
+                           list(where =
+
+                                  # Filter results by single sample date:
+                                  list(dateSampleTaken = sampledates,
+
+                                       # Define format of column names and values:
+                                       useDbColumns = "true",
+                                       dontTranslateValues = "true",
+                                       jsonReplaceUndefinedWithNull = "true"),
+
+                                # Define columns to return:
+                                fields = c("id",                # Lab record ID
+                                           "updatedAt",         # System timestamp
+                                           "person.visualId",   # Visible case ID
+                                           "labName",           # Name of lab
+                                           "sampleIdentifier",  # Lab sample ID
+                                           "dateSampleTaken",   # Lab sample date
+                                           "sequence.hasSequence")))# Boolean
 
     # Build the query to search between two dates and return all fields:
   } else if(cols2return == "all" & datequery != "sample dates"){
@@ -252,7 +282,9 @@ get_labresults_epiwindow <- function(url,
                                      jsonReplaceUndefinedWithNull = "true")))
 
     # Build the query to search for a vector of dates and return all fields:
-  } else if(cols2return == "all" & datequery == "sample dates"){
+  } else if(cols2return == "all" &
+            datequery == "sample dates" &
+            length(sampledates) > 1){
 
     # Build the query as an R list object:
     query_list_l <- list(filter =
@@ -260,13 +292,31 @@ get_labresults_epiwindow <- function(url,
                          # Add where clause:
                          list(where =
 
-                                # Filter results by date range:
+                                # Filter results by list of sample dates:
                                 list(dateSampleTaken = list('$in' = sampledates),
 
                                      # Define format of column names and values:
                                      useDbColumns = "true",
                                      dontTranslateValues = "true",
                                      jsonReplaceUndefinedWithNull = "true")))
+
+  } else if(cols2return == "all" &
+            datequery == "sample dates" &
+            length(sampledates) == 1){
+
+    # Build the query as an R list object:
+    query_list_l <- list(filter =
+
+                           # Add where clause:
+                           list(where =
+
+                                  # Filter results by single sample date:
+                                  list(dateSampleTaken = sampledates,
+
+                                       # Define format of column names and values:
+                                       useDbColumns = "true",
+                                       dontTranslateValues = "true",
+                                       jsonReplaceUndefinedWithNull = "true")))
 
   }
 
@@ -392,9 +442,28 @@ get_labresults_epiwindow <- function(url,
     jsonlite::fromJSON(flatten = TRUE)
 
   # Check at least one record is returned, if true, format:
-  if(!purrr::is_empty(labresults)){
+  if(!purrr::is_empty(labresults) & is.data.frame(labresults)){
 
+    # Named list of column names with new names for renaming:
+    newlabcolnames = c(godata_system_lid = "_id",
+                       godata_labupdatedat = "updatedAt",
+                       godata_sampledate = "dateSampleTaken",
+                       sample_id = "sampleIdentifier",
+                       sequenced = "sequence_hasSequence",
+                       sequenced = "sequence",
+                       godata_caseid = "person_visualId")
+
+    # Format lab results:
     labresults = labresults %>%
+
+      # Replace any NULL values with NA:
+      dplyr::mutate(across(.cols = everything(),
+                           .fns = null2na)) %>%
+
+      # # Unnest nested variables:
+      # tidyr::unnest(cols = sequence,
+      #               names_sep = "_",
+      #               keep_empty = TRUE) %>%
 
       # Convert date columns from mongodb format to R POSIXct:
       dplyr::mutate(across(.cols = c(starts_with("date"), "updatedAt"),
@@ -413,12 +482,7 @@ get_labresults_epiwindow <- function(url,
                                  fixed = TRUE)) %>%
 
       # Rename columns for export:
-      dplyr::rename(godata_system_lid = '_id',
-                    godata_labupdatedat = updatedAt,
-                    godata_sampledate = dateSampleTaken,
-                    sample_id = sampleIdentifier,
-                    sequenced = sequence_hasSequence,
-                    godata_caseid = person_visualId) %>%
+      dplyr::rename(any_of(newlabcolnames)) %>%
 
       # Reorder columns with compulsory ones first:
       dplyr::relocate(godata_system_lid,
@@ -435,31 +499,67 @@ get_labresults_epiwindow <- function(url,
 
     # Build the query to retrieve case identifiers with Go.Data case IDs
     # from the previous step (labresults$godata_caseid):
-    query_list_c <- list(filter =
 
-                           # Add where clause:
-                           list(where =
+    # Check if there is only one value to search for:
+    if(length(labresults$godata_caseid) == 1){
 
-                                  # Filter results by date range:
-                                  list(visualId =
-                                         list('$in' = labresults$godata_caseid),
+      query_list_c <- list(filter =
 
-                                       # Define format of column names and values:
-                                       useDbColumns = "true",
-                                       dontTranslateValues = "true",
-                                       jsonReplaceUndefinedWithNull = "true"),
+                             # Add where clause:
+                             list(where =
 
-                                # Define columns to return:
-                                fields = c("id",                # System case ID
-                                           "visualId",          # Visible case ID
-                                           "firstName",         # First name
-                                           "lastName",          # Last name
-                                           "dob",               # Birth date
-                                           "age.years",         # Age (years)
-                                           "dateOfReporting",   # Report date
-                                           "dateOfOnset",       # Onset date
-                                           "documents.number",  # Document ID
-                                           "type")))            # Type is case
+                                    # Filter results by single case ID:
+                                    list(visualId = labresults$godata_caseid,
+
+                                         # Define format of column names and values:
+                                         useDbColumns = "true",
+                                         dontTranslateValues = "true",
+                                         jsonReplaceUndefinedWithNull = "true"),
+
+                                  # Define columns to return:
+                                  fields = c("id",                # System case ID
+                                             "visualId",          # Visible case ID
+                                             "firstName",         # First name
+                                             "lastName",          # Last name
+                                             "dob",               # Birth date
+                                             "age.years",         # Age (years)
+                                             "documents.number",  # Document ID
+                                             "dateOfReporting",   # Report date
+                                             "dateOfOnset",       # Onset date
+                                             "type")))            # Type is case
+
+    } else if(length(labresults$godata_caseid) > 1){
+
+      query_list_c <- list(filter =
+
+                             # Add where clause:
+                             list(where =
+
+                                    # Filter results by godata_caseid:
+                                    list(visualId =
+
+                                           list('$in' = labresults$godata_caseid),
+
+                                         # Define format of column names and values:
+                                         useDbColumns = "true",
+                                         dontTranslateValues = "true",
+                                         jsonReplaceUndefinedWithNull = "true"),
+
+                                  # Define columns to return:
+                                  fields = c("id",                # System case ID
+                                             "visualId",          # Visible case ID
+                                             "firstName",         # First name
+                                             "lastName",          # Last name
+                                             "dob",               # Birth date
+                                             "age.years",         # Age (years)
+                                             "documents.number",  # Document ID
+                                             "dateOfReporting",   # Report date
+                                             "dateOfOnset",       # Onset date
+                                             "type")))            # Type is case
+
+    }
+
+
 
     ##############################################
     # Convert the Go.Data case ID query to JSON:
@@ -558,12 +658,18 @@ get_labresults_epiwindow <- function(url,
       jsonlite::fromJSON(flatten = TRUE)
 
     # Check if at least one record is returned, if true, format:
-    if(!purrr::is_empty(cases)){
+    if(!purrr::is_empty(cases) & is.data.frame(cases)){
 
       cases = cases %>%
 
+        # Replace any NULL values with NA:
+        dplyr::mutate(across(.cols = everything(),
+                             .fns = null2na)) %>%
+
         # Unnest nested variables:
-        tidyr::unnest(cols = documents, names_sep = "_") %>%
+        tidyr::unnest(cols = documents,
+                      names_sep = "_",
+                      keep_empty = TRUE) %>%
 
         # Convert date columns from mongodb format to R POSIXct:
         dplyr::mutate(across(.cols = c(starts_with("date"), "dob"),
@@ -582,8 +688,36 @@ get_labresults_epiwindow <- function(url,
                                    fixed = TRUE)) %>%
 
         # Rename first column:
-        dplyr::rename(godata_system_cid = '_id',
+        dplyr::rename(godata_system_cid = `_id`,
                       godata_caseid = visualId)
+
+      # Check if documents_number col is present and rename column otherwise:
+      if("documents" %in% names(cases)){
+
+        cases = cases %>%
+
+          dplyr::rename(documents_number = documents)
+
+      }
+
+      # List of column names in final order:
+      colorder <- c("godata_system_cid",
+                    "godata_caseid",
+                    "firstName",
+                    "lastName",
+                    "dob",
+                    "age_years",
+                    "documents_number",
+                    "dateOfReporting",
+                    "dateOfOnset",
+                    "type")
+
+      # Update order of columns:
+      cases = cases %>%
+
+        dplyr::mutate(documents_number = as.character(documents_number)) %>%
+
+        dplyr::relocate(all_of(colorder))
 
 
     } else {
@@ -686,12 +820,18 @@ get_labresults_epiwindow <- function(url,
       jsonlite::fromJSON(flatten = TRUE)
 
     # Check that at least one record is returned, format if so:
-    if(!purrr::is_empty(contacts)){
+    if(!purrr::is_empty(contacts) & is.data.frame(contacts)){
 
       contacts = contacts %>%
 
+        # Replace any NULL values with NA:
+        dplyr::mutate(across(.cols = everything(),
+                             .fns = null2na)) %>%
+
         # Unnest nested variables:
-        tidyr::unnest(cols = documents, names_sep = "_") %>%
+        tidyr::unnest(cols = documents,
+                      names_sep = "_",
+                      keep_empty = TRUE) %>%
 
         # Convert date columns from mongodb format to R POSIXct:
         dplyr::mutate(across(.cols = c(starts_with("date"), "dob"),
@@ -713,6 +853,33 @@ get_labresults_epiwindow <- function(url,
         dplyr::rename(godata_system_cid = '_id',
                       godata_caseid = visualId)
 
+      # Check if documents_number col is present and rename column otherwise:
+      if("documents" %in% names(contacts)){
+
+        contacts = contacts %>%
+
+          dplyr::rename(documents_number = documents)
+
+      }
+
+      # List of column names in final order:
+      colorder <- c("godata_system_cid",
+                    "godata_caseid",
+                    "firstName",
+                    "lastName",
+                    "dob",
+                    "age_years",
+                    "documents_number",
+                    "dateOfReporting",
+                    "type")
+
+      # Update order of columns:
+      contacts = contacts %>%
+
+        dplyr::mutate(documents_number = as.character(documents_number)) %>%
+
+        dplyr::relocate(all_of(colorder))
+
 
     } else {
 
@@ -720,6 +887,11 @@ get_labresults_epiwindow <- function(url,
 
     }
 
+    # Bind case and contact data:
+    ccdata = data.table::rbindlist(Filter(
+      f = is.data.frame,
+      x = list(cases, contacts)),
+      fill = TRUE)
 
   } else {
 
@@ -732,64 +904,33 @@ get_labresults_epiwindow <- function(url,
   # 09. Merge lab with case and contact data:
   ###########################################
 
-  # Bind case and contact data:
-  ccdata = data.table::rbindlist(Filter(
-    f = is.data.frame,
-    x = list(cases, contacts)))
 
   # Replace cclookup with no match statement if it is empty:
-  if(is.data.frame(labresults) & !purrr::is_empty(ccdata)){
+  if(is.data.frame(labresults) & exists("ccdata")){
 
     # Merge lab with case and contact data using a left join:
     labout = dplyr::left_join(x = labresults,
                               y = ccdata,
-                              by = "godata_caseid")
+                              by = "godata_caseid") %>%
 
-    # Reorder columns depending on doc ID presence:
-    if("documents_number" %in% names(labout)){
+      # Set final order of columns:
+      dplyr::relocate(godata_system_lid,
+                      godata_labupdatedat,
+                      godata_caseid,
+                      godata_sampledate,
+                      sample_id,
+                      sequenced,
+                      labName,
+                      godata_system_cid,
+                      dateOfReporting,
+                      dateOfOnset,
+                      firstName,
+                      lastName,
+                      dob,
+                      age_years,
+                      documents_number,
+                      type)
 
-      labout = labout %>%
-
-        dplyr::relocate(godata_system_lid,
-                        godata_labupdatedat,
-                        godata_caseid,
-                        godata_sampledate,
-                        sample_id,
-                        sequenced,
-                        labName,
-                        godata_system_cid,
-                        dateOfReporting,
-                        dateOfOnset,
-                        firstName,
-                        lastName,
-                        dob,
-                        age_years,
-                        documents_number,
-                        type)
-
-    } else if("documents" %in% names(labout)){
-
-      labout = labout %>%
-
-        dplyr::relocate(godata_system_lid,
-                        godata_labupdatedat,
-                        godata_caseid,
-                        godata_sampledate,
-                        sample_id,
-                        sequenced,
-                        labName,
-                        godata_system_cid,
-                        dateOfReporting,
-                        dateOfOnset,
-                        firstName,
-                        lastName,
-                        dob,
-                        age_years,
-                        documents,
-                        type)
-
-
-    }
 
   } else {
 

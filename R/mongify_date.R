@@ -14,9 +14,9 @@
 #'   + s = seconds
 #'   + Remaining characters are milliseconds with mongodb suffix (z)
 #'
-#' Input dates must already have 2 digits for the day and month and 4 digits
-#' for year (names or abbreviations for months are not accepted), however the
-#' day, month and year can be in any order and with any separator.
+#' Input dates must already have 2 digits for the day and month and either 2 or
+#' 4 digits for the year (names or abbreviations for months are not accepted),
+#' however the day, month and year can be in any order and with any separator.
 #'
 #' The user can identify the format of the date column they wish to convert as
 #' one of:
@@ -70,7 +70,7 @@ mongify_date <- function(dates,
   dates = as.character(dates)
 
   # Check if dates already have a time-stamp, if not add time:
-  dflong = ifelse(nchar(dates) == 10,
+  dflong = ifelse(nchar(dates) %in% c(8, 10),
                   paste0(dates, " 00:00:00"),
                   dates)
 

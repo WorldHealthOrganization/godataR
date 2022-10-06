@@ -197,7 +197,7 @@ lab2godata_wrapper <- function(# Go.Data user credentials:
       x = list(caselookup, contactlookup)), fill = TRUE)
 
     # Replace cclookup with no match statement if it is empty:
-    if(purrr::is_empty(godata_res)){godata_res = "no matches"}
+    if(!exists("godata_res")){godata_res = "no matches"}
 
 
   ############################################################
