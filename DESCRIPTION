@@ -17,20 +17,14 @@ Authors@R:
              email = "amy.mikhail@gmail.com"))
 Maintainer: The WHO Go.Data Team <godata@who.int>
 Description: A set of functions to connect R to Go.Data.
-Remotes:
-    github::EmilBode/EmilMisc
 Imports: 
     data.table,
     dplyr, 
-    EmilMisc,
     httr, 
     jsonlite,
     lubridate,
     magrittr,
     purrr,
-    rio,
-    shiny,
-    shinyvalidate,
     stringr,
     tibble,
     tidyr,

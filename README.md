@@ -1,7 +1,7 @@
 godataR: easier wrangling with the Go.Data API
 <img src='inst/images/godataR_logo.png' align='centre' height='20%' width='20%'/>
 ================
-05 October 2022
+10 October 2022
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -27,16 +27,16 @@ painless way to retrieve case data or hierarchical locations by
 bypassing all of the normal API syntax and authenticating with Go.Data
 user login credentials from objects already stored in the R environment.
 
-Users can also retrieve cases or laboratory records that fall within a
-specific date range, using `get_cases_epiwindow()` or
-`get_labresults_epiwindow()` respectively.
-
-It is now possible to create a Go.Data bulk import-ready file of new or
-updated laboratory records matched to cases or existing lab records in
-Go.Data respectively, using the `lab2godata_wrapper()` function. If
-preferred, users not familiar with R can enter the parameters for this
-function by using the `lab2godata` shiny app. The app can be launched
-from within the godataR package with `runlab2godata()`.
+Users can also now retrieve cases, contacts or laboratory records that
+fall within a specific date range, using `get_cases_epiwindow()`,
+`get_contacts_epiwindow()` or `get_labresults_epiwindow()` respectively.
+`get_lab_fields()` is another new function that will help users retrieve
+a table of all the laboratory fields (including those in the lab
+questionnaire) and their reference values (where relevant), for their
+active outbreak. This may be useful for automating reporting on lab
+results across different instances of Go.Data, particularly if the exact
+structure and column names within the database are not known. Future
+versions may include a similar approach for case data.
 
 Future iterations will focus on POSTing to the Go.Data API for bulk
 creation or modification of case, contact and lab records.
@@ -78,12 +78,12 @@ url <- "https://MyGoDataServer.com/"
 username <- getPass::getPass(msg = "Enter your Go.Data username (email address):") 
 
 # Your password to log in to Go.Data
-password <- charToRaw(getPass::getPass(msg = "Enter your Go.Data password:")) 
+password <- getPass::getPass(msg = "Enter your Go.Data password:") 
 
 # Get ID for active outbreak:
 outbreak_id <- godataR::get_active_outbreak(url = url, 
                                             username = username, 
-                                            password = rawToChar(password))
+                                            password = password)
 ```
 
 ## Execute functions to retrieve desired collections
@@ -98,11 +98,15 @@ cases <- get_cases(url = url,
                    password = password, 
                    outbreak_id = outbreak_id)
 
+
+
 # Get contacts data:
 contacts <- get_contacts(url = url,
                          username = username, 
                          password = password,
                          outbreak_id = outbreak_id)
+
+
 
 # Get contacts of contacts:
 contacts_of_contacts <- get_contacts_of_contacts(url = url,
@@ -139,36 +143,66 @@ clusters <- get_clusters(url = url,
                          username = username,
                          password = password,
                          outbreak_id = outbreak_id)
+```
 
-# Match new lab results to cases in Go.Data within a date window:
+The below section demonstrates some new functions that allow users to
+retrieve data from Go.Data that falls within a specific date range:
 
-# - lab results are read in to a data.frame called 'newlab'
-# - cases will be matched to lab results if the case report date is within 30 
-#   days of the specimen collection date in the lab data (epiwindow)
-# - Cases and lab results will be matched with fuzzy matching on names & dob
-# - The relevant column names from lab data to use when matching are supplied;
-#   (in this case first name, last name and date of birth)
+``` r
+#########################
+# New godataR functions:
 
-# Read in example lab data (included in godataR package):
-newlab <- rio::import(system.file("extdata", 
-                                  "Lab_results_new.xlsx", 
-                                  package = "godataR"))
+# Set a date range from a vector of dates:
+mydates <- c("2022-04-19", "2022-05-10", "2022-03-07", "2022-09-25")
 
-# Run lab2godata_wrapper to match Go.Data cases to lab data:
-labmatched <- godataR::lab2godata_wrapper(url = url,
-                                          username = username,
-                                          password = password,
-                                          outbreak = "active",
-                                          reason = "link new",
-                                          daterangeformat = "ymd",
-                                          epiwindow = 30,
-                                          method = "fuzzy",
-                                          matchcols = "names & dob",
-                                          labdata = newlab,
-                                          basedatecol = "sample_collection_date",
-                                          firstnamecol = "firstname",
-                                          lastnamecol = "surname",
-                                          dobcol = "birthdate")
+# Use the godataR helper function get_date_range() to set the date range:
+daterange <- get_date_range(dates = mydates)
+
+# Use the godataR helper function mongify_date() to convert dates to mongodb:
+mongo_formatted_dates <- mongify_date(dates = mydates, dateformat = "undefined")
+
+
+# Get case data within a specific date range:
+cases <- get_cases_epiwindow(url = url,
+                             username = username,
+                             password = password,
+                             outbreak = "active",
+                             cols2return = "identifiers",
+                             datequery = "date range",
+                             daterangeformat = "ymd",
+                             epiwindow = 30,
+                             mindate = daterange$mindate,
+                             maxdate = daterange$maxdate)
+
+# Get contacts within a specific date range:
+contacts <- get_contacts_epiwindow(url = url, 
+                                   username = username,
+                                   password = password,
+                                   outbreak = "active",
+                                   cols2return = "identifiers",
+                                   datequery = "date range",
+                                   daterangeformat = "ymd",
+                                   epiwindow = 30,
+                                   mindate = daterange$mindate,
+                                   maxdate = daterange$maxdate)
+
+# Get lab results within a specific date range:
+labres <- get_labresults_epiwindow(url = url,
+                                   username = username,
+                                   password = password,
+                                   outbreak = "active",
+                                   cols2return = "identifiers",
+                                   datequery = "date range",
+                                   epiwindow = 30,
+                                   daterangeformat = "ymd",
+                                   mindate = daterange$mindate,
+                                   maxdate = daterange$maxdate,
+                                   sampledates = seqdata$specdate)
+
+# Get all lab variables (including lab questionnaire) for the active outbreak:
+labfields <- get_lab_fields(url = url,
+                            username = username,
+                            password = password)
 ```
 
 ### The below collections are outbreak-agnostic and applied at system-level:
