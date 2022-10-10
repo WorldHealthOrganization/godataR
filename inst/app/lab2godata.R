@@ -203,8 +203,13 @@ ui <- fluidPage(
 
       tabsetPanel(
 
-        # Add viewer for match report table:
-        tabPanel(title = "Match report",
+        # Add viewer for summary table of successful matches:
+        tabPanel(title = "Match summary",
+                 dataTableOutput(outputId = "matchsummary")),
+
+
+        # Add viewer for more detailed match report linelist:
+        tabPanel(title = "Match report linelist",
                  dataTableOutput(outputId = "shortreport"))
 
       )
@@ -424,6 +429,25 @@ server <- function(input, output, session) {
                     ~format(.,"%Y-%m-%d")))
   })
 
+  stab <- eventReactive(input$submit, {
+    godataR::lab2godata_wrapper(
+      url = url(),
+      username = username(),
+      password = password(),
+      reason = reason(),
+      daterangeformat = daterangeformat(),
+      epiwindow = epiwindow(),
+      method = method(),
+      matchcols = matchcols(),
+      labdata = labdata(),
+      basedatecol = basedatecol(),
+      firstnamecol = firstnamecol(),
+      lastnamecol = lastnamecol(),
+      dobcol = dobcol(),
+      agecol = agecol(),
+      docidcol = docidcol())$match_summary
+  })
+
 
   # Create matched lab data ready for import to Go.Data:
   md <- eventReactive(input$submit, {
@@ -445,8 +469,13 @@ server <- function(input, output, session) {
       docidcol = docidcol())$matched_data
   })
 
+  # Write summary table to Shiny dashboard:
+  output$matchsummary <- renderDataTable({stab()})
+
   # Write table to Shiny dashboard:
   output$shortreport <- renderDataTable({sr()})
+
+
 
   #########################################################################
   # EXPORT MATCHED LAB DATA WITH DOWNLOAD HANDLER:

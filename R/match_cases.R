@@ -248,6 +248,18 @@ match_cases <- function(basedata,
                                    "edit lab",
                                    "add sequencing")){
 
+
+  ###########################
+  # -1. Helper functions:
+  ###########################
+
+  # Function to return multi-value intersects:
+  intersect_all <- function(...){
+    out = Reduce(intersect, list(...))
+    out = list(out)
+    return(out)
+  }
+
   ###########################
   # 0. Prepare data sets:
   ###########################
@@ -427,23 +439,30 @@ match_cases <- function(basedata,
                                                   dob)]
 
     # Next, check that specimen dates are within range of epiwindow:
-    basedata[, epidatediff := abs(basedate -
-                                    lookuptable$lookupdate[casematch])]
+    # Use abs function so we don't get negative numbers:
+    basedata[, epidatediff := ifelse(test = lengths(casematch) == 1,
+                                      yes = abs(basedate - lookuptable$lookupdate[unlist(casematch)]),
+                                      no = NA),
+             by = 1:nrow(basedata)]
 
     # Compare epidatediff with epiwindow:
-    basedata[, epicheck := fifelse(test = epidatediff <= epiwindow,
+    basedata[, epicheck := fifelse(test = !is.na(epidatediff) &
+                                     epidatediff <= epiwindow,
                                    yes = TRUE,
                                    no = FALSE)]
 
     # Finally add the Go.Data visual case ID for full matches:
-    basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
-                                     yes = lookuptable$match_id[casematch],
-                                     no = "no match")]
+    basedata[, match_id := ifelse(test = lengths(casematch) == 1 &
+                                    epicheck == TRUE,
+                                  yes = lookuptable$match_id[unlist(casematch)],
+                                  no = "no match"),
+             by = 1:nrow(basedata)]
 
     # Add column indicating whether lab result is for a case or a contact:
-    basedata[, match_type := fifelse(test = match_id != "no match",
-                                     yes = lookuptable$type[casematch],
-                                     no = "no match")]
+    basedata[, match_type := ifelse(test = match_id != "no match",
+                                    yes = lookuptable$type[unlist(casematch)],
+                                    no = "no match"),
+             by = 1:nrow(basedata)]
 
   } else if(method == "fuzzy" & matchcols == "names & dob"){
 
@@ -491,29 +510,36 @@ match_cases <- function(basedata,
 
 
     # Return index that matches in all three columns:
-    basedata[, casematch := Reduce(intersect, list(unlist(fn),
-                                                   unlist(ln),
-                                                   unlist(bd))),
+    basedata[, casematch := list(intersect_all(unlist(fn),
+                                               unlist(ln),
+                                               unlist(bd))),
              by = 1:nrow(basedata)]
 
 
     # Next, check that specimen dates are within range of epiwindow:
-    basedata[, epidatediff := abs(basedate - lookuptable$lookupdate[casematch])]
+    basedata[, epidatediff := ifelse(test = lengths(casematch) == 1,
+                                      yes = abs(basedate - lookuptable$lookupdate[unlist(casematch)]),
+                                      no = NA),
+             by = 1:nrow(basedata)]
 
     # Compare epidatediff with epiwindow:
-    basedata[, epicheck := fifelse(test = epidatediff <= epiwindow,
+    basedata[, epicheck := fifelse(test = !is.na(epidatediff) &
+                                     epidatediff <= epiwindow,
                                    yes = TRUE,
                                    no = FALSE)]
 
     # Finally add the Go.Data visual case ID for full matches:
-    basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
-                                     yes = lookuptable$match_id[casematch],
-                                     no = "no match")]
+    basedata[, match_id := ifelse(test = lengths(casematch) == 1 &
+                                    epicheck == TRUE,
+                                  yes = lookuptable$match_id[unlist(casematch)],
+                                  no = "no match"),
+             by = 1:nrow(basedata)]
 
     # Add column indicating whether lab result is for a case or a contact:
-    basedata[, match_type := fifelse(test = match_id != "no match",
-                                     yes = lookuptable$type[casematch],
-                                     no = "no match")]
+    basedata[, match_type := ifelse(test = match_id != "no match",
+                                    yes = lookuptable$type[unlist(casematch)],
+                                    no = "no match"),
+             by = 1:nrow(basedata)]
 
 
   } else if(method == "exact" & matchcols == "names & age"){
@@ -529,23 +555,29 @@ match_cases <- function(basedata,
                                                   age_years)]
 
     # Next, check that specimen dates are within range of epiwindow:
-    basedata[, epidatediff := abs(basedate -
-                                   lookuptable$lookupdate[casematch])]
+    basedata[, epidatediff := ifelse(test = lengths(casematch) == 1,
+                                      yes = abs(basedate - lookuptable$lookupdate[unlist(casematch)]),
+                                      no = NA),
+             by = 1:nrow(basedata)]
 
     # Compare epidatediff with epiwindow:
-    basedata[, epicheck := fifelse(test = epidatediff <= epiwindow,
+    basedata[, epicheck := fifelse(test = !is.na(epidatediff) &
+                                     epidatediff <= epiwindow,
                                    yes = TRUE,
                                    no = FALSE)]
 
     # Finally add the Go.Data visual case ID for full matches:
-    basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
-                                     yes = lookuptable$match_id[casematch],
-                                     no = "no match")]
+    basedata[, match_id := ifelse(test = lengths(casematch) == 1 &
+                                    epicheck == TRUE,
+                                  yes = lookuptable$match_id[unlist(casematch)],
+                                  no = "no match"),
+             by = 1:nrow(basedata)]
 
     # Add column indicating whether lab result is for a case or a contact:
-    basedata[, match_type := fifelse(test = match_id != "no match",
-                                     yes = lookuptable$type[casematch],
-                                     no = "no match")]
+    basedata[, match_type := ifelse(test = match_id != "no match",
+                                    yes = lookuptable$type[unlist(casematch)],
+                                    no = "no match"),
+             by = 1:nrow(basedata)]
 
 
   } else if(method == "fuzzy" & matchcols == "names & age"){
@@ -568,7 +600,12 @@ match_cases <- function(basedata,
                                        returnAs = "list")]
 
     # Check exact age match (too few digits for distance measure):
-    basedata[lookuptable, am := .I, on = .(age_years)]
+    basedata[, am := EmilMisc::mamatch(x = age_years,
+                                           table = lookuptable$age_years,
+                                           method = "dl",
+                                           maxDist = 0,
+                                           maxmatch = nrow(lookuptable),
+                                           returnAs = "list")]
 
 
     ####################################################################
@@ -590,29 +627,35 @@ match_cases <- function(basedata,
 
 
     # Return index that matches in all three columns:
-    basedata[, casematch := Reduce(intersect, list(unlist(fn),
-                                                   unlist(ln),
-                                                   unlist(am))),
+    basedata[, casematch := list(intersect_all(unlist(fn),
+                                               unlist(ln),
+                                               unlist(am))),
              by = 1:nrow(basedata)]
 
     # Next, check that specimen dates are within range of epiwindow:
-    basedata[, epidatediff := abs(basedate -
-                                   lookuptable$lookupdate[casematch])]
+    basedata[, epidatediff := ifelse(test = lengths(casematch) == 1,
+                                      yes = abs(basedate - lookuptable$lookupdate[unlist(casematch)]),
+                                      no = NA),
+             by = 1:nrow(basedata)]
 
     # Compare epidatediff with epiwindow:
-    basedata[, epicheck := fifelse(test = epidatediff <= epiwindow,
+    basedata[, epicheck := fifelse(test = !is.na(epidatediff) &
+                                     epidatediff <= epiwindow,
                                    yes = TRUE,
                                    no = FALSE)]
 
     # Finally add the Go.Data visual case ID for full matches:
-    basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
-                                     yes = lookuptable$match_id[casematch],
-                                     no = "no match")]
+    basedata[, match_id := ifelse(test = lengths(casematch) == 1 &
+                                    epicheck == TRUE,
+                                  yes = lookuptable$match_id[unlist(casematch)],
+                                  no = "no match"),
+             by = 1:nrow(basedata)]
 
     # Add column indicating whether lab result is for a case or a contact:
-    basedata[, match_type := fifelse(test = match_id != "no match",
-                                     yes = lookuptable$type[casematch],
-                                     no = "no match")]
+    basedata[, match_type := ifelse(test = match_id != "no match",
+                                    yes = lookuptable$type[unlist(casematch)],
+                                    no = "no match"),
+             by = 1:nrow(basedata)]
 
 
   } else if(method == "exact" & matchcols == "names"){
@@ -627,23 +670,29 @@ match_cases <- function(basedata,
                                                   lastName = firstName)]
 
     # Next, check that specimen dates are within range of epiwindow:
-    basedata[, epidatediff := abs(basedate -
-                                   lookuptable$lookupdate[casematch])]
+    basedata[, epidatediff := ifelse(test = lengths(casematch) == 1,
+                                      yes = abs(basedate - lookuptable$lookupdate[unlist(casematch)]),
+                                      no = NA),
+             by = 1:nrow(basedata)]
 
     # Compare epidatediff with epiwindow:
-    basedata[, epicheck := fifelse(test = epidatediff <= epiwindow,
+    basedata[, epicheck := fifelse(test = !is.na(epidatediff) &
+                                     epidatediff <= epiwindow,
                                    yes = TRUE,
                                    no = FALSE)]
 
     # Finally add the Go.Data visual case ID for full matches:
-    basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
-                                     yes = lookuptable$match_id[casematch],
-                                     no = "no match")]
+    basedata[, match_id := ifelse(test = lengths(casematch) == 1 &
+                                    epicheck == TRUE,
+                                  yes = lookuptable$match_id[unlist(casematch)],
+                                  no = "no match"),
+             by = 1:nrow(basedata)]
 
     # Add column indicating whether lab result is for a case or a contact:
-    basedata[, match_type := fifelse(test = match_id != "no match",
-                                     yes = lookuptable$type[casematch],
-                                     no = "no match")]
+    basedata[, match_type := ifelse(test = match_id != "no match",
+                                    yes = lookuptable$type[unlist(casematch)],
+                                    no = "no match"),
+             by = 1:nrow(basedata)]
 
 
   } else if(method == "fuzzy" & matchcols == "names"){
@@ -684,28 +733,34 @@ match_cases <- function(basedata,
 
 
     # Return index that matches in both columns:
-    basedata[, casematch := Reduce(intersect, list(unlist(fn),
-                                                   unlist(ln))),
+    basedata[, casematch := list(intersect_all(unlist(fn),
+                                               unlist(ln))),
              by = 1:nrow(basedata)]
 
     # Next, check that specimen dates are within range of epiwindow:
-    basedata[, epidatediff := abs(basedate -
-                                   lookuptable$lookupdate[casematch])]
+    basedata[, epidatediff := ifelse(test = lengths(casematch) == 1,
+                                     yes = abs(basedate - lookuptable$lookupdate[unlist(casematch)]),
+                                     no = NA),
+             by = 1:nrow(basedata)]
 
     # Compare epidatediff with epiwindow:
-    basedata[, epicheck := fifelse(test = epidatediff <= epiwindow,
+    basedata[, epicheck := fifelse(test = !is.na(epidatediff) &
+                                     epidatediff <= epiwindow,
                                    yes = TRUE,
                                    no = FALSE)]
 
     # Finally add the Go.Data visual case ID for full matches:
-    basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
-                                     yes = lookuptable$match_id[casematch],
-                                     no = "no match")]
+    basedata[, match_id := ifelse(test = lengths(casematch) == 1 &
+                                    epicheck == TRUE,
+                                  yes = lookuptable$match_id[unlist(casematch)],
+                                  no = "no match"),
+             by = 1:nrow(basedata)]
 
     # Add column indicating whether lab result is for a case or a contact:
-    basedata[, match_type := fifelse(test = match_id != "no match",
-                                     yes = lookuptable$type[casematch],
-                                     no = "no match")]
+    basedata[, match_type := ifelse(test = match_id != "no match",
+                                     yes = lookuptable$type[unlist(casematch)],
+                                     no = "no match"),
+             by = 1:nrow(basedata)]
 
 
   } else if(method == "exact" & matchcols == "doc ID"){
@@ -716,24 +771,29 @@ match_cases <- function(basedata,
     basedata[lookuptable, casematch := .I, on = .(documents_number)]
 
     # Next, check that specimen dates are within range of epiwindow:
-    basedata[, epidatediff := abs(basedate -
-                                   lookuptable$lookupdate[casematch])]
+    basedata[, epidatediff := ifelse(test = lengths(casematch) == 1,
+                                      yes = abs(basedate - lookuptable$lookupdate[unlist(casematch)]),
+                                      no = NA),
+             by = 1:nrow(basedata)]
 
     # Compare epidatediff with epiwindow:
-    basedata[, epicheck := fifelse(test = epidatediff <= epiwindow,
+    basedata[, epicheck := fifelse(test = !is.na(epidatediff) &
+                                     epidatediff <= epiwindow,
                                    yes = TRUE,
                                    no = FALSE)]
 
     # Finally add the Go.Data visual case ID for full matches:
-    basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
-                                     yes = lookuptable$match_id[casematch],
-                                     no = "no match")]
+    basedata[, match_id := ifelse(test = lengths(casematch) == 1 &
+                                    epicheck == TRUE,
+                                  yes = lookuptable$match_id[unlist(casematch)],
+                                  no = "no match"),
+             by = 1:nrow(basedata)]
 
     # Add column indicating whether lab result is for a case or a contact:
-    basedata[, match_type := fifelse(test = match_id != "no match",
-                                     yes = lookuptable$type[casematch],
-                                     no = "no match")]
-
+    basedata[, match_type := ifelse(test = match_id != "no match",
+                                    yes = lookuptable$type[unlist(casematch)],
+                                    no = "no match"),
+             by = 1:nrow(basedata)]
 
 
   } else if(method == "fuzzy" & matchcols == "doc ID"){
@@ -750,30 +810,35 @@ match_cases <- function(basedata,
 
 
     # Return index that matches in all three columns:
-    basedata[, casematch := fifelse(test = (length(unlist(did)) == 1),
+    basedata[, casematch := fifelse(test = lengths(did) == 1,
                                     yes = lapply(did, unlist),
-                                    no = list(NA_real_)),
+                                    no = list(NA)),
             by = 1:nrow(basedata)]
 
     # Next, check that specimen dates are within range of epiwindow:
-    basedata[, epidatediff := abs(basedate -
-                                   lookuptable$lookupdate[casematch])]
+    basedata[, epidatediff := ifelse(test = lengths(casematch) == 1,
+                                      yes = abs(basedate - lookuptable$lookupdate[unlist(casematch)]),
+                                      no = NA),
+             by = 1:nrow(basedata)]
 
     # Compare epidatediff with epiwindow:
-    basedata[, epicheck := fifelse(test = epidatediff <= epiwindow,
+    basedata[, epicheck := fifelse(test = !is.na(epidatediff) &
+                                     epidatediff <= epiwindow,
                                    yes = TRUE,
                                    no = FALSE)]
 
     # Finally add the Go.Data visual case ID for full matches:
-    basedata[, match_id := fifelse(test = !is.na(casematch) & epicheck == TRUE,
-                                     yes = lookuptable$match_id[casematch],
-                                     no = "no match")]
+    basedata[, match_id := ifelse(test = lengths(casematch) == 1 &
+                                    epicheck == TRUE,
+                                  yes = lookuptable$match_id[unlist(casematch)],
+                                  no = "no match"),
+             by = 1:nrow(basedata)]
 
     # Add column indicating whether lab result is for a case or a contact:
-    basedata[, match_type := fifelse(test = match_id != "no match",
-                                     yes = lookuptable$type[casematch],
-                                     no = "no match")]
-
+    basedata[, match_type := ifelse(test = match_id != "no match",
+                                    yes = lookuptable$type[unlist(casematch)],
+                                    no = "no match"),
+             by = 1:nrow(basedata)]
 
   }
 
@@ -799,11 +864,11 @@ match_cases <- function(basedata,
 
     # Add Go.Data visual case ID column:
     basedata[match_id != "no match",
-             godata_caseid := lookuptable$godata_caseid[casematch]]
+             godata_caseid := lookuptable$godata_caseid[unlist(casematch)]]
 
     # Add Go.Data sample date (mandatory for bulk importing lab data):
     basedata[match_id != "no match",
-             godata_sampledate := lookuptable$lookupdate[casematch]]
+             godata_sampledate := lookuptable$lookupdate[unlist(casematch)]]
 
   }
 
@@ -921,10 +986,35 @@ match_cases <- function(basedata,
   # Create match report:
   match_report = basedata
 
-  # Unlist columns in match report to ensure single values are in cells:
-  match_report[, names(match_report) := lapply(.SD, unlist),
-               .SDcols = names(match_report)]
+  # Update match_id column to no match if casematch is not unique:
+  match_report[, match_id := ifelse(test = lengths(casematch) > 1,
+                                    yes = "no match",
+                                    no = match_id)]
 
+  # Update match_type column to no match if casematch is not unique:
+  match_report[, match_type := ifelse(test = lengths(casematch) > 1,
+                                      yes = "no match",
+                                      no = match_type)]
+
+  # Extract the names of list columns:
+  lnames <- names(match_report)[which(sapply(match_report, is.list))]
+
+  # If there are list columns:
+  if(length(lnames) != 0){
+
+    # Convert all values in list columns to '>5 matches' if length > 5:
+    match_report[, (lnames) := lapply(.SD, FUN = function(x)
+      ifelse(test = sapply(x, function(x) length(x) > 5),
+             yes = ">5 matches",
+             no = x)),
+      .SDcols = lnames]
+
+    # If needed, convert the final columns from lists to character vectors:
+    match_report[, (lnames) := lapply(.SD, FUN = function(x)
+      sapply(x, paste0, collapse = ",")),
+      .SDcols = lnames]
+
+  }
 
   # Revert columns from input basedata data back to their original names:
   data.table::setnames(x = match_report,
@@ -937,6 +1027,14 @@ match_cases <- function(basedata,
                        old = reportcolsin,
                        new = reportcolsout)
 
+  # Ensure that match_index has NAs for blank values:
+  match_report[, names(match_report) := lapply(.SD,
+                                               function(x)
+                                                 ifelse(test = x %in% c("NA", ""),
+                                                        yes = NA,
+                                                        no = x)),
+               .SDcols = names(match_report)]
+
   # Get list of added columns for lab updates to keep in export:
   godatacols = names(match_report)[!names(match_report) %in% original_names &
                                      !names(match_report) %in% reportcolsout]
@@ -945,6 +1043,7 @@ match_cases <- function(basedata,
   if(length(godatacols) > 0){
 
     matched_data = subset(match_report,
+                          match_id != "no match",
                           select = c(original_names,
                                      "match_id",
                                      godatacols,
@@ -953,6 +1052,7 @@ match_cases <- function(basedata,
   } else {
 
     matched_data = subset(match_report,
+                          match_id != "no match",
                           select = c(original_names,
                                      "match_id",
                                      "match_type"))
@@ -982,9 +1082,47 @@ match_cases <- function(basedata,
 
   }
 
+  # Create match status column:
+  match_report[, `Match status` := ifelse(test = match_id != "no match",
+                                        yes = "matched",
+                                        no = "not matched"),
+               by = 1:nrow(match_report)]
+
+  # Create unique row IDs:
+  if(matchcols == "names & dob"){
+
+    match_report[, index := .GRP, by = option1cols]
+
+  } else if(matchcols == "names & age"){
+
+    match_report[, index := .GRP, by = option2cols]
+
+  } else if(matchcols == "names"){
+
+    match_report[, index := .GRP, by = option3cols]
+
+  } else if(matchcols == "doc ID"){
+
+    match_report[, index := .GRP, by = option4cols]
+
+  }
+
+  # Create summary table of number of matches:
+  match_summary = data.table::dcast(data = match_report,
+                                    formula = `Match status` ~ .,
+                                    fun.aggregate = length,
+                                    value.var = "index")
+
+  # Update name of result column:
+  data.table::setnames(x = match_summary,
+                       old = ".",
+                       new = "Lab records",
+                       skip_absent = TRUE)
+
 
   # Create list object to export:
   gdmatches = list(match_report = match_report,
+                   match_summary = match_summary,
                    short_report = short_report,
                    matched_data = matched_data)
 
