@@ -1,13 +1,42 @@
 Package: godataR
 Type: Package
 Title: Connecting R with the Go.Data Application
-Version: 1.0.0
-Author: James Fuller <kux9@cdc.gov> and Sara Hollis <holliss@who.int>
+Version: 2.0.0
+Authors@R:
+    c(person(given = "James", 
+             family = "Fuller", 
+             role = c("aut", "cre"),
+             email = "kux9@cdc.gov"),
+      person(given = "Sara", 
+             family = "Hollis", 
+             role = c("aut"),
+             email = "holliss@who.int"),
+      person(given = "Amy", 
+             family = "Mikhail", 
+             role = c("aut"),
+             email = "amy.mikhail@gmail.com"))
 Maintainer: The WHO Go.Data Team <godata@who.int>
 Description: A set of functions to connect R to Go.Data.
-Imports: httr, jsonlite, tidyverse, tidyr, dplyr, magrittr, purrr, tibble, stringr
+Imports: 
+    data.table,
+    dplyr, 
+    httr, 
+    jsonlite,
+    lubridate,
+    magrittr,
+    purrr,
+    stringr,
+    tibble,
+    tidyr,
+    tidyverse,
+    urltools
+Suggests:
+    devtools, 
+    testthat
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
+Depends: 
+    R (>= 2.10)
