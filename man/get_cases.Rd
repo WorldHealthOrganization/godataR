@@ -12,28 +12,38 @@ get_cases(
   method = c("export", "batch"),
   batch_size = 50000,
   wait = 2,
-  file.type = c("json", "csv")
+  file_type = c("json", "csv")
 )
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here.
+Don't forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
 \item{password}{The password for your Go.Data login}
 
-\item{outbreak_id}{The id number for the outbreak for which you want to download data.}
+\item{outbreak_id}{The id number for the outbreak for which you want to
+download data.}
 
-\item{method}{The method to download data. \code{method="export"} is the preferred and default method for Go.Data version 2.38.1 or later. See Details.}
+\item{method}{The method to download data. \code{method = "export"} is the
+preferred and default method for Go.Data version 2.38.1 or later.
+See Details.}
 
-\item{batch_size}{If \code{method="batches"}, then \code{batch_size} specifies the number of records to retrieve in each iteration.}
+\item{batch_size}{If \code{method = "batches"}, then \code{batch_size} specifies the
+number of records to retrieve in each iteration.}
 
-\item{wait}{If \code{method="export"}, then \code{wait} is the number of seconds to wait in between iterations of checking the status of the export.}
+\item{wait}{If \code{method = "export"}, then \code{wait} is the number of seconds to
+wait in between iterations of checking the status of the export.}
 
-\item{file.type}{If \code{method="export"}, then \code{file.type} determines Whether the resulting data frame should contain nested fields (\code{file.type="json"}, the default) or an entirely flat data structure (\code{file.type="csv"})}
+\item{file_type}{If \code{method = "export"}, then \code{file_type} determines Whether
+the resulting data frame should contain nested fields (\code{file_type = "json"},
+the default) or an entirely flat data structure (\code{file_type = "csv"})}
 }
 \value{
-Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See \code{\link[tidyr]{nest}} for assitance with unnesting.
+Returns a data frame. Some fields, such as addresses, hospitalization
+history, and questionnaire fields may require further unnesting. See
+\verb{\link[tidyr]\{nest\}} for assitance with unnesting.
 }
 \description{
 A function to retrieve the case data for a
@@ -47,7 +57,7 @@ are two methods for downloading the data:
 Go.Data. This method relies on the GET outbreak/{id}/cases
 API endpoint. Records are then retrieved in batches
 based on \code{batch_size} and appended together into
-a final dataset. \code{method="batches"} will be the default and
+a final dataset. \code{method = "batches"} will be the default and
 only available method for Go.Data version 2.38.0 or older.
 
 \code{method="export"} will only work on Go.Data versions
@@ -55,7 +65,7 @@ only available method for Go.Data version 2.38.0 or older.
 outbreak/{id}/cases/export API endpoint. An export
 request is submitted to the server, and then when the
 export is ready, it will be downloaded. Due to better
-performance and more options, \code{method="export"} will
+performance and more options, \code{method = "export"} will
 be the default if you are using Go.Data version 2.38.1
 or newer.
 }
