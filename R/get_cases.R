@@ -57,15 +57,6 @@
 #'                    password=password,
 #'                    outbreak_id=outbreak_id)
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @import tibble
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
-
-
 get_cases <- function(url = url,
                       username = username,
                       password = password,
