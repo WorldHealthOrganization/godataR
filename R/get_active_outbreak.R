@@ -31,6 +31,7 @@ get_active_outbreak <- function(url = url,
                                 username = username,
                                 password = password) {
 
+  # get request to go.data
   godata_url <- httr::GET(
     paste0(
       url,
@@ -44,10 +45,13 @@ get_active_outbreak <- function(url = url,
     )
   )
 
+  # unpack request as character string
   url_content <- httr::content(godata_url, as = "text")
 
+  # converts JSON string into data frame
   users <- jsonlite::fromJSON(url_content, flatten = TRUE)
 
+  # subset to active user
   active_outbreak <- users$activeOutbreakId[users$email == username]
 
   return(active_outbreak)
