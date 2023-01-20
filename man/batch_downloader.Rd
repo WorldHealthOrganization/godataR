@@ -4,14 +4,7 @@
 \alias{batch_downloader}
 \title{Function to manage batch downloads}
 \usage{
-batch_downloader(
-  url = url,
-  username = username,
-  password = password,
-  api_call_n = api_call_n,
-  api_call_get = api_call_get,
-  batch_size = batch_size
-)
+batch_downloader(url, username, password, api_call_n, api_call_get, batch_size)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't
