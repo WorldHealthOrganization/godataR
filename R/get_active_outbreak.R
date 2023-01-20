@@ -32,12 +32,12 @@
 #' @import tidyr
 #' @import httr
 #' @importFrom jsonlite fromJSON
-
 get_active_outbreak <- function(url = url,
                                 username = username,
                                 password = password) {
 
-  users <- GET(
+
+  godata_url <- GET(
     paste0(
       url,
       "api/users",
@@ -48,9 +48,11 @@ get_active_outbreak <- function(url = url,
         password = password
       )
     )
-  ) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE)
+  )
+
+  url_content <- content(godata_url, as = "text")
+
+  users <- fromJSON(url_content, flatten = TRUE)
 
   active_outbreak <- users$activeOutbreakId[users$email == username]
 
