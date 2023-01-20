@@ -9,9 +9,9 @@
 #' @param api_call_request The API url to get the number of records.
 #' @param wait The number of seconds to wait in between iterations of checking
 #' the status of the export.
-#' @param file.type Whether the resulting data frame should contain nested
-#' fields (`file.type = "json"`, the default) or an entirely flat data structure
-#' (`file.type = "csv"`)
+#' @param file_type Whether the resulting data frame should contain nested
+#' fields (`file_type = "json"`, the default) or an entirely flat data structure
+#' (`file_type = "csv"`)
 #'
 #' @return
 #' Returns a data frame. Some fields, such as addresses, hospitalization
@@ -45,7 +45,7 @@ export_downloader <- function(url = url,
                              password = password,
                              api_call_request = api_call_request,
                              wait = wait,
-                             file.type = file.type) {
+                             file_type = file_type) {
 
   request_id <- GET(
     paste0(
@@ -54,7 +54,7 @@ export_downloader <- function(url = url,
       "dontTranslateValues%22%3A%22true%22%2C%20%22",
       "jsonReplaceUndefinedWithNull%22%3A%22true%22%20%7D%7D",
       "&type=",
-      file.type,
+      file_type,
       "&access_token=",
       get_access_token(
         url = url,
@@ -107,7 +107,7 @@ export_downloader <- function(url = url,
 
   #Download the export
   message("...beginning download")
-  if (file.type == "json") {
+  if (file_type == "json") {
     df <- GET(
       paste0(
         url,
@@ -126,7 +126,7 @@ export_downloader <- function(url = url,
 
     # fix one strange variable name
     names(df)[names(df) %in% "_id"] <- "id"
-  } else if (file.type == "csv") {
+  } else if (file_type == "csv") {
     df <- GET(
       paste0(
         url,

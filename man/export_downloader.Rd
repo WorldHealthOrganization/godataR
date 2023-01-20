@@ -10,7 +10,7 @@ export_downloader(
   password = password,
   api_call_request = api_call_request,
   wait = wait,
-  file.type = file.type
+  file_type = file_type
 )
 }
 \arguments{
@@ -26,9 +26,9 @@ forget the forward slash "/" at end!}
 \item{wait}{The number of seconds to wait in between iterations of checking
 the status of the export.}
 
-\item{file.type}{Whether the resulting data frame should contain nested
-fields (\code{file.type = "json"}, the default) or an entirely flat data structure
-(\code{file.type = "csv"})}
+\item{file_type}{Whether the resulting data frame should contain nested
+fields (\code{file_type = "json"}, the default) or an entirely flat data structure
+(\code{file_type = "csv"})}
 }
 \value{
 Returns a data frame. Some fields, such as addresses, hospitalization

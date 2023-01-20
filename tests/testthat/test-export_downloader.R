@@ -10,7 +10,7 @@ test_that("export_downloader works as expected", {
     password = password,
     api_call_request = api_call_request,
     wait = 2,
-    file.type = "json"
+    file_type = "json"
   )
 
   expect_s3_class(res, "data.frame")
