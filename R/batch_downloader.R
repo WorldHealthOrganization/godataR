@@ -23,10 +23,12 @@
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
-#' cases <- get_cases(url=url,
-#'                    username=username,
-#'                    password=password,
-#'                    outbreak_id=outbreak_id)
+#' cases <- get_cases(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   outbreak_id = outbreak_id
+#' )
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr

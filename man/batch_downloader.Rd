@@ -14,7 +14,8 @@ batch_downloader(
 )
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
@@ -24,10 +25,13 @@ batch_downloader(
 
 \item{api_call_get}{The API url to GET the records.}
 
-\item{batch_size}{Specifies the number of records to retrieve in each iteration.}
+\item{batch_size}{Specifies the number of records to retrieve in each
+iteration.}
 }
 \value{
-Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See \code{\link[tidyr]{nest}} for assitance with unnesting.
+Returns a data frame. Some fields, such as addresses, hospitalization
+history, and questionnaire fields may require further unnesting. See
+\verb{\link[tidyr]\{nest\}} for assitance with unnesting.
 }
 \description{
 A housekeeping function to do batch downloads.
@@ -39,9 +43,11 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-cases <- get_cases(url=url,
-                   username=username,
-                   password=password,
-                   outbreak_id=outbreak_id)
+cases <- get_cases(
+  url = url,
+  username = username,
+  password = password,
+  outbreak_id = outbreak_id
+)
 }
 }
