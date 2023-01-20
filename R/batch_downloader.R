@@ -107,6 +107,5 @@ batch_downloader <- function(url,
     skip <- skip + batch_size
     rm(records)
   }
-  rm(batch_size, skip, num_records)
   return(df)
 }
