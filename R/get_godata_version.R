@@ -5,7 +5,8 @@
 #' housekeeping function used in many of the
 #' other `godataR` functions.
 #'
-#' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
+#' @param url Insert the base URL for your instance of Go.Data here. Don't
+#' forget the forward slash "/" at end!
 #'
 #' @return string
 #' @export
@@ -13,22 +14,22 @@
 #' @examples
 #' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
-#' get_godata_version(url=url)
+#' get_godata_version(url = url)
 #' }
 #' @import httr
 #' @importFrom jsonlite fromJSON
 #' @importFrom magrittr %>%
 
-get_godata_version <- function(url=url) {
+get_godata_version <- function(url = url) {
 
-  version.request <- GET(paste0(url,"api/system-settings/version"))
+  version_request <- GET(paste0(url, "api/system-settings/version"))
 
-  if (version.request$status_code==200) {
-    version <- content(version.request, as="text") %>%
-      fromJSON(flatten=TRUE)
+  if (version_request$status_code == 200) {
+    version <- content(version_request, as = "text") %>%
+      fromJSON(flatten = TRUE)
     return(version$version)
   } else {
-    stop(paste0("Error ",version.request$status_code))
+    stop(paste0("Error ", version_request$status_code))
   }
 
 }
