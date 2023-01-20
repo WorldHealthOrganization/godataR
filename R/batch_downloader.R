@@ -53,7 +53,6 @@ batch_downloader <- function(url,
 
   #Import records in batches
   df <- tibble::tibble()
-  batch_size <- batch_size # number of records to import per iteration
   skip <- 0
   message("****************************")
 
