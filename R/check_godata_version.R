@@ -5,7 +5,8 @@
 #' This is a housekeeping function used in
 #' many of the other `godataR` functions.
 #'
-#' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
+#' @param url Insert the base URL for your instance of Go.Data here. Don't
+#' forget the forward slash "/" at end!
 #'
 #' @return Boolean, where `TRUE` indicates version 2.38.1 or later.
 #' @examples
@@ -15,33 +16,33 @@
 #' }
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_split
-check_godata_version <- function(url=url) {
+check_godata_version <- function(url = url) {
 
   # Get Current Version of Go.Data
-  gd.version <- get_godata_version(url=url)
+  gd_version <- get_godata_version(url = url)
 
   # Convert string to vector of 3 numbers
-  gd.version <- str_split(gd.version, "[.]") %>%
+  gd_version <- str_split(gd_version, "[.]") %>%
     unlist() %>%
     as.numeric()
 
   # Check if 2.38.1 or later
   # Should be TRUE if it is version 2.38.1 or later &
   # FALSE if version 2.38.0 or earlier
-  if (gd.version[1] < 2) {
-    after.2.38.1 <- FALSE
-  } else if (gd.version[1]==2 & gd.version[2] < 38) {
-    after.2.38.1 <- FALSE
-  } else if (gd.version[1]==2 & gd.version[2]==38 & gd.version[3]<1) {
-    after.2.38.1 <- FALSE
-  } else if (gd.version[1]==2 & gd.version[2]==38 & gd.version[3]>=1) {
-    after.2.38.1 <- TRUE
-  } else if (gd.version[1]==2 & gd.version[2]>38) {
-    after.2.38.1 <- TRUE
-  } else if (gd.version[1]>2) {
-    after.2.38.1 <- TRUE
+  if (gd_version[1] < 2) {
+    after_2_38_1 <- FALSE
+  } else if (gd_version[1] == 2 && gd_version[2] < 38) {
+    after_2_38_1 <- FALSE
+  } else if (gd_version[1] == 2 && gd_version[2] == 38 && gd_version[3] < 1) {
+    after_2_38_1 <- FALSE
+  } else if (gd_version[1] == 2 && gd_version[2] == 38 && gd_version[3] >= 1) {
+    after_2_38_1 <- TRUE
+  } else if (gd_version[1] == 2 && gd_version[2] > 38) {
+    after_2_38_1 <- TRUE
+  } else if (gd_version[1] > 2) {
+    after_2_38_1 <- TRUE
   }
 
-  return(after.2.38.1)
+  return(after_2_38_1)
 
 }
