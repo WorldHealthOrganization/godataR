@@ -9,9 +9,10 @@ test_that("get_cases works as expected", {
     method = "export",
     batch_size = 50000,
     wait = 2,
-    file.type = "json"
+    file_type = "json"
   )
 
+  expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
   expect_identical(dim(res), c(13L, 357L))
   expect_true(
