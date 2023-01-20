@@ -30,15 +30,6 @@
 #'   outbreak_id = outbreak_id
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @import tibble
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
-#'
-#'
 batch_downloader <- function(url,
                              username,
                              password,
@@ -46,22 +37,22 @@ batch_downloader <- function(url,
                              api_call_get,
                              batch_size) {
 
-  num_record_request <- GET(
+  num_record_request <- httr::GET(
     paste0(api_call_n),
-    add_headers(
+    httr::add_headers(
       Authorization = paste("Bearer", get_access_token(
         url = url,
         username = username,
         password = password
       ), sep = " ")))
 
-  num_record_content <- content(record_request, as = "text")
+  num_record_content <- httr::content(record_request, as = "text")
 
-  num_records <- fromJSON(record_content, flatten = TRUE)
+  num_records <- jsonlite::fromJSON(record_content, flatten = TRUE)
   num_records <- records$count
 
   #Import records in batches
-  df <- tibble()
+  df <- tibble::tibble()
   batch_size <- batch_size # number of records to import per iteration
   skip <- 0
   message("****************************")
@@ -85,7 +76,7 @@ batch_downloader <- function(url,
     }
 
     #fetch the batch of records
-    record_request <- GET(
+    record_request <- httr::GET(
       paste0(
         api_call_get,
         "?filter={%22limit%22:",
@@ -94,7 +85,7 @@ batch_downloader <- function(url,
         format(skip, scientific = FALSE),
         "}"
       ),
-      add_headers(
+      httr::add_headers(
         Authorization = paste("Bearer", get_access_token(
           url = url,
           username = username,
@@ -103,14 +94,14 @@ batch_downloader <- function(url,
       )
     )
 
-    record_content <- content(cases_request, as = "text")
+    record_content <- httr::content(cases_request, as = "text")
 
-    records <- fromJSON(cases_content, flatten = TRUE)
+    records <- jsonlite::fromJSON(cases_content, flatten = TRUE)
 
-    records <- as_tibble(cases)
+    records <- tibble::as_tibble(cases)
 
     #append the new batch of records to the existing data frame
-    df <- bind_rows(df, records)
+    df <- dplyr::bind_rows(df, records)
 
     #update numbers for the next iteration
     skip <- skip + batch_size
