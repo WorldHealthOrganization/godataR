@@ -7,7 +7,8 @@
 get_active_outbreak(url = url, username = username, password = password)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
@@ -30,8 +31,10 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
-active_outbreak_id <- get_active_outbreak(url=url,
-                                          username=username,
-                                          password=password)
+active_outbreak_id <- get_active_outbreak(
+  url = url,
+  username = username,
+  password = password
+)
 }
 }
