@@ -28,19 +28,12 @@ check_godata_version <- function(url = url) {
   # Should be TRUE if it is version 2.38.1 or later &
   # FALSE if version 2.38.0 or earlier
   if (gd_version[1] < 2) {
-    after_2_38_1 <- FALSE
+    return(FALSE)
   } else if (gd_version[1] == 2 && gd_version[2] < 38) {
-    after_2_38_1 <- FALSE
-  } else if (gd_version[1] == 2 && gd_version[2] == 38 && gd_version[3] < 1) {
-    after_2_38_1 <- FALSE
-  } else if (gd_version[1] == 2 && gd_version[2] == 38 && gd_version[3] >= 1) {
-    after_2_38_1 <- TRUE
-  } else if (gd_version[1] == 2 && gd_version[2] > 38) {
-    after_2_38_1 <- TRUE
-  } else if (gd_version[1] > 2) {
-    after_2_38_1 <- TRUE
+    return(FALSE)
+  } else if (gd_version[1] == 2 && gd_version[2] == 38 && gd_version[3] == 0) {
+    return(FALSE)
+  } else {
+    return(TRUE)
   }
-
-  return(after_2_38_1)
-
 }
