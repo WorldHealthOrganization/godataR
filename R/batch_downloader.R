@@ -39,12 +39,12 @@
 #' @importFrom purrr pluck
 #'
 #'
-batch_downloader <- function(url = url,
-                             username = username,
-                             password = password,
-                             api_call_n = api_call_n,
-                             api_call_get = api_call_get,
-                             batch_size = batch_size) {
+batch_downloader <- function(url,
+                             username,
+                             password,
+                             api_call_n,
+                             api_call_get,
+                             batch_size) {
 
   #get total number of records
   df_n <- GET(
