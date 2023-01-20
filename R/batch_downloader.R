@@ -46,19 +46,19 @@ batch_downloader <- function(url,
                              api_call_get,
                              batch_size) {
 
-  #get total number of records
-  df_n <- GET(
+  num_record_request <- GET(
     paste0(api_call_n),
     add_headers(
       Authorization = paste("Bearer", get_access_token(
         url = url,
         username = username,
         password = password
-      ), sep = " "))) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    unlist() %>%
-    unname()
+      ), sep = " ")))
+
+  num_record_content <- content(record_request, as = "text")
+
+  num_records <- fromJSON(record_content, flatten = TRUE)
+  num_records <- records$count
 
   #Import records in batches
   df <- tibble()
@@ -67,13 +67,13 @@ batch_downloader <- function(url,
   message("****************************")
 
   #Download records in batches, and then append them into a single dataset
-  while (skip < df_n) {
+  while (skip < num_records) {
 
     #Progress message
-    if (df_n <= batch_size) {
-      message(paste0("...downloading records 1 to ", df_n))
+    if (num_records <= batch_size) {
+      message(paste0("...downloading records 1 to ", num_records))
     }
-    if (df_n > batch_size) {
+    if (num_records > batch_size) {
       message(
         paste0(
           "...downloading records ",
@@ -85,7 +85,7 @@ batch_downloader <- function(url,
     }
 
     #fetch the batch of records
-    df_i <- GET(
+    record_request <- GET(
       paste0(
         api_call_get,
         "?filter={%22limit%22:",
@@ -101,19 +101,21 @@ batch_downloader <- function(url,
           password = password),
           sep = " ")
       )
-    ) %>%
-      content(as = "text") %>%
-      fromJSON(flatten = TRUE) %>%
-      as_tibble()
+    )
+
+    record_content <- content(cases_request, as = "text")
+
+    records <- fromJSON(cases_content, flatten = TRUE)
+
+    records <- as_tibble(cases)
 
     #append the new batch of records to the existing data frame
-    df <- df %>%
-      bind_rows(df_i)
+    df <- bind_rows(df, records)
 
     #update numbers for the next iteration
     skip <- skip + batch_size
-    rm(df_i)
+    rm(records)
   }
-  rm(batch_size, skip, df_n)
+  rm(batch_size, skip, num_records)
   return(df)
 }
