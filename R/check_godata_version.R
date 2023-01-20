@@ -22,9 +22,9 @@ check_godata_version <- function(url = url) {
   gd_version <- get_godata_version(url = url)
 
   # Convert string to vector of 3 numbers
-  gd_version <- str_split(gd_version, "[.]") %>%
-    unlist() %>%
-    as.numeric()
+  gd_version <- str_split(gd_version, "[.]")
+
+  gd_version <- as.numeric(unlist(gd_version))
 
   # Check if 2.38.1 or later
   # Should be TRUE if it is version 2.38.1 or later &
