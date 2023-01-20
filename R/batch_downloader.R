@@ -46,10 +46,10 @@ batch_downloader <- function(url,
         password = password
       ), sep = " ")))
 
-  num_record_content <- httr::content(record_request, as = "text")
+  num_record_content <- httr::content(num_record_request, as = "text")
 
-  num_records <- jsonlite::fromJSON(record_content, flatten = TRUE)
-  num_records <- records$count
+  num_records <- jsonlite::fromJSON(num_record_content, flatten = TRUE)
+  num_records <- num_records$count
 
   #Import records in batches
   df <- tibble::tibble()
@@ -94,11 +94,11 @@ batch_downloader <- function(url,
       )
     )
 
-    record_content <- httr::content(cases_request, as = "text")
+    record_content <- httr::content(record_request, as = "text")
 
-    records <- jsonlite::fromJSON(cases_content, flatten = TRUE)
+    records <- jsonlite::fromJSON(record_content, flatten = TRUE)
 
-    records <- tibble::as_tibble(cases)
+    records <- tibble::as_tibble(records)
 
     #append the new batch of records to the existing data frame
     df <- dplyr::bind_rows(df, records)
