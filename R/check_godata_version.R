@@ -12,17 +12,15 @@
 #' @examples
 #' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
-#' check_godata_version(url=url)
+#' check_godata_version(url = url)
 #' }
-#' @importFrom magrittr %>%
-#' @importFrom stringr str_split
 check_godata_version <- function(url = url) {
 
   # Get Current Version of Go.Data
   gd_version <- get_godata_version(url = url)
 
   # Convert string to vector of 3 numbers
-  gd_version <- str_split(gd_version, "[.]")
+  gd_version <- stringr::str_split(gd_version, "[.]")
 
   gd_version <- as.numeric(unlist(gd_version))
 
