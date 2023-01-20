@@ -7,7 +7,8 @@
 get_godata_version(url = url)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 }
 \value{
 string
@@ -21,6 +22,6 @@ other \code{godataR} functions.
 \examples{
 \dontrun{
 url <- "https://MyGoDataServer.com/"
-get_godata_version(url=url)
+get_godata_version(url = url)
 }
 }
