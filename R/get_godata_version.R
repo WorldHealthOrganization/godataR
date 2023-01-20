@@ -16,16 +16,13 @@
 #' url <- "https://MyGoDataServer.com/"
 #' get_godata_version(url = url)
 #' }
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom magrittr %>%
 get_godata_version <- function(url = url) {
 
-  version_request <- GET(paste0(url, "api/system-settings/version"))
+  version_request <- httr::GET(paste0(url, "api/system-settings/version"))
 
   if (version_request$status_code == 200) {
-    version <- content(version_request, as = "text")
-    version <- fromJSON(version, flatten = TRUE)
+    version <- httr::content(version_request, as = "text")
+    version <- jsonlite::fromJSON(version, flatten = TRUE)
     return(version$version)
   } else {
     stop(paste0("Error ", version_request$status_code))
