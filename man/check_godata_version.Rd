@@ -22,6 +22,6 @@ many of the other \code{godataR} functions.
 \examples{
 \dontrun{
 url <- "https://MyGoDataServer.com/"
-check_godata_version(url=url)
+check_godata_version(url = url)
 }
 }
