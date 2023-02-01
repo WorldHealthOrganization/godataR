@@ -56,10 +56,10 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 
-get_export_status <- function(url = url,
-                              username = username,
-                              password = password,
-                              request_id = request_id) {
+get_export_status <- function(url,
+                              username,
+                              password,
+                              request_id) {
 
   export_request_status <- GET(
     paste0(
