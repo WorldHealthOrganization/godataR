@@ -25,18 +25,12 @@
 #'                                username=username,
 #'                                password=password)
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
 #' @export
 get_all_outbreaks <- function(url,
                               username,
                               password) {
 
-  outbreaks_request <- GET(
+  outbreaks_request <- httr::GET(
     paste0(
       url,
       "api/outbreaks",
@@ -49,15 +43,15 @@ get_all_outbreaks <- function(url,
     )
   )
 
-  outbreaks_content <- content(outbreaks_request, as = "text")
+  outbreaks_content <- httr::content(outbreaks_request, as = "text")
 
-  outbreaks <- fromJSON(outbreaks_content, flatten = TRUE)
+  outbreaks <- jsonlite::fromJSON(outbreaks_content, flatten = TRUE)
 
-  outbreaks <- filter(outbreaks, .data$deleted != TRUE)
+  outbreaks <- dplyr::filter(outbreaks, .data$deleted != TRUE)
 
-  outbreaks <- select(
+  outbreaks <- dplyr::select(
     outbreaks,
-    any_of(c("id", "name", "description", "createdBy", "createdAt"))
+    dplyr::any_of(c("id", "name", "description", "createdBy", "createdAt"))
   )
 
   return(outbreaks)
