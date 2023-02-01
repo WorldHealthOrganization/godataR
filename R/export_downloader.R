@@ -154,5 +154,6 @@ export_downloader <- function(url,
   }
 
   message("...download complete!")
+  df <- tibble::as_tibble(df)
   return(df)
 }
