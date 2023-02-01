@@ -41,13 +41,13 @@
 #' @importFrom purrr pluck
 #' @importFrom utils read.csv
 export_downloader <- function(url,
-                             username,
-                             password,
-                             api_call_request,
-                             wait,
-                             file_type) {
+                              username,
+                              password,
+                              api_call_request,
+                              wait,
+                              file_type) {
 
-  request_id <- GET(
+  export_log_id_request <- GET(
     paste0(
       api_call_request,
       "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22",
@@ -62,10 +62,11 @@ export_downloader <- function(url,
         password = password
       )
     )
-  ) %>%
-    content() %>%
-    pluck("exportLogId")
+  )
 
+  export_log_id_request_content <- content(export_log_id_request)
+
+  request_id <- pluck(export_log_id_request_content, "exportLogId")
 
   #Check status of request periodcially, until finished
   #function argument 'wait' determines the number of seconds to wait between
@@ -92,8 +93,9 @@ export_downloader <- function(url,
           password = password
         )
       )
-    ) %>%
-      content()
+    )
+
+    export_request_status_content <- content(export_request_status)
     message(
       paste0(
         "...processed ",
@@ -108,7 +110,7 @@ export_downloader <- function(url,
   #Download the export
   message("...beginning download")
   if (file_type == "json") {
-    df <- GET(
+    df_request <- GET(
       paste0(
         url,
         "api/export-logs/",
@@ -120,14 +122,16 @@ export_downloader <- function(url,
           password = password
         )
       )
-    ) %>%
-      content("text", encoding = "UTF-8") %>%
-      fromJSON(flatten = TRUE)
+    )
+
+    df_content <- content(df_request, "text", encoding = "UTF-8")
+
+    df <- fromJSON(df_content, flatten = TRUE)
 
     # fix one strange variable name
     names(df)[names(df) %in% "_id"] <- "id"
   } else if (file_type == "csv") {
-    df <- GET(
+    df_request <- GET(
       paste0(
         url,
         "api/export-logs/",
@@ -139,10 +143,13 @@ export_downloader <- function(url,
           password = password
         )
       )
-    ) %>%
-      content("text", encoding = "UTF-8") %>%
-      textConnection() %>%
-      read.csv()
+    )
+
+    df_content <- content(df_request, "text", encoding = "UTF-8")
+
+    df_content <- textConnection(df_content)
+
+    df <- read.csv(df_content)
     names(df)[names(df) %in% "X_id"] <- "id"
   }
 
