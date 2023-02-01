@@ -32,9 +32,9 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 #' @export
-get_all_outbreaks <- function(url = url,
-                              username = username,
-                              password = password) {
+get_all_outbreaks <- function(url,
+                              username,
+                              password) {
 
   outbreaks_request <- GET(
     paste0(
