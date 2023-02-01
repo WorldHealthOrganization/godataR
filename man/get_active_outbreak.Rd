@@ -4,7 +4,7 @@
 \alias{get_active_outbreak}
 \title{Get the currently active outbreak id number}
 \usage{
-get_active_outbreak(url = url, username = username, password = password)
+get_active_outbreak(url, username, password)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't

@@ -48,19 +48,12 @@
 #'   request_id = request_id
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
-
 get_export_status <- function(url,
                               username,
                               password,
                               request_id) {
 
-  export_request_status <- GET(
+  export_request_status <- httr::GET(
     paste0(
       url,
       "api/export-logs/",
@@ -73,12 +66,11 @@ get_export_status <- function(url,
       )
     )
   )
-  export_request_status <- content(export_request_status)
+  export_request_status <- httr::content(export_request_status)
 
   export_request_status <- export_request_status[
     c("statusStep", "totalNo", "processedNo")
   ]
 
   return(export_request_status)
-
 }
