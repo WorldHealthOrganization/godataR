@@ -26,7 +26,7 @@
 #' )
 #'
 #' # Submit an export request
-#' export.request <- GET(
+#' export_request <- GET(
 #'   paste0(
 #'     url,
 #'     "api/outbreaks/",
@@ -36,9 +36,8 @@
 #'     access_token
 #'   )
 #' )
-#' request_id <- export.request %>%
-#'   content() %>%
-#'   pluck("exportLogId")
+#' request_id <- content(export_request)
+#' request_id <- pluck(request_id, "exportLogId")
 #'
 #' # Check the status of the export request
 #'
@@ -73,8 +72,8 @@ get_export_status <- function(url,
         password = password
       )
     )
-  ) %>%
-    content()
+  )
+  export_request_status <- content(export_request_status)
 
   export_request_status <- export_request_status[
     c("statusStep", "totalNo", "processedNo")
