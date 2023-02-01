@@ -24,9 +24,9 @@
 #' @importFrom jsonlite fromJSON
 #' @export
 
-get_access_token <- function(url=url,
-                             username=username,
-                             password=password) {
+get_access_token <- function(url,
+                             username,
+                             password) {
 
   response <- POST(url=paste0(url,"api/oauth/token?access_token=123"),
                    body = list(username=username, password=password),
