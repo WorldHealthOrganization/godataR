@@ -36,7 +36,7 @@ get_all_outbreaks <- function(url = url,
                               username = username,
                               password = password) {
 
-  outbreaks <- GET(
+  outbreaks_request <- GET(
     paste0(
       url,
       "api/outbreaks",
@@ -47,11 +47,18 @@ get_all_outbreaks <- function(url = url,
         password = password
       )
     )
-  ) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    filter(.data$deleted != TRUE) %>%
-    select(any_of(c("id", "name", "description", "createdBy", "createdAt")))
+  )
+
+  outbreaks_content <- content(outbreaks_request, as = "text")
+
+  outbreaks <- fromJSON(outbreaks_content, flatten = TRUE)
+
+  outbreaks <- filter(outbreaks, .data$deleted != TRUE)
+
+  outbreaks <- select(
+    outbreaks,
+    any_of(c("id", "name", "description", "createdBy", "createdAt"))
+  )
 
   return(outbreaks)
 }
