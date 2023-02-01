@@ -32,14 +32,6 @@
 #'   outbreak_id = outbreak_id
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @import tibble
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
-#' @importFrom utils read.csv
 export_downloader <- function(url,
                               username,
                               password,
@@ -47,7 +39,7 @@ export_downloader <- function(url,
                               wait,
                               file_type) {
 
-  export_log_id_request <- GET(
+  export_log_id_request <- httr::GET(
     paste0(
       api_call_request,
       "?filter=%7B%22where%22%3A%7B%22useDbColumns%22%3A%22true%22%2C%20%22",
@@ -64,9 +56,9 @@ export_downloader <- function(url,
     )
   )
 
-  export_log_id_request_content <- content(export_log_id_request)
+  export_log_id_request_content <- httr::content(export_log_id_request)
 
-  request_id <- pluck(export_log_id_request_content, "exportLogId")
+  request_id <- purrr::pluck(export_log_id_request_content, "exportLogId")
 
   #Check status of request periodcially, until finished
   #function argument 'wait' determines the number of seconds to wait between
@@ -81,7 +73,7 @@ export_downloader <- function(url,
   status_step <- export_request_status$statusStep
   while (status_step != "LNG_STATUS_STEP_EXPORT_FINISHED") {
     Sys.sleep(wait)
-    export_request_status <- GET(
+    export_request_status <- httr::GET(
       paste0(
         url,
         "api/export-logs/",
@@ -95,7 +87,7 @@ export_downloader <- function(url,
       )
     )
 
-    export_request_status_content <- content(export_request_status)
+    export_request_status_content <- httr::content(export_request_status)
     message(
       paste0(
         "...processed ",
@@ -110,7 +102,7 @@ export_downloader <- function(url,
   #Download the export
   message("...beginning download")
   if (file_type == "json") {
-    df_request <- GET(
+    df_request <- httr::GET(
       paste0(
         url,
         "api/export-logs/",
@@ -124,14 +116,14 @@ export_downloader <- function(url,
       )
     )
 
-    df_content <- content(df_request, "text", encoding = "UTF-8")
+    df_content <- httr::content(df_request, "text", encoding = "UTF-8")
 
-    df <- fromJSON(df_content, flatten = TRUE)
+    df <- jsonlite::fromJSON(df_content, flatten = TRUE)
 
     # fix one strange variable name
     names(df)[names(df) %in% "_id"] <- "id"
   } else if (file_type == "csv") {
-    df_request <- GET(
+    df_request <- httr::GET(
       paste0(
         url,
         "api/export-logs/",
@@ -145,11 +137,11 @@ export_downloader <- function(url,
       )
     )
 
-    df_content <- content(df_request, "text", encoding = "UTF-8")
+    df_content <- httr::content(df_request, "text", encoding = "UTF-8")
 
     df_content <- textConnection(df_content)
 
-    df <- read.csv(df_content)
+    df <- utils::read.csv(df_content)
     names(df)[names(df) %in% "X_id"] <- "id"
   }
 
