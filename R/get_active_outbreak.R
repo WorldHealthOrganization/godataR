@@ -27,9 +27,9 @@
 #'   password = password
 #' )
 #' }
-get_active_outbreak <- function(url = url,
-                                username = username,
-                                password = password) {
+get_active_outbreak <- function(url,
+                                username,
+                                password) {
 
   # get request to go.data
   godata_url <- httr::GET(
