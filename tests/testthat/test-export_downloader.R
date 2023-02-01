@@ -13,6 +13,7 @@ test_that("export_downloader works as expected", {
     file_type = "json"
   )
 
+  expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
   expect_identical(dim(res), c(13L, 357L))
   expect_true(
