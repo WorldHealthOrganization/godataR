@@ -21,22 +21,22 @@
 #'                  username = username,
 #'                  password = password)
 #' }
-#' @import httr
-#' @importFrom jsonlite fromJSON
 #' @export
 get_access_token <- function(url,
                              username,
                              password) {
 
-  response <- POST(url = paste0(url, "api/oauth/token?access_token=123"),
-                   body = list(username = username, password = password),
-                   encode = "json")
+  response <- httr::POST(
+    url = paste0(url, "api/oauth/token?access_token=123"),
+    body = list(username = username, password = password),
+    encode = "json"
+  )
 
   if (response$status_code == 200) {
-    response_json <- content(response, as = "text")
-    token <- fromJSON(response_json, flatten = TRUE)$access_token
+    response_json <- httr::content(response, as = "text")
+    token <- jsonlite::fromJSON(response_json, flatten = TRUE)$access_token
     return(token)
   } else {
-    stop(paste0("Error: ", response$status_code))
+    stop("Error: ", response$status_code)
   }
 }
