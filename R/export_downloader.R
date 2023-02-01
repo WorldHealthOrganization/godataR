@@ -40,12 +40,12 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 #' @importFrom utils read.csv
-export_downloader <- function(url = url,
-                             username = username,
-                             password = password,
-                             api_call_request = api_call_request,
-                             wait = wait,
-                             file_type = file_type) {
+export_downloader <- function(url,
+                             username,
+                             password,
+                             api_call_request,
+                             wait,
+                             file_type) {
 
   request_id <- GET(
     paste0(

@@ -4,14 +4,7 @@
 \alias{export_downloader}
 \title{Function to manage export downloads}
 \usage{
-export_downloader(
-  url = url,
-  username = username,
-  password = password,
-  api_call_request = api_call_request,
-  wait = wait,
-  file_type = file_type
-)
+export_downloader(url, username, password, api_call_request, wait, file_type)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't
