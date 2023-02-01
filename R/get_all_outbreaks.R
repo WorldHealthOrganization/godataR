@@ -21,9 +21,11 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
-#' outbreaks <- get_all_outbreaks(url=url,
-#'                                username=username,
-#'                                password=password)
+#' outbreaks <- get_all_outbreaks(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
 #' }
 #' @export
 get_all_outbreaks <- function(url,
@@ -53,6 +55,8 @@ get_all_outbreaks <- function(url,
     outbreaks,
     dplyr::any_of(c("id", "name", "description", "createdBy", "createdAt"))
   )
+
+  outbreaks <- tibble::as_tibble(outbreaks)
 
   return(outbreaks)
 }
