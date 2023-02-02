@@ -68,17 +68,18 @@ get_clusters <- function(url,
   }
 
   #get total number of records
-  df_n <- GET(
+  df_n_request <- GET(
     paste0(url, "api/outbreaks/", outbreak_id, "/clusters/count"),
     add_headers(Authorization = paste("Bearer", get_access_token(
       url = url,
       username = username,
       password = password
-    ), sep = " "))) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    unlist() %>%
-    unname()
+    ), sep = " ")))
+
+  df_n_content <- content(df_n_request, as = "text")
+
+  df_n <- fromJSON(df_n_content, flatten = TRUE)
+  df_n <- unname(unlist(df_n))
 
   #Import records in batches
   df <- tibble()
@@ -103,7 +104,7 @@ get_clusters <- function(url,
     }
 
     #fetch the batch of records
-    df_i <- GET(
+    df_i_request <- GET(
       paste0(
         url,
         "api/outbreaks/",
@@ -119,14 +120,17 @@ get_clusters <- function(url,
         url = url,
         username = username,
         password = password
-      ), sep = " "))) %>%
-      content(as = "text") %>%
-      fromJSON(flatten = TRUE) %>%
-      as_tibble()
+      ), sep = " "))
+    )
+
+    df_i_content <- content(df_i_request, as = "text")
+
+    df_i <- fromJSON(df_i_content, flatten = TRUE)
+
+    df_i <- as_tibble(df_i)
 
     #append the new batch of records to the existing data frame
-    df <- df %>%
-      bind_rows(df_i)
+    df <- bind_rows(df, df_i)
 
     #update numbers for the next iteration
     skip <- skip + batch_size
