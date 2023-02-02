@@ -12,7 +12,7 @@
 #' @examples
 #' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
-#' check_godata_url(url=url)
+#' check_godata_url(url = url)
 #' }
 #' @export
 check_godata_url <- function(url) {

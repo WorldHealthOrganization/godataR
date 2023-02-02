@@ -21,6 +21,6 @@ used in many of the other \code{godataR} functions.
 \examples{
 \dontrun{
 url <- "https://MyGoDataServer.com/"
-check_godata_url(url=url)
+check_godata_url(url = url)
 }
 }
