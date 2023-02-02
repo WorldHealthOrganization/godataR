@@ -44,10 +44,10 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 
-get_clusters <- function(url = url,
-                         username = username,
-                         password = password,
-                         outbreak_id = outbreak_id,
+get_clusters <- function(url,
+                         username,
+                         password,
+                         outbreak_id,
                          batch_size = 50000) {
 
 # no /export endpoint for clusters so no need to check version
