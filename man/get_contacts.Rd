@@ -5,10 +5,10 @@
 \title{Download contacts from Go.Data}
 \usage{
 get_contacts(
-  url = url,
-  username = username,
-  password = password,
-  outbreak_id = outbreak_id,
+  url,
+  username,
+  password,
+  outbreak_id,
   method = c("export", "batch"),
   batch_size = 50000,
   wait = 2,
@@ -76,9 +76,11 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-contacts <- get_contacts(url=url,
-                         username=username,
-                         password=password,
-                         outbreak_id=outbreak_id)
+contacts <- get_contacts(
+  url = url,
+  username = username,
+  password = password,
+  outbreak_id=outbreak_id
+)
 }
 }

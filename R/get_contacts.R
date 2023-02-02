@@ -52,20 +52,13 @@
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
-#' contacts <- get_contacts(url=url,
-#'                          username=username,
-#'                          password=password,
-#'                          outbreak_id=outbreak_id)
+#' contacts <- get_contacts(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   outbreak_id=outbreak_id
+#' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @import tibble
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
-
-
 get_contacts <- function(url,
                          username,
                          password,
