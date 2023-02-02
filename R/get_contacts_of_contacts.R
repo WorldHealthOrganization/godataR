@@ -69,10 +69,10 @@
 #' @importFrom purrr pluck
 
 
-get_contacts_of_contacts <- function(url = url,
-                                     username = username,
-                                     password = password,
-                                     outbreak_id = outbreak_id,
+get_contacts_of_contacts <- function(url,
+                                     username,
+                                     password,
+                                     outbreak_id,
                                      method = c("export", "batch"),
                                      batch_size = 50000,
                                      wait = 2,
