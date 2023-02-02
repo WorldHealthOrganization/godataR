@@ -18,7 +18,7 @@
 #' @import httr
 #' @importFrom purrr pluck
 #' @export
-check_godata_url <- function(url = url) {
+check_godata_url <- function(url) {
 
   # Get status code for version check
   status_code <- GET(paste0(url, "api/system-settings/version")) %>%
