@@ -42,7 +42,7 @@ set_active_outbreak <- function(url,
 
 
   #Get User ID & Active Outbreak ID
-  user_details <- GET(
+  user_details_request <- GET(
     paste0(
       url,
       "api/users",
@@ -53,10 +53,13 @@ set_active_outbreak <- function(url,
         password = password
       )
     )
-  ) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    filter(.data$email == username)
+  )
+
+  user_details_content <-  content(user_details_request, as = "text")
+
+  user_details <- fromJSON(user_details_content, flatten = TRUE)
+
+  user_details <- filter(user_details, .data$email == username)
 
   current_active_outbreak <- user_details$activeOutbreakId
   user_id <- user_details$id
@@ -66,9 +69,10 @@ set_active_outbreak <- function(url,
     url = url,
     username = username,
     password = password
-  ) %>%
-    select(id) %>%
-    unlist()
+  )
+
+  available_outbreaks <- unlist(select(available_outbreaks, id))
+
 
   if (current_active_outbreak == outbreak_id) { # Is outbreak_id already active?
     text <- paste0(
