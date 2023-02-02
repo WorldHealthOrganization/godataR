@@ -138,5 +138,7 @@ get_contacts_of_contacts <- function(url,
     )
   }
 
+  df <- tibble::as_tibble(df)
+
   return(df)
 }
