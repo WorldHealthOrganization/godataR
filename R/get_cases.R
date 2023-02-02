@@ -59,10 +59,10 @@
 #'   outbreak_id = outbreak_id
 #' )
 #' }
-get_cases <- function(url = url,
-                      username = username,
-                      password = password,
-                      outbreak_id = outbreak_id,
+get_cases <- function(url,
+                      username,
+                      password,
+                      outbreak_id,
                       method = c("export", "batch"),
                       batch_size = 50000,
                       wait = 2,

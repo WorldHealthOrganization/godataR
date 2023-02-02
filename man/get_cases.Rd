@@ -5,10 +5,10 @@
 \title{Download cases from Go.Data}
 \usage{
 get_cases(
-  url = url,
-  username = username,
-  password = password,
-  outbreak_id = outbreak_id,
+  url,
+  username,
+  password,
+  outbreak_id,
   method = c("export", "batch"),
   batch_size = 50000,
   wait = 2,
