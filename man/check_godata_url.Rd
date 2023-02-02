@@ -7,7 +7,8 @@
 check_godata_url(url = url)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 }
 \value{
 Boolean, where \code{TRUE} indicates a valid URL.
