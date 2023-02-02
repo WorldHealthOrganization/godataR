@@ -13,15 +13,18 @@ get_clusters(
 )
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
 \item{password}{The password for your Go.Data login}
 
-\item{outbreak_id}{The id number for the outbreak for which you want to download clusters.}
+\item{outbreak_id}{The id number for the outbreak for which you want to
+download clusters.}
 
-\item{batch_size}{For large datasets, specify the number of records to retrieve in each iteration.}
+\item{batch_size}{For large datasets, specify the number of records to
+retrieve in each iteration.}
 }
 \value{
 Returns data frame.
@@ -44,9 +47,11 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-clusters <- get_clusters(url=url,
-                         username=username,
-                         password=password,
-                         outbreak_id=outbreak_id)
+clusters <- get_clusters(
+  url = url,
+  username = username,
+  password = password,
+  outbreak_id = outbreak_id
+)
 }
 }
