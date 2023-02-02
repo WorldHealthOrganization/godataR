@@ -36,7 +36,6 @@ set_active_outbreak <- function(url,
                                 password,
                                 outbreak_id) {
 
-
   #Get User ID & Active Outbreak ID
   user_details_request <- httr::GET(
     paste0(
@@ -111,6 +110,6 @@ set_active_outbreak <- function(url,
 
   message(text)
 
-
+  invisible(outbreak_id)
 
 }
