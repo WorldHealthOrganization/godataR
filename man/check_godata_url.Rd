@@ -4,7 +4,7 @@
 \alias{check_godata_url}
 \title{Check if the provided Go.Data URL is valid}
 \usage{
-check_godata_url(url = url)
+check_godata_url(url)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't

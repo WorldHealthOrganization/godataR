@@ -14,19 +14,16 @@
 #' url <- "https://MyGoDataServer.com/"
 #' check_godata_url(url=url)
 #' }
-#' @importFrom magrittr %>%
-#' @import httr
-#' @importFrom purrr pluck
 #' @export
 check_godata_url <- function(url) {
 
   # Get status code for version check
-  status_code <- GET(paste0(url, "api/system-settings/version"))
+  status_code <- httr::GET(paste0(url, "api/system-settings/version"))
 
-  status_code <- pluck(status_code, "status_code")
+  status_code <- purrr::pluck(status_code, "status_code")
 
   # create boolean based on status code being 200 (success)
-  check <- (status_code == 200)
+  check <- status_code == 200
 
   return(check)
 
