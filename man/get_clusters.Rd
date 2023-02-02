@@ -4,13 +4,7 @@
 \alias{get_clusters}
 \title{Download clusters from Go.Data (version agnostic)}
 \usage{
-get_clusters(
-  url = url,
-  username = username,
-  password = password,
-  outbreak_id = outbreak_id,
-  batch_size = 50000
-)
+get_clusters(url, username, password, outbreak_id, batch_size = 50000)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't

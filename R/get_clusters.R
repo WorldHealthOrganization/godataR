@@ -36,14 +36,6 @@
 #'   outbreak_id = outbreak_id
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @import tibble
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
-
 get_clusters <- function(url,
                          username,
                          password,
@@ -68,21 +60,21 @@ get_clusters <- function(url,
   }
 
   #get total number of records
-  df_n_request <- GET(
+  df_n_request <- httr::GET(
     paste0(url, "api/outbreaks/", outbreak_id, "/clusters/count"),
-    add_headers(Authorization = paste("Bearer", get_access_token(
+    httr::add_headers(Authorization = paste("Bearer", get_access_token(
       url = url,
       username = username,
       password = password
     ), sep = " ")))
 
-  df_n_content <- content(df_n_request, as = "text")
+  df_n_content <- httr::content(df_n_request, as = "text")
 
-  df_n <- fromJSON(df_n_content, flatten = TRUE)
+  df_n <- jsonlite::fromJSON(df_n_content, flatten = TRUE)
   df_n <- unname(unlist(df_n))
 
   #Import records in batches
-  df <- tibble()
+  df <- tibble::tibble()
   batch_size <- batch_size # number of records to import per iteration
   skip <- 0
   message("****************************")
@@ -104,7 +96,7 @@ get_clusters <- function(url,
     }
 
     #fetch the batch of records
-    df_i_request <- GET(
+    df_i_request <- httr::GET(
       paste0(
         url,
         "api/outbreaks/",
@@ -116,21 +108,21 @@ get_clusters <- function(url,
         format(skip, scientific = FALSE),
         "}"
       ),
-      add_headers(Authorization = paste("Bearer", get_access_token(
+      httr::add_headers(Authorization = paste("Bearer", get_access_token(
         url = url,
         username = username,
         password = password
       ), sep = " "))
     )
 
-    df_i_content <- content(df_i_request, as = "text")
+    df_i_content <- httr::content(df_i_request, as = "text")
 
-    df_i <- fromJSON(df_i_content, flatten = TRUE)
+    df_i <- jsonlite::fromJSON(df_i_content, flatten = TRUE)
 
-    df_i <- as_tibble(df_i)
+    df_i <- tibble::as_tibble(df_i)
 
     #append the new batch of records to the existing data frame
-    df <- bind_rows(df, df_i)
+    df <- dplyr::bind_rows(df, df_i)
 
     #update numbers for the next iteration
     skip <- skip + batch_size
