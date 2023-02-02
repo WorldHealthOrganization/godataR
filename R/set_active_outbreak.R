@@ -24,17 +24,13 @@
 #' password <- "mypassword"
 #' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
-#' set_active_outbreak(url=url,
-#'                     username=username,
-#'                     password=password,
-#'                     outbreak_id=outbreak_id)
+#' set_active_outbreak(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   outbreak_id = outbreak_id
+#' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-
 set_active_outbreak <- function(url,
                                 username,
                                 password,
@@ -42,7 +38,7 @@ set_active_outbreak <- function(url,
 
 
   #Get User ID & Active Outbreak ID
-  user_details_request <- GET(
+  user_details_request <- httr::GET(
     paste0(
       url,
       "api/users",
@@ -55,11 +51,11 @@ set_active_outbreak <- function(url,
     )
   )
 
-  user_details_content <-  content(user_details_request, as = "text")
+  user_details_content <- httr::content(user_details_request, as = "text")
 
-  user_details <- fromJSON(user_details_content, flatten = TRUE)
+  user_details <- jsonlite::fromJSON(user_details_content, flatten = TRUE)
 
-  user_details <- filter(user_details, .data$email == username)
+  user_details <- dplyr::filter(user_details, .data$email == username)
 
   current_active_outbreak <- user_details$activeOutbreakId
   user_id <- user_details$id
@@ -71,7 +67,7 @@ set_active_outbreak <- function(url,
     password = password
   )
 
-  available_outbreaks <- unlist(select(available_outbreaks, id))
+  available_outbreaks <- unlist(dplyr::select(available_outbreaks, id))
 
 
   if (current_active_outbreak == outbreak_id) { # Is outbreak_id already active?
@@ -90,13 +86,13 @@ set_active_outbreak <- function(url,
   } else {
 
     new_data <- list("activeOutbreakId" = outbreak_id)
-    patch_active_outbreak <- PATCH(
+    patch_active_outbreak <- httr::PATCH(
       paste0(
         url,
         "api/users/",
         user_id
       ),
-      add_headers(
+      httr::add_headers(
         Authorization = paste(
           "Bearer",
           get_access_token(

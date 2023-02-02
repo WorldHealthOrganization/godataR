@@ -4,12 +4,7 @@
 \alias{set_active_outbreak}
 \title{Change the currently active outbreak}
 \usage{
-set_active_outbreak(
-  url = url,
-  username = username,
-  password = password,
-  outbreak_id = outbreak_id
-)
+set_active_outbreak(url, username, password, outbreak_id)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't
@@ -41,9 +36,11 @@ username <- "myemail@email.com"
 password <- "mypassword"
 outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-set_active_outbreak(url=url,
-                    username=username,
-                    password=password,
-                    outbreak_id=outbreak_id)
+set_active_outbreak(
+  url = url,
+  username = username,
+  password = password,
+  outbreak_id = outbreak_id
+)
 }
 }
