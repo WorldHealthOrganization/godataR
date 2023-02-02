@@ -35,10 +35,10 @@
 #' @import httr
 #' @importFrom jsonlite fromJSON
 
-set_active_outbreak <- function(url = url,
-                                username = username,
-                                password = password,
-                                outbreak_id = outbreak_id) {
+set_active_outbreak <- function(url,
+                                username,
+                                password,
+                                outbreak_id) {
 
 
   #Get User ID & Active Outbreak ID
