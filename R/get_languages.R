@@ -30,9 +30,9 @@
 #' @importFrom purrr pluck
 
 
-get_languages <- function(url = url,
-                          username = username,
-                          password = password) {
+get_languages <- function(url,
+                          username,
+                          password) {
 
   df_request <- GET(
     paste0(
