@@ -4,7 +4,7 @@
 \alias{get_languages}
 \title{Get lanuages in Go.Data}
 \usage{
-get_languages(url = url, username = username, password = password)
+get_languages(url, username, password)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't

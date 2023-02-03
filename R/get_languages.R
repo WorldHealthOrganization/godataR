@@ -22,19 +22,11 @@
 #'   password = password
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
-
-
 get_languages <- function(url,
                           username,
                           password) {
 
-  df_request <- GET(
+  df_request <- httr::GET(
     paste0(
       url,
       "api/languages/",
@@ -47,11 +39,11 @@ get_languages <- function(url,
     )
   )
 
-  df_content <- content(df_request, as = "text")
+  df_content <- httr::content(df_request, as = "text")
 
-  df <- fromJSON(df_content, flatten = TRUE)
+  df <- jsonlite::fromJSON(df_content, flatten = TRUE)
 
-  df <- as_tibble(df)
+  df <- tibble::as_tibble(df)
 
   return(df)
 }
