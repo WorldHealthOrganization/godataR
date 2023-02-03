@@ -35,10 +35,10 @@
 #' @importFrom purrr pluck
 
 
-get_language_tokens <- function(url = url,
-                                username = username,
-                                password = password,
-                                language = language) {
+get_language_tokens <- function(url,
+                                username,
+                                password,
+                                language) {
 
   df <- GET(
     paste0(

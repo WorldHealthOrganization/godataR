@@ -5,12 +5,7 @@
 \title{Get a list of variable tokens and their labels for the language you specify,
 in order to re-code variables in R.}
 \usage{
-get_language_tokens(
-  url = url,
-  username = username,
-  password = password,
-  language = language
-)
+get_language_tokens(url, username, password, language)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't
