@@ -40,7 +40,7 @@ get_language_tokens <- function(url,
                                 password,
                                 language) {
 
-  df <- GET(
+  df_request <- GET(
     paste0(
       url,
       "api/languages/",
@@ -53,10 +53,13 @@ get_language_tokens <- function(url,
         password = password
       )
     )
-  ) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    as_tibble()
+  )
+
+  df_content <-  content(df_request, as = "text")
+
+  df <- fromJSON(df_content, flatten = TRUE)
+
+  df <- as_tibble(df)
 
   return(df)
 
