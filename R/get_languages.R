@@ -1,7 +1,8 @@
 #' Get lanuages in Go.Data
 #'
 #'
-#' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
+#' @param url Insert the base URL for your instance of Go.Data here. Don't
+#' forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
 #'
@@ -15,9 +16,11 @@
 #' password <- "mypassword"
 #' language <- "english_us"
 #'
-#' languages <- get_languages(url=url,
-#'                            username=username,
-#'                            password=password)
+#' languages <- get_languages(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -27,16 +30,25 @@
 #' @importFrom purrr pluck
 
 
-get_languages <- function(url=url,
-                          username=username,
-                          password=password) {
+get_languages <- function(url = url,
+                          username = username,
+                          password = password) {
 
-  df <- GET(paste0(url,"api/languages/",
-                   "?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-    content(as="text") %>%
-    fromJSON(flatten=TRUE) %>%
+  df <- GET(
+    paste0(
+      url,
+      "api/languages/",
+      "?access_token=",
+      get_access_token(
+        url = url,
+        username = username,
+        password = password
+      )
+    )
+  ) %>%
+    content(as = "text") %>%
+    fromJSON(flatten = TRUE) %>%
     as_tibble()
 
   return(df)
-
 }

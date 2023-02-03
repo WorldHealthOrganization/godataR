@@ -7,7 +7,8 @@
 get_languages(url = url, username = username, password = password)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
@@ -26,8 +27,10 @@ username <- "myemail@email.com"
 password <- "mypassword"
 language <- "english_us"
 
-languages <- get_languages(url=url,
-                           username=username,
-                           password=password)
+languages <- get_languages(
+  url = url,
+  username = username,
+  password = password
+)
 }
 }
