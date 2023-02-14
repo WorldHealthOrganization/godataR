@@ -31,9 +31,9 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 #' @export
-get_teams <- function(url = url,
-                      username = username,
-                      password = password) {
+get_teams <- function(url,
+                      username,
+                      password) {
 
   teams <- GET(
     paste0(

@@ -4,7 +4,7 @@
 \alias{get_teams}
 \title{#' Get teams data from Go.Data}
 \usage{
-get_teams(url = url, username = username, password = password)
+get_teams(url, username, password)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't
