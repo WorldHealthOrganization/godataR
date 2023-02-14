@@ -26,18 +26,12 @@
 #'   password = password
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
 #' @export
 get_reference_data <- function(url,
                                username,
                                password) {
 
-  reference_data_request <- GET(
+  reference_data_request <- httr::GET(
     paste0(
       url,
       "api/reference-data",
@@ -49,9 +43,9 @@ get_reference_data <- function(url,
       )
     )
   )
-  reference_data_content <- content(reference_data_request, as = "text")
-  reference_data <- fromJSON(reference_data_content, flatten = TRUE)
-  reference_data <- filter(reference_data, .data$deleted != TRUE)
+  reference_data_content <- httr::content(reference_data_request, as = "text")
+  reference_data <- jsonlite::fromJSON(reference_data_content, flatten = TRUE)
+  reference_data <- dplyr::filter(reference_data, .data$deleted != TRUE)
 
     return(reference_data)
 }
