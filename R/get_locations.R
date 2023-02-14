@@ -6,7 +6,8 @@
 #' endpoint). This function relies on the `\locations`
 #' API endpoint.
 #'
-#' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
+#' @param url Insert the base URL for your instance of Go.Data here. Don't
+#' forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
 #'
@@ -19,9 +20,11 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
-#' locations <- get_locations(url=url,
-#'                            username=username,
-#'                            password=password)
+#' locations <- get_locations(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
 #' }
 #' @importFrom magrittr %>%
 #' @import dplyr
@@ -32,15 +35,25 @@
 #' @export
 
 
-get_locations <- function(url=url,
-                          username=username,
-                          password=password) {
+get_locations <- function(url = url,
+                          username = username,
+                          password = password) {
 
-  locations <- GET(paste0(url,"api/locations",
-                      "?access_token=",godataR::get_access_token(url=url, username=username, password=password))) %>%
-    content(as="text") %>%
-    fromJSON(flatten=TRUE) %>%
-    filter(deleted!=TRUE)
+  locations <- GET(
+    paste0(
+      url,
+      "api/locations",
+      "?access_token=",
+      godataR::get_access_token(
+        url = url,
+        username = username,
+        password = password
+      )
+    )
+  ) %>%
+    content(as = "text") %>%
+    fromJSON(flatten = TRUE) %>%
+    filter(.data$deleted != TRUE)
 
   return(locations)
 
