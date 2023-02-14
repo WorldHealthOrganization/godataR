@@ -59,13 +59,6 @@
 #'   outbreak_id = outbreak_id
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @import tibble
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
 get_relationships <- function(url,
                               username,
                               password,
@@ -142,9 +135,6 @@ get_relationships <- function(url,
       file_type = file_type,
       wait = wait
     )
-
-
   }
-
-  return(df)
+  return(tibble::as_tibble(df))
 }
