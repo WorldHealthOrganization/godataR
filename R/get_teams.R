@@ -35,7 +35,7 @@ get_teams <- function(url,
                       username,
                       password) {
 
-  teams <- GET(
+  teams_request <- GET(
     paste0(
       url,
       "api/teams",
@@ -46,11 +46,10 @@ get_teams <- function(url,
         password = password
       )
     )
-  ) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    filter(.data$deleted != TRUE)
+  )
+  teams_content <- content(teams_request, as = "text")
+  teams <- fromJSON(teams_content, flatten = TRUE)
+  teams <- filter(teams, .data$deleted != TRUE)
 
   return(teams)
-
 }
