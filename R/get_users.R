@@ -48,6 +48,7 @@ get_users <- function(url,
   users_content <- httr::content(users_request, as = "text")
   users <- jsonlite::fromJSON(users_content, flatten = TRUE)
   users <- dplyr::filter(users, .data$deleted != TRUE)
+  users <- tibble::as_tibble(users)
 
   return(users)
 }
