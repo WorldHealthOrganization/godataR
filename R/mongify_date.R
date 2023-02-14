@@ -72,14 +72,18 @@ mongify_date <- function(dates,
   dates <- as.character(dates)
 
   # Check if dates already have a time-stamp, if not add time:
-  dflong <- ifelse(nchar(dates) %in% c(8, 10),
-                  paste0(dates, " 00:00:00"),
-                  dates)
+  dflong <- ifelse(
+    nchar(dates) %in% c(8, 10),
+    paste0(dates, " 00:00:00"),
+    dates
+  )
 
   # Convert date-times to posixct format:
-  dfpct <- lubridate::parse_date_time(x = dflong,
-                                     orders = format2search,
-                                     tz = "UTC")
+  dfpct <- lubridate::parse_date_time(
+    x = dflong,
+    orders = format2search,
+    tz = "UTC"
+  )
 
   # Add the Godata / Mongodb specific format ending for date-time:
   dfmongo <- format(x = dfpct, format = "%Y-%m-%dT%H:%M:%S.000Z")
