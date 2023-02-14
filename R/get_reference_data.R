@@ -46,6 +46,7 @@ get_reference_data <- function(url,
   reference_data_content <- httr::content(reference_data_request, as = "text")
   reference_data <- jsonlite::fromJSON(reference_data_content, flatten = TRUE)
   reference_data <- dplyr::filter(reference_data, .data$deleted != TRUE)
+  reference_data <- tibble::as_tibble(reference_data)
 
     return(reference_data)
 }
