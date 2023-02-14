@@ -4,7 +4,7 @@
 \alias{get_locations}
 \title{Get location data from Go.Data}
 \usage{
-get_locations(url = url, username = username, password = password)
+get_locations(url, username, password)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't

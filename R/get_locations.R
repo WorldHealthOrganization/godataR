@@ -35,9 +35,9 @@
 #' @export
 
 
-get_locations <- function(url = url,
-                          username = username,
-                          password = password) {
+get_locations <- function(url,
+                          username,
+                          password) {
 
   locations <- GET(
     paste0(
