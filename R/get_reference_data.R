@@ -37,7 +37,7 @@ get_reference_data <- function(url,
                                username,
                                password) {
 
-  reference_data <- GET(
+  reference_data_request <- GET(
     paste0(
       url,
       "api/reference-data",
@@ -48,10 +48,10 @@ get_reference_data <- function(url,
         password = password
       )
     )
-  ) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    filter(.data$deleted != TRUE)
+  )
+  reference_data_content <- content(reference_data_request, as = "text")
+  reference_data <- fromJSON(reference_data_content, flatten = TRUE)
+  reference_data <- filter(reference_data, .data$deleted != TRUE)
 
     return(reference_data)
 }
