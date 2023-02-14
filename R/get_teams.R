@@ -24,18 +24,12 @@
 #'                    username=username,
 #'                    password=password)
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
 #' @export
 get_teams <- function(url,
                       username,
                       password) {
 
-  teams_request <- GET(
+  teams_request <- httr::GET(
     paste0(
       url,
       "api/teams",
@@ -47,9 +41,9 @@ get_teams <- function(url,
       )
     )
   )
-  teams_content <- content(teams_request, as = "text")
-  teams <- fromJSON(teams_content, flatten = TRUE)
-  teams <- filter(teams, .data$deleted != TRUE)
+  teams_content <- httr::content(teams_request, as = "text")
+  teams <- jsonlite::fromJSON(teams_content, flatten = TRUE)
+  teams <- dplyr::filter(teams, .data$deleted != TRUE)
 
   return(teams)
 }
