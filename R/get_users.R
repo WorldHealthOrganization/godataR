@@ -39,7 +39,7 @@ get_users <- function(url,
                       username,
                       password) {
 
-  users <- GET(
+  users_request <- GET(
     paste0(
       url,
       "api/users",
@@ -50,10 +50,10 @@ get_users <- function(url,
         password = password
       )
     )
-  ) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    filter(.data$deleted != TRUE)
+  )
+  users_content <- content(users_request, as = "text")
+  users <- fromJSON(users_content, flatten = TRUE)
+  users <- filter(users, .data$deleted != TRUE)
 
   return(users)
 }
