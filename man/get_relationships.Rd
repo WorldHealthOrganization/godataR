@@ -5,14 +5,14 @@
 \title{Download relationships from Go.Data}
 \usage{
 get_relationships(
-  url = url,
-  username = username,
-  password = password,
-  outbreak_id = outbreak_id,
+  url,
+  username,
+  password,
+  outbreak_id,
   method = c("export", "batch"),
   batch_size = 50000,
   wait = 2,
-  file.type = c("json", "csv")
+  file_type = c("json", "csv")
 )
 }
 \arguments{
@@ -36,9 +36,9 @@ number of records to retrieve in each iteration.}
 \item{wait}{If \code{method = "export"}, then \code{wait} is the number of seconds to
 wait in between iterations of checking the status of the export.}
 
-\item{file.type}{If \code{method = "export"}, then \code{file.type} determines Whether
-the resulting data frame should contain nested fields (\code{file.type = "json"},
-the default) or an entirely flat data structure (\code{file.type = "csv"})}
+\item{file_type}{If \code{method = "export"}, then \code{file_type} determines Whether
+the resulting data frame should contain nested fields (\code{file_type = "json"},
+the default) or an entirely flat data structure (\code{file_type = "csv"})}
 }
 \value{
 Returns a data frame. Some fields, such as addresses, hospitalization
