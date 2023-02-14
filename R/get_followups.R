@@ -66,10 +66,10 @@
 #' @import tibble
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
-get_followups <- function(url = url,
-                          username = username,
-                          password = password,
-                          outbreak_id = outbreak_id,
+get_followups <- function(url,
+                          username,
+                          password,
+                          outbreak_id,
                           method = c("export", "batch"),
                           batch_size = 50000,
                           wait = 2,

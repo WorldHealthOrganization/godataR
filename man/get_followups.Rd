@@ -5,10 +5,10 @@
 \title{Download contact follow-ups from Go.Data}
 \usage{
 get_followups(
-  url = url,
-  username = username,
-  password = password,
-  outbreak_id = outbreak_id,
+  url,
+  username,
+  password,
+  outbreak_id,
   method = c("export", "batch"),
   batch_size = 50000,
   wait = 2,
