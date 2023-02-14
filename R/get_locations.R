@@ -46,6 +46,7 @@ get_locations <- function(url,
   locations_content <- httr::content(locations_request, as = "text")
   locations <- jsonlite::fromJSON(locations_content, flatten = TRUE)
   locations <- dplyr::filter(locations, .data$deleted != TRUE)
+  locations <- tibble::as_tibble(locations)
 
   return(locations)
 }
