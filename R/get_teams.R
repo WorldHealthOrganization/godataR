@@ -20,9 +20,11 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
-#' teams <- get_teams(url=url,
-#'                    username=username,
-#'                    password=password)
+#' teams <- get_teams(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
 #' }
 #' @export
 get_teams <- function(url,
@@ -44,6 +46,7 @@ get_teams <- function(url,
   teams_content <- httr::content(teams_request, as = "text")
   teams <- jsonlite::fromJSON(teams_content, flatten = TRUE)
   teams <- dplyr::filter(teams, .data$deleted != TRUE)
+  teams <- tibble::as_tibble(teams)
 
   return(teams)
 }

@@ -30,8 +30,10 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
-teams <- get_teams(url=url,
-                   username=username,
-                   password=password)
+teams <- get_teams(
+  url = url,
+  username = username,
+  password = password
+)
 }
 }
