@@ -33,7 +33,8 @@
 #' must be in the same format).
 #'
 #' Dates with and without a time-stamp are both accepted. Dates which do include
-#' a time stamp must include hours, minutes and seconds in the format **HH:mm:ss**
+#' a time stamp must include hours, minutes and seconds in the format
+#' **HH:mm:ss**
 #'
 #' @md
 #'
@@ -57,32 +58,32 @@
 #'
 #' @export
 mongify_date <- function(dates,
-                        dateformat = "undefined"){
+                         dateformat = "undefined") {
 
   # Define format of input dates:
-  if(dateformat == "undefined"){
-    format2search = c("ymd_HMS", "dmy_HMS", "mdy_HMS")}
-  if(dateformat == "ymd"){format2search = "ymd_HMS"}
-  if(dateformat == "dmy"){format2search = "dmy_HMS"}
-  if(dateformat == "mdy"){format2search = "mdy_HMS"}
+  if (dateformat == "undefined") {
+    format2search <- c("ymd_HMS", "dmy_HMS", "mdy_HMS")
+  }
+  if (dateformat == "ymd") format2search <- "ymd_HMS"
+  if (dateformat == "dmy") format2search <- "dmy_HMS"
+  if (dateformat == "mdy") format2search <- "mdy_HMS"
 
   # Make sure dates are strings:
-  dates = as.character(dates)
+  dates <- as.character(dates)
 
   # Check if dates already have a time-stamp, if not add time:
-  dflong = ifelse(nchar(dates) %in% c(8, 10),
+  dflong <- ifelse(nchar(dates) %in% c(8, 10),
                   paste0(dates, " 00:00:00"),
                   dates)
 
   # Convert date-times to posixct format:
-  dfpct = lubridate::parse_date_time(x = dflong,
+  dfpct <- lubridate::parse_date_time(x = dflong,
                                      orders = format2search,
                                      tz = "UTC")
 
   # Add the Godata / Mongodb specific format ending for date-time:
-  dfmongo = format(x = dfpct, format = "%Y-%m-%dT%H:%M:%S.000Z")
+  dfmongo <- format(x = dfpct, format = "%Y-%m-%dT%H:%M:%S.000Z")
 
   # Return the formatted dates:
   return(dfmongo)
-
 }
