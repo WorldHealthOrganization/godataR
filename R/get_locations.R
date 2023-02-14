@@ -26,18 +26,12 @@
 #'   password = password
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
 #' @export
 get_locations <- function(url,
                           username,
                           password) {
 
-  locations_request <- GET(
+  locations_request <- httr::GET(
     paste0(
       url,
       "api/locations",
@@ -49,9 +43,9 @@ get_locations <- function(url,
       )
     )
   )
-  locations_content <- content(locations_request, as = "text")
-  locations <- fromJSON(locations_content, flatten = TRUE)
-  locations <- filter(locations, .data$deleted != TRUE)
+  locations_content <- httr::content(locations_request, as = "text")
+  locations <- jsonlite::fromJSON(locations_content, flatten = TRUE)
+  locations <- dplyr::filter(locations, .data$deleted != TRUE)
 
   return(locations)
 }
