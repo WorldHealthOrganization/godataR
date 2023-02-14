@@ -59,13 +59,6 @@
 #'   outbreak_id = outbreak_id
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @import tibble
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
 get_followups <- function(url,
                           username,
                           password,
@@ -143,5 +136,5 @@ get_followups <- function(url,
       wait = wait
     )
   }
-  return(df)
+  return(tibble::as_tibble(df))
 }
