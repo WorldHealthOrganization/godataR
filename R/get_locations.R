@@ -33,13 +33,11 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 #' @export
-
-
 get_locations <- function(url,
                           username,
                           password) {
 
-  locations <- GET(
+  locations_request <- GET(
     paste0(
       url,
       "api/locations",
@@ -50,11 +48,10 @@ get_locations <- function(url,
         password = password
       )
     )
-  ) %>%
-    content(as = "text") %>%
-    fromJSON(flatten = TRUE) %>%
-    filter(.data$deleted != TRUE)
+  )
+  locations_content <- content(locations_request, as = "text")
+  locations <- fromJSON(locations_content, flatten = TRUE)
+  locations <- filter(locations, .data$deleted != TRUE)
 
   return(locations)
-
 }
