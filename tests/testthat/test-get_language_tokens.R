@@ -19,6 +19,6 @@ test_that("get_language_tokens works as expected", {
     unname(sapply(res[1, ], class)),
     c("character", "character", "data.frame")
   )
-  expect_identical(colnames(res$tokens),c("token", "translation"))
+  expect_identical(colnames(res$tokens), c("token", "translation"))
   expect_identical(dim(res$tokens), c(13641L, 2L))
 })

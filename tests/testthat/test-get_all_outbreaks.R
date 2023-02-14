@@ -12,7 +12,7 @@ test_that("get_all_outbreaks works as expected", {
   expect_identical(dim(res), c(10L, 5L))
   expect_identical(
     colnames(res),
-    c("id", "name", "description", "createdBy", "createdAt" )
+    c("id", "name", "description", "createdBy", "createdAt")
   )
   expect_identical(
     unname(sapply(res[1, ], class)),

@@ -30,7 +30,7 @@ test_that("batch_downloader works as expected", {
       "dateBecomeCase", "wasCase", "active", "followUpHistory",
       "isDateOfOnsetApproximate", "outcomeId", "riskReason", "pregnancyStatus",
       "dateOfOutcome", "dateOfInfection", "middleName",
-      "questionnaireAnswers.would_you_like_to_complete_who_basic_case_questionnaire",
+      "questionnaireAnswers.would_you_like_to_complete_who_basic_case_questionnaire", # nolint
       "questionnaireAnswers.Case_WhichForm",
       "questionnaireAnswers.report_test_reason",
       "questionnaireAnswers.Comcond_present",
@@ -38,7 +38,7 @@ test_that("batch_downloader works as expected", {
       "questionnaireAnswers.expo_travel",
       "questionnaireAnswers.expo_visit_healthcare",
       "questionnaireAnswers.patcourse", "questionnaireAnswers.Comcond_select",
-      "questionnaireAnswers.specify_places_and_dates_for_up_to_3_locations_below",
+      "questionnaireAnswers.specify_places_and_dates_for_up_to_3_locations_below", # nolint
       "questionnaireAnswers.expo_travel_country1",
       "questionnaireAnswers.expo_travel_city1",
       "questionnaireAnswers.expo_travel_date1",
@@ -107,14 +107,14 @@ test_that("batch_downloader works as expected", {
       "questionnaireAnswers.FA1_preexistingconditions_diabetes",
       "questionnaireAnswers.FA1_preexistingconditions_HIVotherimmunedeficiency",
       "questionnaireAnswers.FA1_preexistingconditions_heartdisease",
-      "questionnaireAnswers.FA1_preexistingconditions_asthmarequiringmedication",
-      "questionnaireAnswers.FA1_preexistingconditions_chroniclungdiseasenonasthma",
+      "questionnaireAnswers.FA1_preexistingconditions_asthmarequiringmedication", # nolint
+      "questionnaireAnswers.FA1_preexistingconditions_chroniclungdiseasenonasthma", # nolint
       "questionnaireAnswers.FA1_preexistingconditions_chronicliverdisease",
-      "questionnaireAnswers.FA1_preexistingconditions_chronichaematologicaldisorder",
+      "questionnaireAnswers.FA1_preexistingconditions_chronichaematologicaldisorder", # nolint
       "questionnaireAnswers.FA1_preexistingconditions_chronickidneydisease",
       "questionnaireAnswers.FA1_preexistingconditions_chronicneurological",
-      "questionnaireAnswers.FA1_preexistingconditions_organorbonemarrowrecipient",
-      "questionnaireAnswers.FA1_preexistingconditions_otherpreexistingcondition",
+      "questionnaireAnswers.FA1_preexistingconditions_organorbonemarrowrecipient", # nolint
+      "questionnaireAnswers.FA1_preexistingconditions_otherpreexistingcondition", # nolint
       "questionnaireAnswers.FA1_healthcareinteractions_contactemergencynumber",
       "questionnaireAnswers.FA1_priorXdayexposure_travelleddomestically",
       "questionnaireAnswers.FA1_priorXdayexposure_travelledinternationally",

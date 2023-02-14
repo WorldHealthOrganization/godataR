@@ -48,5 +48,5 @@ get_reference_data <- function(url,
   reference_data <- dplyr::filter(reference_data, .data$deleted != TRUE)
   reference_data <- tibble::as_tibble(reference_data)
 
-    return(reference_data)
+  return(reference_data)
 }

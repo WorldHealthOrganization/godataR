@@ -15,4 +15,3 @@ test_that("get_access_token works as expected", {
   # character string cannot contain spaces
   expect_false(grepl(pattern = "\\s", x = res))
 })
-
