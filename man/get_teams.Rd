@@ -7,7 +7,8 @@
 get_teams(url = url, username = username, password = password)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
