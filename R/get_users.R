@@ -28,18 +28,12 @@
 #'   password = password
 #' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
 #' @export
 get_users <- function(url,
                       username,
                       password) {
 
-  users_request <- GET(
+  users_request <- httr::GET(
     paste0(
       url,
       "api/users",
@@ -51,9 +45,9 @@ get_users <- function(url,
       )
     )
   )
-  users_content <- content(users_request, as = "text")
-  users <- fromJSON(users_content, flatten = TRUE)
-  users <- filter(users, .data$deleted != TRUE)
+  users_content <- httr::content(users_request, as = "text")
+  users <- jsonlite::fromJSON(users_content, flatten = TRUE)
+  users <- dplyr::filter(users, .data$deleted != TRUE)
 
   return(users)
 }
