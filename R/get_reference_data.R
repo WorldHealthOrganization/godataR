@@ -33,9 +33,9 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom purrr pluck
 #' @export
-get_reference_data <- function(url = url,
-                               username = username,
-                               password = password) {
+get_reference_data <- function(url,
+                               username,
+                               password) {
 
   reference_data <- GET(
     paste0(

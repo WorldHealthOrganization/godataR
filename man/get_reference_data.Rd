@@ -4,7 +4,7 @@
 \alias{get_reference_data}
 \title{Get reference data from Go.Data}
 \usage{
-get_reference_data(url = url, username = username, password = password)
+get_reference_data(url, username, password)
 }
 \arguments{
 \item{url}{Insert the base URL for your instance of Go.Data here. Don't
