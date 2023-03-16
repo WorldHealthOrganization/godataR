@@ -26,7 +26,7 @@
 clean_users <- function(users) {
 
   # standardize column name syntax
-  clean_users <- janitor::clean_names(clean_users)
+  clean_users <- janitor::clean_names(users)
 
   # label timestamps as datetime
   clean_users <- dplyr::rename(
