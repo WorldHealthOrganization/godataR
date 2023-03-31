@@ -6,6 +6,8 @@
 #'
 #' @param cases A tibble with case data. Case data is returned by
 #' [`get_cases()`].
+#' @param locations_clean A tibble with cleaned locations data. Locations data
+#' is returned by [`get_locations()`] and cleaned by [`clean_locations()`].
 #'
 #' @return A tibble with address information from cases data.
 #' @export
@@ -24,9 +26,21 @@
 #'   outbreak_id = outbreak_id
 #' )
 #'
-#' case_address_history <- clean_case_address_history(cases = cases)
+#' locations <- get_locations(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
+#'
+#' locations_clean <- clean_locations(locations = locations)
+#'
+#' case_address_history <- clean_case_address_history(
+#'   cases = cases,
+#'   locations_clean = locations_clean
+#' )
 #' }
-clean_case_address_history <- function(cases) {
+clean_case_address_history <- function(cases,
+                                       locations_clean) {
 
   cases_address_history_clean <- dplyr::filter(
     .data = cases,

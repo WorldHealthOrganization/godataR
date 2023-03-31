@@ -7,11 +7,22 @@ test_that("clean_case_address_history works as expected", {
     password = password,
     outbreak_id = outbreak_id
   )
-  res <- clean_case_address_history(cases = res)
+
+  locations <- get_locations(
+    url = url,
+    username = username,
+    password = password
+  )
+  locations_clean <- clean_locations(locations = locations)
+
+  res <- clean_case_address_history(
+    cases = res,
+    locations_clean = locations_clean
+  )
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
-  expect_identical(dim(res), c(15L, 14L))
+  expect_identical(dim(res), c(16L, 14L))
   expect_true(
     all(c(
       "id", "visualid", "addresses_locationid", "addresses_typeid", "lat",
