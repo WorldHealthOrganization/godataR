@@ -121,5 +121,5 @@ clean_locations <- function(locations) {
     by = "location_id"
   )
 
-  return(locations_clean)
+  return(clean_locations)
 }
