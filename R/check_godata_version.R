@@ -20,18 +20,25 @@ check_godata_version <- function(url = url) {
   gd_version <- get_godata_version(url = url)
 
   # Convert string to vector of 3 numbers
-  gd_version <- stringr::str_split(gd_version, "[.]")
+  gd_version <- strsplit(x = gd_version, split = "[.]")
 
   gd_version <- as.numeric(unlist(gd_version))
+
+  stopifnot(
+    "godata version from API does not have major, minor and patch versioning" =
+      length(gd_version) == 3
+  )
+
+  names(gd_version) <- c("major", "minor", "patch")
 
   # Check if 2.38.1 or later
   # Should be TRUE if it is version 2.38.1 or later &
   # FALSE if version 2.38.0 or earlier
-  if (gd_version[1] < 2) {
+  if (gd_version["major"] < 2) {
     return(FALSE)
-  } else if (gd_version[1] == 2 && gd_version[2] < 38) {
+  } else if (gd_version["major"] == 2 && gd_version["minor"] < 38) {
     return(FALSE)
-  } else if (gd_version[1] == 2 && gd_version[2] == 38 && gd_version[3] == 0) {
+  } else if (gd_version["major"] == 2 && gd_version["minor"] == 38 && gd_version["patch"] == 0) {
     return(FALSE)
   } else {
     return(TRUE)
