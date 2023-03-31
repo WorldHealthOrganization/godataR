@@ -8,8 +8,19 @@ test_that("cases_from_contacts works as expected", {
     outbreak_id = outbreak_id
   )
 
+  locations <- get_locations(
+    url = url,
+    username = username,
+    password = password
+  )
+
+  locations_clean <- clean_locations(locations = locations)
+
   cases_vacc_history_clean <- clean_case_vax_history(cases = cases)
-  cases_address_history_clean <- clean_case_address_history(cases = cases)
+  cases_address_history_clean <- clean_case_address_history(
+    cases = cases,
+    locations_clean = locations_clean
+  )
   cases_dateranges_history_clean <- clean_case_med_history(cases = cases)
 
   cases_clean <- clean_cases(
