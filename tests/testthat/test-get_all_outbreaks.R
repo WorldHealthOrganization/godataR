@@ -9,7 +9,7 @@ test_that("get_all_outbreaks works as expected", {
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
-  expect_identical(dim(res), c(10L, 5L))
+  expect_identical(dim(res), c(11L, 5L))
   expect_identical(
     colnames(res),
     c("id", "name", "description", "createdBy", "createdAt")
