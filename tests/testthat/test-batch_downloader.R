@@ -15,7 +15,7 @@ test_that("batch_downloader works as expected", {
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
-  expect_identical(dim(res), c(13L, 153L))
+  expect_identical(dim(res), c(14L, 153L))
   expect_identical(
     colnames(res),
     c("firstName", "gender", "wasContact", "safeBurial", "classification",
