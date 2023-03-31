@@ -1,7 +1,7 @@
 test_that("clean_case_address_history works as expected", {
   skip("get_cases requires API call")
 
-  res <- get_cases(
+  cases <- get_cases(
     url = url,
     username = username,
     password = password,
@@ -16,7 +16,7 @@ test_that("clean_case_address_history works as expected", {
   locations_clean <- clean_locations(locations = locations)
 
   res <- clean_case_address_history(
-    cases = res,
+    cases = cases,
     locations_clean = locations_clean
   )
 
