@@ -15,7 +15,7 @@ test_that("export_downloader works as expected", {
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
-  expect_identical(dim(res), c(13L, 357L))
+  expect_identical(dim(res), c(14L, 363L))
   expect_true(
     all(c(
       "id", "visualId", "dateOfReporting", "isDateOfReportingApproximate",
@@ -26,16 +26,20 @@ test_that("export_downloader works as expected", {
       "outcomeId", "dateOfOutcome", "documents", "type", "dateRanges",
       "transferRefused", "addresses", "safeBurial", "dateOfBurial",
       "isDateOfOnsetApproximate", "numberOfExposures", "numberOfContacts",
-      "burialLocationId", "burialLocationId Identifiers",
+      "deathLocationId", "deathLocationId Identifiers",
+      "deathLocationId Location geographical level",
+      "deathLocationId Parent location", "burialLocationId",
+      "burialLocationId Identifiers",
       "burialLocationId Location geographical level",
       "burialLocationId Parent location", "burialPlaceName",
       "investigationStatus", "dateInvestigationCompleted", "vaccinesReceived",
-      "pregnancyStatus", "responsibleUserId", "age.years", "age.months"
+      "pregnancyStatus", "age.years", "age.months", "responsibleUser.firstName",
+      "responsibleUser.lastName", "responsibleUser.id"
     ) %in% colnames(res))
   )
 
   expect_true(
-    all(grepl(pattern = "^questionnaireAnswers", x = colnames(res)[50:357]))
+    all(grepl(pattern = "^questionnaireAnswers", x = colnames(res)[56:363]))
   )
 
   expect_identical(
@@ -47,17 +51,15 @@ test_that("export_downloader works as expected", {
       "character", "character", "character", "character", "character", "list",
       "character", "list", "logical", "list", "logical", "logical", "logical",
       "integer", "integer", "logical", "list", "list", "list", "logical",
-      "character", "logical", "list", "character", "character", "integer",
-      "integer", "list", "list", "list", "list", "list", "list", "list", "list",
+      "list", "list", "list", "logical", "character", "logical", "list",
+      "character", "integer", "integer", "character", "character", "character",
       "list", "list", "list", "list", "list", "list", "list", "list", "list",
       "list", "list", "list", "list", "list", "list", "list", "list", "list",
       "list", "list", "list", "list", "list", "list", "list", "list", "list",
+      "list", "list", "list", "list", "list", "list", "list", "list", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
-      "logical", "logical", "logical", "logical", "list", "list", "list",
-      "list", "list", "list", "logical", "logical", "logical", "logical",
-      "logical", "logical", "logical", "logical", "logical", "logical",
-      "logical", "logical", "logical", "logical", "logical", "logical",
-      "logical", "logical", "logical", "logical", "logical", "logical",
+      "logical", "logical", "logical", "list", "list", "list", "list", "list",
+      "list", "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
@@ -65,24 +67,26 @@ test_that("export_downloader works as expected", {
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
-      "logical", "logical", "logical", "logical", "list", "list", "list",
-      "list", "list", "list", "list", "logical", "logical", "logical",
-      "logical", "logical", "logical", "logical", "list", "list", "list",
-      "list", "list", "list", "list", "list", "list", "list", "logical",
-      "list", "list", "list", "list", "logical", "logical", "logical",
+      "logical", "logical", "logical", "logical", "logical", "logical",
+      "logical", "logical", "logical", "logical", "logical", "logical",
+      "logical", "logical", "logical", "logical", "logical", "logical",
+      "logical", "logical", "list", "list", "list", "list", "list", "list",
+      "list", "logical", "logical", "logical", "logical", "logical", "logical",
+      "logical", "list", "list", "list", "list", "list", "list", "list", "list",
+      "list", "list", "logical", "list", "list", "list", "list", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
-      "logical", "list", "logical", "logical", "list", "logical", "logical",
-      "logical", "list", "logical", "list", "logical", "list", "logical",
-      "list", "logical", "list", "logical", "list", "logical", "list", "list",
-      "list", "list", "list", "list", "list", "list", "list", "list", "list",
-      "list", "list", "list", "list", "logical", "list", "logical", "list",
-      "logical", "logical", "logical", "logical", "list", "logical", "logical",
-      "logical", "logical", "list", "logical", "list", "logical", "list",
+      "logical", "logical", "logical", "list", "logical", "logical", "list",
+      "logical", "logical", "logical", "list", "logical", "list", "logical",
       "list", "logical", "list", "logical", "list", "logical", "list",
-      "logical", "list", "logical", "logical", "logical", "logical", "logical",
+      "logical", "list", "list", "list", "list", "list", "list", "list", "list",
+      "list", "list", "list", "list", "list", "list", "list", "logical", "list",
+      "logical", "list", "logical", "logical", "logical", "logical", "list",
+      "logical", "logical", "logical", "logical", "list", "logical", "list",
+      "logical", "list", "list", "logical", "list", "logical", "list",
+      "logical", "list", "logical", "list", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
@@ -93,5 +97,7 @@ test_that("export_downloader works as expected", {
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
       "logical", "logical", "logical", "logical", "logical", "logical",
-      "logical", "logical", "logical", "list", "list", "list"))
+      "logical", "logical", "logical", "logical", "logical", "list", "list",
+      "list")
+  )
 })
