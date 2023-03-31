@@ -6,6 +6,8 @@
 #'
 #' @param url Insert the base URL for your instance of Go.Data here. Don't
 #' forget the forward slash "/" at end!
+#' @param success_code A numeric specifying which code is returned by the API
+#' when successfully returning the status code. Default is 200.
 #'
 #' @return
 #' Boolean, where `TRUE` indicates a valid URL.
@@ -15,16 +17,15 @@
 #' check_godata_url(url = url)
 #' }
 #' @export
-check_godata_url <- function(url) {
+check_godata_url <- function(url,
+                             success_code = 200) {
 
   # Get status code for version check
   status_code <- httr::GET(paste0(url, "api/system-settings/version"))
 
   status_code <- purrr::pluck(status_code, "status_code")
 
-  # create boolean based on status code being 200 (success)
-  check <- status_code == 200
-
-  return(check)
+  # return boolean based on status code being a success
+  return(isTRUE(status_code == success_code))
 
 }
