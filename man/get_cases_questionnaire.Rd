@@ -19,17 +19,6 @@ download data.}
 
 \item{wait}{If \code{method = "export"}, then \code{wait} is the number of seconds to
 wait in between iterations of checking the status of the export.}
-
-\item{method}{The method to download data. \code{method = "export"} is the
-preferred and default method for Go.Data version 2.38.1 or later.
-See Details.}
-
-\item{batch_size}{If \code{method = "batches"}, then \code{batch_size} specifies the
-number of records to retrieve in each iteration.}
-
-\item{file_type}{If \code{method = "export"}, then \code{file_type} determines Whether
-the resulting data frame should contain nested fields (\code{file_type = "json"},
-the default) or an entirely flat data structure (\code{file_type = "csv"})}
 }
 \value{
 Returns a \code{tibble}.

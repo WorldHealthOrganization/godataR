@@ -17,16 +17,8 @@
 #' @param password The password for your Go.Data login
 #' @param outbreak_id The id number for the outbreak for which you want to
 #' download data.
-#' @param method The method to download data. `method = "export"` is the
-#' preferred and default method for Go.Data version 2.38.1 or later.
-#' See Details.
-#' @param batch_size If `method = "batches"`, then `batch_size` specifies the
-#' number of records to retrieve in each iteration.
 #' @param wait If `method = "export"`, then `wait` is the number of seconds to
 #' wait in between iterations of checking the status of the export.
-#' @param file_type If `method = "export"`, then `file_type` determines Whether
-#' the resulting data frame should contain nested fields (`file_type = "json"`,
-#' the default) or an entirely flat data structure (`file_type = "csv"`)
 #'
 #' @return Returns a `tibble`.
 #' @export
