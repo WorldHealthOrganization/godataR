@@ -113,17 +113,17 @@ clean_cases <- function(cases,
 
   cases_clean <- dplyr::mutate(
     .data = cases_clean,
-    isolated = case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "ISOLATION"] ~ TRUE, TRUE ~ FALSE)
+    isolated = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "ISOLATION"] ~ TRUE, TRUE ~ FALSE)
   )
 
   cases_clean <- dplyr::mutate(
     .data = cases_clean,
-    hospitalized = case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "HOSPITALIZATION"] ~ TRUE, TRUE ~ FALSE)
+    hospitalized = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "HOSPITALIZATION"] ~ TRUE, TRUE ~ FALSE)
   )
 
   cases_clean <- dplyr::mutate(
     .data = cases_clean,
-    icu = case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "ICU_ADMISSION"] ~ TRUE, TRUE ~ FALSE)
+    icu = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "ICU_ADMISSION"] ~ TRUE, TRUE ~ FALSE)
   )
 
   cases_address_history_clean <- dplyr::filter(
@@ -172,7 +172,7 @@ clean_cases <- function(cases,
   cases_clean <- dplyr::mutate(
     .data = cases_clean,
     age_class = factor(
-      case_when(
+      dplyr::case_when(
         age <= 4 ~ "<5",
         age <= 14 ~ "5-14",
         age <= 24 ~ "15-24",
