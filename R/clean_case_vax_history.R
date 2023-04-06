@@ -4,6 +4,8 @@
 #' complete, from case data. Case data is returned from [`get_cases()`].
 #'
 #' @param cases A tibble with address information from cases data.
+#' @param language_tokens A tibble of language tokens returned by
+#' [`get_language_tokens()`] to translate the string tokens in the data.
 #'
 #' @return A tibble with cleaned and un-nested vaccination history data.
 #' @export
@@ -22,9 +24,20 @@
 #'   outbreak_id = outbreak_id
 #' )
 #'
-#' vax_history <- clean_case_vax_history(cases = cases)
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
+#' vax_history <- clean_case_vax_history(
+#'   cases = cases,
+#'   language_tokens = language_tokens
+#' )
 #' }
-clean_case_vax_history <- function(cases) {
+clean_case_vax_history <- function(cases,
+                                   language_tokens) {
 
   cases_vacc_history_clean <- dplyr::filter(
     .data = cases,
@@ -59,14 +72,9 @@ clean_case_vax_history <- function(cases) {
     .fn = tolower
   )
 
-  cases_vacc_history_clean <- dplyr::mutate(
-    .data = cases_vacc_history_clean,
-    vaccinesreceived_vaccine = sub(".*VACCINE_", "", vaccinesreceived_vaccine)
-  )
-
-  cases_vacc_history_clean <- dplyr::mutate(
-    .data = cases_vacc_history_clean,
-    vaccinesreceived_status = sub(".*STATUS_", "", vaccinesreceived_status)
+  cases_vacc_history_clean <- translate_categories(
+    data = cases_vacc_history_clean,
+    language_tokens = language_tokens
   )
 
   cases_vacc_history_clean <- dplyr::mutate(

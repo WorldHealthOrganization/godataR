@@ -1,13 +1,24 @@
 test_that("clean_case_vax_history works as expected", {
   skip("get_cases requires API call")
 
-  res <- get_cases(
+  cases <- get_cases(
     url = url,
     username = username,
     password = password,
     outbreak_id = outbreak_id
   )
-  res <- clean_case_vax_history(cases = res)
+
+  language_tokens <- get_language_tokens(
+    url = url,
+    username = username,
+    password = password,
+    language = "english_us"
+  )
+
+  res <- clean_case_vax_history(
+    cases = cases,
+    language_tokens = language_tokens
+  )
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")

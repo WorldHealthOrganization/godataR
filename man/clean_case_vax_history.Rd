@@ -4,10 +4,13 @@
 \alias{clean_case_vax_history}
 \title{Cleans vaccination data from case data}
 \usage{
-clean_case_vax_history(cases)
+clean_case_vax_history(cases, language_tokens)
 }
 \arguments{
 \item{cases}{A tibble with address information from cases data.}
+
+\item{language_tokens}{A tibble of language tokens returned by
+\code{\link[=get_language_tokens]{get_language_tokens()}} to translate the string tokens in the data.}
 }
 \value{
 A tibble with cleaned and un-nested vaccination history data.
@@ -30,6 +33,16 @@ cases <- get_cases(
   outbreak_id = outbreak_id
 )
 
-vax_history <- clean_case_vax_history(cases = cases)
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
+vax_history <- clean_case_vax_history(
+  cases = cases,
+  language_tokens = language_tokens
+)
 }
 }
