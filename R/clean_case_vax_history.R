@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
 #' username <- "myemail@email.com"
 #' password <- "mypassword"

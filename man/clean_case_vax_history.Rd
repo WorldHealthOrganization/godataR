@@ -20,7 +20,7 @@ Cleans and un-nests vaccination history, where vaccination is
 complete, from case data. Case data is returned from \code{\link[=get_cases]{get_cases()}}.
 }
 \examples{
-#' \dontrun{
+\dontrun{
 url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
