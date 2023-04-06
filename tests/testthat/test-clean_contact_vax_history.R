@@ -8,7 +8,17 @@ test_that("clean_contact_vax_history works as expected", {
     outbreak_id = outbreak_id
   )
 
-  res <- clean_contact_vax_history(contacts = contacts)
+  language_tokens <- get_language_tokens(
+    url = url,
+    username = username,
+    password = password,
+    language = "english_us"
+  )
+
+  res <- clean_contact_vax_history(
+    contacts = contacts,
+    language_tokens = language_tokens
+  )
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")

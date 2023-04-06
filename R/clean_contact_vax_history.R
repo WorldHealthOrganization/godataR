@@ -5,6 +5,8 @@
 #' [`get_contacts()`].
 #'
 #' @param contacts A tibble with address information from contact data.
+#' @param language_tokens A tibble of language tokens returned by
+#' [`get_language_tokens()`] to translate the string tokens in the data.
 #'
 #' @return A tibble with cleaned and un-nested vaccination history data.
 #' @export
@@ -23,9 +25,20 @@
 #'   outbreak_id = outbreak_id
 #' )
 #'
-#' vax_history <- clean_contact_vax_history(contacts = contacts)
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
+#' vax_history <- clean_contact_vax_history(
+#'   contacts = contacts,
+#'   language_tokens = language_tokens
+#' )
 #' }
-clean_contact_vax_history <- function(contacts) {
+clean_contact_vax_history <- function(contacts,
+                                      language_tokens) {
 
   contacts_vax_history_clean <- dplyr::filter(
     .data = contacts,
@@ -58,14 +71,9 @@ clean_contact_vax_history <- function(contacts) {
     .funs = tolower
   )
 
-  contacts_vax_history_clean <- dplyr::mutate(
-    .data = contacts_vax_history_clean,
-    vaccinesreceived_vaccine = sub(".*VACCINE_", "", vaccinesreceived_vaccine)
-  )
-
-  contacts_vax_history_clean <- dplyr::mutate(
-    .data = contacts_vax_history_clean,
-    vaccinesreceived_status = sub(".*STATUS_", "", vaccinesreceived_status)
+  contacts_vax_history_clean <- translate_categories(
+    data = contacts_vax_history_clean,
+    language_tokens = language_tokens
   )
 
   contacts_vax_history_clean <- dplyr::mutate_at(
