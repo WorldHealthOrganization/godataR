@@ -4,11 +4,14 @@
 \alias{clean_contacts_of_contacts_vax_history}
 \title{Cleans vaccination data from contacts of contacts data}
 \usage{
-clean_contacts_of_contacts_vax_history(contacts_of_contacts)
+clean_contacts_of_contacts_vax_history(contacts_of_contacts, language_tokens)
 }
 \arguments{
 \item{contacts_of_contacts}{A \code{tibble} with address information from contacts
 of contacts data.}
+
+\item{language_tokens}{A tibble of language tokens returned by
+\code{\link[=get_language_tokens]{get_language_tokens()}} to translate the string tokens in the data.}
 }
 \value{
 A \code{tibble} with cleaned and un-nested vaccination history data.
@@ -32,8 +35,16 @@ contacts_of_contacts <- get_contacts_of_contacts(
   outbreak_id = outbreak_id
 )
 
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
 vax_history <- clean_contacts_of_contacts_vax_history(
-  contacts_of_contacts = contacts_of_contacts
+  contacts_of_contacts = contacts_of_contacts,
+  language_tokens = language_tokens
 )
 }
 }

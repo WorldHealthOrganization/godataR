@@ -6,6 +6,8 @@
 #'
 #' @param contacts_of_contacts A `tibble` with address information from contacts
 #' of contacts data.
+#' @param language_tokens A tibble of language tokens returned by
+#' [`get_language_tokens()`] to translate the string tokens in the data.
 #'
 #' @return A `tibble` with cleaned and un-nested vaccination history data.
 #' @export
@@ -24,11 +26,20 @@
 #'   outbreak_id = outbreak_id
 #' )
 #'
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
 #' vax_history <- clean_contacts_of_contacts_vax_history(
-#'   contacts_of_contacts = contacts_of_contacts
+#'   contacts_of_contacts = contacts_of_contacts,
+#'   language_tokens = language_tokens
 #' )
 #' }
-clean_contacts_of_contacts_vax_history <- function(contacts_of_contacts) {
+clean_contacts_of_contacts_vax_history <- function(contacts_of_contacts,
+                                                   language_tokens) {
 
   coc_vacc_hist <- dplyr::filter(
     .data = contacts_of_contacts,
@@ -47,14 +58,9 @@ clean_contacts_of_contacts_vax_history <- function(contacts_of_contacts) {
     tolower
   )
 
-  coc_vacc_hist <- dplyr::mutate(
-    .data = coc_vacc_hist,
-    vaccinesreceived_vaccine = sub(".*VACCINE_", "", vaccinesreceived_vaccine)
-  )
-
-  coc_vacc_hist <- dplyr::mutate(
-    .data = coc_vacc_hist,
-    vaccinesreceived_status = sub(".*STATUS_", "", vaccinesreceived_status)
+  coc_vacc_hist <- translate_categories(
+    data = coc_vacc_hist,
+    language_tokens = language_tokens
   )
 
   coc_vacc_hist <- dplyr::mutate_at(
