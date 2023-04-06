@@ -45,7 +45,7 @@ locations <- get_locations(
 )
 locations_clean <- clean_locations(locations = locations)
 
-contact_of_contacts_address_history <- clean_contacts_of_contacts_address_history(
+contact_of_contacts_add_hist <- clean_contacts_of_contacts_address_history(
   contacts_of_contacts = contacts_of_contacts,
   locations_clean = locations_clean
 )

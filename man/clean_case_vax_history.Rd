@@ -2,7 +2,7 @@
 % Please edit documentation in R/clean_case_vax_history.R
 \name{clean_case_vax_history}
 \alias{clean_case_vax_history}
-\title{Cleans vaccinations data from case data}
+\title{Cleans vaccination data from case data}
 \usage{
 clean_case_vax_history(cases)
 }
