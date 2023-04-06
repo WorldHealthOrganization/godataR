@@ -7,7 +7,8 @@
 clean_contacts_of_contacts(
   contacts_of_contacts,
   contacts_of_contacts_address_history_clean,
-  contacts_of_contacts_vacc_history_clean
+  contacts_of_contacts_vacc_history_clean,
+  language_tokens
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ cleaned address history data from contacts of contacts (data is cleaned by
 \item{contacts_of_contacts_vacc_history_clean}{A \code{tibble} containing the
 cleaned vaccination history from contacts of contacts (data is cleaned by
 \code{\link[=clean_contacts_of_contacts_vax_history]{clean_contacts_of_contacts_vax_history()}}).}
+
+\item{language_tokens}{A tibble of language tokens returned by
+\code{\link[=get_language_tokens]{get_language_tokens()}} to translate the string tokens in the data.}
 }
 \value{
 A \code{tibble} containing the cleaned contacts of contacts data.
@@ -31,10 +35,10 @@ contacts data is returned by \code{\link[=get_contacts_of_contacts]{get_contacts
 }
 \examples{
 \dontrun{
-  url <- "https://MyGoDataServer.com/"
-  username <- "myemail@email.com"
-  password <- "mypassword"
-  outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
+url <- "https://MyGoDataServer.com/"
+username <- "myemail@email.com"
+password <- "mypassword"
+outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
 contacts_of_contacts <- get_contacts_of_contacts(
   url = url,
@@ -51,19 +55,29 @@ locations <- get_locations(
 
 locations_clean <- clean_locations(locations = locations)
 
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
 contacts_of_contacts_address_history_clean <- clean_contacts_of_contacts_address_history(
   contacts_of_contacts = contacts_of_contacts,
-  locations_clean = locations_clean
+  locations_clean = locations_clean,
+  language_tokens = language_tokens
 )
 
 contacts_of_contacts_vacc_history_clean <- clean_contacts_of_contacts_vax_history(
-  contacts_of_contacts = contacts_of_contacts
+  contacts_of_contacts = contacts_of_contacts,
+  language_tokens = language_tokens
 )
 
 contacts_of_contacts_clean <- clean_contacts_of_contacts(
   contacts_of_contacts = contacts_of_contacts,
   contacts_of_contacts_address_history_clean = contacts_of_contacts_address_history_clean,
-  contacts_of_contacts_vacc_history_clean = contacts_of_contacts_vacc_history_clean
+  contacts_of_contacts_vacc_history_clean = contacts_of_contacts_vacc_history_clean,
+  language_tokens = language_tokens
 )
 }
 }

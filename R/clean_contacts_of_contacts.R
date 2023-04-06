@@ -11,16 +11,18 @@
 #' @param contacts_of_contacts_vacc_history_clean A `tibble` containing the
 #' cleaned vaccination history from contacts of contacts (data is cleaned by
 #' [`clean_contacts_of_contacts_vax_history()`]).
+#' @param language_tokens A tibble of language tokens returned by
+#' [`get_language_tokens()`] to translate the string tokens in the data.
 #'
 #' @return A `tibble` containing the cleaned contacts of contacts data.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#'   url <- "https://MyGoDataServer.com/"
-#'   username <- "myemail@email.com"
-#'   password <- "mypassword"
-#'   outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
+#' url <- "https://MyGoDataServer.com/"
+#' username <- "myemail@email.com"
+#' password <- "mypassword"
+#' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
 #' contacts_of_contacts <- get_contacts_of_contacts(
 #'   url = url,
@@ -37,24 +39,35 @@
 #'
 #' locations_clean <- clean_locations(locations = locations)
 #'
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
 #' contacts_of_contacts_address_history_clean <- clean_contacts_of_contacts_address_history(
 #'   contacts_of_contacts = contacts_of_contacts,
-#'   locations_clean = locations_clean
+#'   locations_clean = locations_clean,
+#'   language_tokens = language_tokens
 #' )
 #'
 #' contacts_of_contacts_vacc_history_clean <- clean_contacts_of_contacts_vax_history(
-#'   contacts_of_contacts = contacts_of_contacts
+#'   contacts_of_contacts = contacts_of_contacts,
+#'   language_tokens = language_tokens
 #' )
 #'
 #' contacts_of_contacts_clean <- clean_contacts_of_contacts(
 #'   contacts_of_contacts = contacts_of_contacts,
 #'   contacts_of_contacts_address_history_clean = contacts_of_contacts_address_history_clean,
-#'   contacts_of_contacts_vacc_history_clean = contacts_of_contacts_vacc_history_clean
+#'   contacts_of_contacts_vacc_history_clean = contacts_of_contacts_vacc_history_clean,
+#'   language_tokens = language_tokens
 #' )
 #' }
 clean_contacts_of_contacts <- function(contacts_of_contacts,
                                        contacts_of_contacts_address_history_clean,
-                                       contacts_of_contacts_vacc_history_clean) {
+                                       contacts_of_contacts_vacc_history_clean,
+                                       language_tokens) {
 
   # Remove all deleted records
   coc_clean <- dplyr::filter(
@@ -103,24 +116,14 @@ clean_contacts_of_contacts <- function(contacts_of_contacts,
   )
 
   #  truncate responses of categorical vars so easier to read
-  coc_clean <- dplyr::mutate(
-    .data = coc_clean,
-    classification = sub(".*CLASSIFICATION_", "", classification),
-    gender = sub(".*GENDER_", "", gender),
-    occupation = sub(".*OCCUPATION_", "", occupation),
-    outcome = sub(".*OUTCOME_", "", outcome_id),
-    pregnancy_status = sub(".*STATUS_", "", pregnancy_status),
-    risk_level = sub(".*LEVEL_", "", risk_level),
-    relationship_certainty_level = sub(".*LEVEL_", "", relationship_certainty_level_id),
-    relationship_exposure_type = sub(".*TYPE_", "", relationship_exposure_type_id),
-    relationship_context_of_transmission = sub(".*TRANSMISSION_", "", relationship_social_relationship_type_id),
-    relationship_exposure_frequency = sub(".*FREQUENCY_", "", relationship_exposure_frequency_id),
-    relationship_exposure_duration = sub(".*DURATION_", "", relationship_exposure_duration_id)
+  coc_clean <- translate_categories(
+    data = coc_clean,
+    language_tokens = language_tokens
   )
 
   contacts_of_contacts_address_history_clean <- dplyr::filter(
     .data = contacts_of_contacts_address_history_clean,
-    addresses_typeid == "USUAL_PLACE_OF_RESIDENCE"
+    addresses_typeid == "Current address"
   )
 
   # join in current address from address history, only current place of
