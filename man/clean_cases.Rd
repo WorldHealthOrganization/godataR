@@ -8,11 +8,18 @@ clean_cases(
   cases,
   cases_address_history_clean,
   cases_vacc_history_clean,
-  cases_dateranges_history_clean
+  cases_dateranges_history_clean,
+  language_tokens
 )
 }
 \arguments{
 \item{cases}{A \code{tibble} containing the case data.}
+
+\item{language_tokens}{A tibble of language tokens returned by
+\code{\link[=get_language_tokens]{get_language_tokens()}} to translate the string tokens in the data.}
+
+\item{locations_clean}{A tibble with cleaned locations data. Locations data
+is returned by \code{\link[=get_locations]{get_locations()}} and cleaned by \code{\link[=clean_locations]{clean_locations()}}.}
 }
 \value{
 A \code{tibble} containing the cleaned case data.
@@ -35,16 +42,41 @@ cases <- get_cases(
   outbreak_id = outbreak_id
 )
 
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
+locations <- get_locations(
+  url = url,
+  username = username,
+  password = password
+)
+locations_clean <- clean_locations(locations = locations)
+
 # other cleaned data required for `clean_cases()`
-cases_vacc_history_clean <- clean_case_vax_history(cases = cases)
-cases_address_history_clean <- clean_case_address_history(cases = cases)
-cases_dateranges_history_clean <- clean_case_med_history(cases = cases)
+cases_vacc_history_clean <- clean_case_vax_history(
+  cases = cases,
+  language_tokens = language_tokens
+)
+cases_address_history_clean <- clean_case_address_history(
+  cases = cases,
+  locations_clean = locations_clean,
+  language_tokens = language_tokens
+)
+cases_dateranges_history_clean <- clean_case_med_history(
+  cases = cases,
+  language_tokens = language_tokens
+)
 
 cases_clean <- clean_cases(
   cases = cases,
   cases_address_history_clean = cases_address_history_clean,
   cases_vacc_history_clean = cases_vacc_history_clean,
-  cases_dateranges_history_clean = cases_dateranges_history_clean
+  cases_dateranges_history_clean = cases_dateranges_history_clean,
+  language_tokens = language_tokens
 )
 }
 }

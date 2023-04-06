@@ -4,6 +4,10 @@
 #' [`get_cases()`].
 #'
 #' @param cases A `tibble` containing the case data.
+#' @param locations_clean A tibble with cleaned locations data. Locations data
+#' is returned by [`get_locations()`] and cleaned by [`clean_locations()`].
+#' @param language_tokens A tibble of language tokens returned by
+#' [`get_language_tokens()`] to translate the string tokens in the data.
 #'
 #' @return A `tibble` containing the cleaned case data.
 #' @export
@@ -22,22 +26,48 @@
 #'   outbreak_id = outbreak_id
 #' )
 #'
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
+#' locations <- get_locations(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
+#' locations_clean <- clean_locations(locations = locations)
+#'
 #' # other cleaned data required for `clean_cases()`
-#' cases_vacc_history_clean <- clean_case_vax_history(cases = cases)
-#' cases_address_history_clean <- clean_case_address_history(cases = cases)
-#' cases_dateranges_history_clean <- clean_case_med_history(cases = cases)
+#' cases_vacc_history_clean <- clean_case_vax_history(
+#'   cases = cases,
+#'   language_tokens = language_tokens
+#' )
+#' cases_address_history_clean <- clean_case_address_history(
+#'   cases = cases,
+#'   locations_clean = locations_clean,
+#'   language_tokens = language_tokens
+#' )
+#' cases_dateranges_history_clean <- clean_case_med_history(
+#'   cases = cases,
+#'   language_tokens = language_tokens
+#' )
 #'
 #' cases_clean <- clean_cases(
 #'   cases = cases,
 #'   cases_address_history_clean = cases_address_history_clean,
 #'   cases_vacc_history_clean = cases_vacc_history_clean,
-#'   cases_dateranges_history_clean = cases_dateranges_history_clean
+#'   cases_dateranges_history_clean = cases_dateranges_history_clean,
+#'   language_tokens = language_tokens
 #' )
 #' }
 clean_cases <- function(cases,
                         cases_address_history_clean,
                         cases_vacc_history_clean,
-                        cases_dateranges_history_clean) {
+                        cases_dateranges_history_clean,
+                        language_tokens) {
 
   # Remove all deleted records
   cases_clean <- dplyr::filter(
@@ -100,35 +130,35 @@ clean_cases <- function(cases,
     datetime_created_at = as.POSIXct(datetime_created_at,format="%Y-%m-%dT%H:%M")
   )
 
-  #  truncate responses of categorical vars so easier to read
-  cases_clean <- dplyr::mutate(
+  # translate responses of categorical vars so easier to read
+  cases_clean <- translate_categories(
+    data = cases_clean,
+    language_tokens = language_tokens
+  )
+
+  cases_clean <- dplyr::rename(
     .data = cases_clean,
-    classification = sub(".*CLASSIFICATION_", "", classification),
-    gender = sub(".*GENDER_", "", gender),
-    occupation = sub(".*OCCUPATION_", "", occupation),
-    outcome = sub(".*OUTCOME_", "", outcome_id),
-    pregnancy_status = sub(".*STATUS_", "", pregnancy_status),
-    risk_level = sub(".*LEVEL_", "", risk_level)
+    outcome = "outcome_id"
   )
 
   cases_clean <- dplyr::mutate(
     .data = cases_clean,
-    isolated = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "ISOLATION"] ~ TRUE, TRUE ~ FALSE)
+    isolated = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "Isolation"] ~ TRUE, TRUE ~ FALSE)
   )
 
   cases_clean <- dplyr::mutate(
     .data = cases_clean,
-    hospitalized = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "HOSPITALIZATION"] ~ TRUE, TRUE ~ FALSE)
+    hospitalized = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "Hospitalization"] ~ TRUE, TRUE ~ FALSE)
   )
 
   cases_clean <- dplyr::mutate(
     .data = cases_clean,
-    icu = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "ICU_ADMISSION"] ~ TRUE, TRUE ~ FALSE)
+    icu = dplyr::case_when(id %in% cases_dateranges_history_clean$id[cases_dateranges_history_clean$dateranges_typeid == "ICU Admission"] ~ TRUE, TRUE ~ FALSE)
   )
 
   cases_address_history_clean <- dplyr::filter(
     .data = cases_address_history_clean,
-    addresses_typeid == "USUAL_PLACE_OF_RESIDENCE"
+    addresses_typeid == "Current address"
   )
 
   # join in current address from address history, only current place of residence

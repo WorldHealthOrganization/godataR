@@ -8,6 +8,13 @@ test_that("clean_cases works as expected", {
     outbreak_id = outbreak_id
   )
 
+  language_tokens <- get_language_tokens(
+    url = url,
+    username = username,
+    password = password,
+    language = "english_us"
+  )
+
   locations <- get_locations(
     url = url,
     username = username,
@@ -16,18 +23,26 @@ test_that("clean_cases works as expected", {
 
   locations_clean <- clean_locations(locations = locations)
 
-  cases_vacc_history_clean <- clean_case_vax_history(cases = cases)
+  cases_vacc_history_clean <- clean_case_vax_history(
+    cases = cases,
+    language_tokens = language_tokens
+  )
   cases_address_history_clean <- clean_case_address_history(
     cases = cases,
-    locations_clean = locations_clean
+    locations_clean = locations_clean,
+    language_tokens = language_tokens
   )
-  cases_dateranges_history_clean <- clean_case_med_history(cases = cases)
+  cases_dateranges_history_clean <- clean_case_med_history(
+    cases = cases,
+    language_tokens = language_tokens
+  )
 
   res <- clean_cases(
     cases = cases,
     cases_address_history_clean = cases_address_history_clean,
     cases_vacc_history_clean = cases_vacc_history_clean,
-    cases_dateranges_history_clean = cases_dateranges_history_clean
+    cases_dateranges_history_clean = cases_dateranges_history_clean,
+    language_tokens = language_tokens
   )
 
   expect_s3_class(res, "tbl_df")
