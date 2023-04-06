@@ -4,7 +4,7 @@
 \alias{clean_contact_address_history}
 \title{Extracts address information from contact data}
 \usage{
-clean_contact_address_history(contacts, locations_clean)
+clean_contact_address_history(contacts, locations_clean, language_tokens)
 }
 \arguments{
 \item{contacts}{A tibble with contacts data. Contacts data is returned by
@@ -12,6 +12,9 @@ clean_contact_address_history(contacts, locations_clean)
 
 \item{locations_clean}{A tibble with cleaned locations data. Locations data
 is returned by \code{\link[=get_locations]{get_locations()}} and cleaned by \code{\link[=clean_locations]{clean_locations()}}.}
+
+\item{language_tokens}{A tibble of language tokens returned by
+\code{\link[=get_language_tokens]{get_language_tokens()}} to translate the string tokens in the data.}
 }
 \value{
 A tibble with address information from contacts data.
@@ -42,9 +45,17 @@ locations <- get_locations(
 )
 locations_clean <- clean_locations(locations = locations)
 
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
 contact_address_history <- clean_contact_address_history(
   contacts = contacts,
-  locations_clean = locations_clean
+  locations_clean = locations_clean,
+  language_tokens = language_tokens
 )
 }
 }

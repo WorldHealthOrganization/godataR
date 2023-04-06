@@ -15,14 +15,22 @@ test_that("clean_contact_address_history works as expected", {
   )
   locations_clean <- clean_locations(locations = locations)
 
+  language_tokens <- get_language_tokens(
+    url = url,
+    username = username,
+    password = password,
+    language = "english_us"
+  )
+
   res <- clean_contact_address_history(
     contacts = contacts,
-    locations_clean = locations_clean
+    locations_clean = locations_clean,
+    language_tokens = language_tokens
   )
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
-  expect_identical(dim(res), c(15L, 13L))
+  expect_identical(dim(res), c(16L, 13L))
   expect_true(
     all(c(
       "id", "addresses_locationid", "addresses_typeid", "lat", "long",
