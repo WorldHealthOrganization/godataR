@@ -4,7 +4,7 @@
 \alias{clean_case_address_history}
 \title{Extract address information from case data}
 \usage{
-clean_case_address_history(cases, locations_clean)
+clean_case_address_history(cases, locations_clean, language_tokens)
 }
 \arguments{
 \item{cases}{A tibble with case data. Case data is returned by
@@ -12,6 +12,9 @@ clean_case_address_history(cases, locations_clean)
 
 \item{locations_clean}{A tibble with cleaned locations data. Locations data
 is returned by \code{\link[=get_locations]{get_locations()}} and cleaned by \code{\link[=clean_locations]{clean_locations()}}.}
+
+\item{language_tokens}{A tibble of language tokens returned by
+\code{\link[=get_language_tokens]{get_language_tokens()}} to translate the string tokens in the data.}
 }
 \value{
 A tibble with address information from cases data.
@@ -43,9 +46,17 @@ locations <- get_locations(
 
 locations_clean <- clean_locations(locations = locations)
 
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
 case_address_history <- clean_case_address_history(
   cases = cases,
-  locations_clean = locations_clean
+  locations_clean = locations_clean,
+  language_tokens = language_tokens
 )
 }
 }

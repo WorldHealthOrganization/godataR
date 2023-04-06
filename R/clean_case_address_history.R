@@ -8,6 +8,8 @@
 #' [`get_cases()`].
 #' @param locations_clean A tibble with cleaned locations data. Locations data
 #' is returned by [`get_locations()`] and cleaned by [`clean_locations()`].
+#' @param language_tokens A tibble of language tokens returned by
+#' [`get_language_tokens()`] to translate the string tokens in the data.
 #'
 #' @return A tibble with address information from cases data.
 #' @export
@@ -34,13 +36,22 @@
 #'
 #' locations_clean <- clean_locations(locations = locations)
 #'
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
 #' case_address_history <- clean_case_address_history(
 #'   cases = cases,
-#'   locations_clean = locations_clean
+#'   locations_clean = locations_clean,
+#'   language_tokens = language_tokens
 #' )
 #' }
 clean_case_address_history <- function(cases,
-                                       locations_clean) {
+                                       locations_clean,
+                                       language_tokens) {
 
   cases_address_history_clean <- dplyr::filter(
     .data = cases,
@@ -67,9 +78,9 @@ clean_case_address_history <- function(cases,
     purrr::negate(is.list)
   )
 
-  cases_address_history_clean <- dplyr::mutate(
-    .data = cases_address_history_clean,
-    addresses_typeid = sub(".*TYPE_", "", .data$addresses_typeid)
+  cases_address_history_clean <- translate_categories(
+    data = cases_address_history_clean,
+    language_tokens = language_tokens
   )
 
   cases_address_history_clean <- dplyr::left_join(
