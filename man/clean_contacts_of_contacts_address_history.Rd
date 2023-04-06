@@ -6,7 +6,8 @@
 \usage{
 clean_contacts_of_contacts_address_history(
   contacts_of_contacts,
-  locations_clean
+  locations_clean,
+  language_tokens
 )
 }
 \arguments{
@@ -15,6 +16,9 @@ Contacts of contacts data is returned by \code{\link[=get_contacts_of_contacts]{
 
 \item{locations_clean}{A \code{tibble} with cleaned location data. Location data
 is returned by \code{\link[=get_locations]{get_locations()}} and cleaned by \code{\link[=clean_locations]{clean_locations()}}.}
+
+\item{language_tokens}{A tibble of language tokens returned by
+\code{\link[=get_language_tokens]{get_language_tokens()}} to translate the string tokens in the data.}
 }
 \value{
 A \code{tibble} with address information from contacts of contacts data.
@@ -45,9 +49,17 @@ locations <- get_locations(
 )
 locations_clean <- clean_locations(locations = locations)
 
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
 contact_of_contacts_add_hist <- clean_contacts_of_contacts_address_history(
   contacts_of_contacts = contacts_of_contacts,
-  locations_clean = locations_clean
+  locations_clean = locations_clean,
+  language_tokens = language_tokens
 )
 }
 }

@@ -8,6 +8,8 @@
 #' Contacts of contacts data is returned by [`get_contacts_of_contacts()`].
 #' @param locations_clean A `tibble` with cleaned location data. Location data
 #' is returned by [`get_locations()`] and cleaned by [`clean_locations()`].
+#' @param language_tokens A tibble of language tokens returned by
+#' [`get_language_tokens()`] to translate the string tokens in the data.
 #'
 #' @return A `tibble` with address information from contacts of contacts data.
 #' @export
@@ -33,13 +35,22 @@
 #' )
 #' locations_clean <- clean_locations(locations = locations)
 #'
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
 #' contact_of_contacts_add_hist <- clean_contacts_of_contacts_address_history(
 #'   contacts_of_contacts = contacts_of_contacts,
-#'   locations_clean = locations_clean
+#'   locations_clean = locations_clean,
+#'   language_tokens = language_tokens
 #' )
 #' }
 clean_contacts_of_contacts_address_history <- function(contacts_of_contacts,
-                                                       locations_clean) {
+                                                       locations_clean,
+                                                       language_tokens) {
 
   coc_add_hist <- dplyr::filter(
     .data = contacts_of_contacts,
@@ -67,9 +78,9 @@ clean_contacts_of_contacts_address_history <- function(contacts_of_contacts,
     .predicate = purrr::negate(is.list)
   )
 
-  coc_add_hist <- dplyr::mutate(
-    .data = coc_add_hist,
-    addresses_typeid = sub(".*TYPE_", "", addresses_typeid)
+  coc_add_hist <- translate_categories(
+    data = coc_add_hist,
+    language_tokens = language_tokens
   )
 
   coc_add_hist <- dplyr::left_join(
