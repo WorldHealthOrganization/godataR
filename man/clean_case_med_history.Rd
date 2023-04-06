@@ -4,11 +4,14 @@
 \alias{clean_case_med_history}
 \title{Extracts and cleans medical history from case data}
 \usage{
-clean_case_med_history(cases)
+clean_case_med_history(cases, language_tokens)
 }
 \arguments{
 \item{cases}{A tibble with case data. Case data is returned by
 \code{\link[=get_cases]{get_cases()}}.}
+
+\item{language_tokens}{A tibble of language tokens returned by
+\code{\link[=get_language_tokens]{get_language_tokens()}} to translate the string tokens in the data.}
 }
 \value{
 A tibble with information on isolation and hospitalization history.
@@ -31,6 +34,16 @@ cases <- get_cases(
   outbreak_id = outbreak_id
 )
 
-cases_med_history <- clean_case_med_history(cases = cases)
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
+cases_med_history <- clean_case_med_history(
+  cases = cases,
+  language_tokens = language_tokens
+)
 }
 }

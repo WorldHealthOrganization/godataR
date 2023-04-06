@@ -5,6 +5,8 @@
 #'
 #' @param cases A tibble with case data. Case data is returned by
 #' [`get_cases()`].
+#' @param language_tokens A tibble of language tokens returned by
+#' [`get_language_tokens()`] to translate the string tokens in the data.
 #'
 #' @return A tibble with information on isolation and hospitalization history.
 #' @export
@@ -23,9 +25,20 @@
 #'   outbreak_id = outbreak_id
 #' )
 #'
-#' cases_med_history <- clean_case_med_history(cases = cases)
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
+#' cases_med_history <- clean_case_med_history(
+#'   cases = cases,
+#'   language_tokens = language_tokens
+#' )
 #' }
-clean_case_med_history <- function(cases) {
+clean_case_med_history <- function(cases,
+                                   language_tokens) {
 
   cases_dateranges_history_clean <- dplyr::filter(
     .data = cases,
@@ -54,14 +67,9 @@ clean_case_med_history <- function(cases) {
     tolower
   )
 
-  cases_dateranges_history_clean <- dplyr::mutate(
-    .data = cases_dateranges_history_clean,
-    dateranges_typeid = sub(".*TYPE_", "", dateranges_typeid)
-  )
-
-  cases_dateranges_history_clean <- dplyr::mutate(
-    .data = cases_dateranges_history_clean,
-    dateranges_centername = sub(".*NAME_", "", dateranges_centername)
+  cases_dateranges_history_clean <- translate_categories(
+    data = cases_dateranges_history_clean,
+    language_tokens = language_tokens
   )
 
   cases_dateranges_history_clean <- dplyr::mutate_at(
