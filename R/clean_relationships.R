@@ -23,9 +23,20 @@
 #'   outbreak_id = outbreak_id
 #' )
 #'
-#' clean_relationships <- clean_relationships(relationships)
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
+#' clean_relationships <- clean_relationships(
+#'   relationships,
+#'   language_tokens = language_tokens
+#' )
 #' }
-clean_relationships <- function(relationships) {
+clean_relationships <- function(relationships,
+                                language_tokens) {
 
   # Remove all deleted records
   clean_relationships <- dplyr::filter(
@@ -77,11 +88,10 @@ clean_relationships <- function(relationships) {
     )
   )
 
-  #  truncate responses of categorical vars so easier to read
-  clean_relationships <- dplyr::mutate(
-    .data = clean_relationships,
-    source_person_type = sub(".*TYPE_", "", source_person_type),
-    target_person_type = sub(".*TYPE_", "", target_person_type)
+  # translate responses of categorical vars so easier to read
+  clean_relationships <- translate_categories(
+    data = clean_relationships,
+    language_tokens = language_tokens
   )
 
   # organize order of vars, only bring in what we need, take away confusing vars

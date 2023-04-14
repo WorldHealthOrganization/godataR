@@ -7,11 +7,22 @@ test_that("clean_relationships works as expected", {
     password = password,
     outbreak_id = outbreak_id
   )
-  res <- clean_relationships(relationships = relationships)
+
+  language_tokens <- get_language_tokens(
+    url = url,
+    username = username,
+    password = password,
+    language = "english_us"
+  )
+
+  res <- clean_relationships(
+    relationships = relationships,
+    language_tokens = language_tokens
+  )
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
-  expect_identical(dim(res), c(28L, 11L))
+  expect_identical(dim(res), c(29L, 11L))
   expect_true(
     all(c(
       "id", "source_person_id", "source_person_visual_id", "target_person_id",
