@@ -96,7 +96,7 @@ clean_events <- function(events,
     "date", # dates
     "date_of_reporting", # dates
     "description",
-    "responsible_user_id", # assigned contact tracer
+    "responsible_user", # assigned contact tracer
     matches("^admin_.*name$"),
     lat = "address_geo_location_lat", # address
     long = "address_geo_location_lng", # address
