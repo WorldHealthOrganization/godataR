@@ -4,7 +4,7 @@
 \alias{clean_users}
 \title{Cleans users data}
 \usage{
-clean_users(users)
+clean_users(users, language_tokens)
 }
 \arguments{
 \item{users}{A \code{tibble} containing users data. Users data is returned by
@@ -29,6 +29,13 @@ users <- get_users(
   password = password
 )
 
-clean_users <- clean_users(users)
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
+clean_users <- clean_users(users = users, language_tokens = language_tokens)
 }
 }

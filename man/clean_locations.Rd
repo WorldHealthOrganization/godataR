@@ -4,7 +4,7 @@
 \alias{clean_locations}
 \title{Cleans location data}
 \usage{
-clean_locations(locations)
+clean_locations(locations, language_tokens)
 }
 \arguments{
 \item{locations}{A \code{\link{tibble}} containing locations data. This is the data
@@ -29,6 +29,13 @@ locations <- get_locations(
   password = password
 )
 
-clean_locations(locations = locations)
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
+clean_locations(locations = locations, language_tokens = language_tokens)
 }
 }

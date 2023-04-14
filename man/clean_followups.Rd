@@ -4,7 +4,7 @@
 \alias{clean_followups}
 \title{Clean followup data}
 \usage{
-clean_followups(followups, contacts_address_history_clean)
+clean_followups(followups, contacts_address_history_clean, language_tokens)
 }
 \arguments{
 \item{followups}{A \code{tibble} with events data. Followup data is returned by
@@ -50,14 +50,23 @@ locations <- get_locations(
 
 locations_clean <- clean_locations(locations = locations)
 
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
 contacts_address_history_clean <- clean_contact_address_history(
   contacts = contacts,
-  locations_clean = locations_clean
+  locations_clean = locations_clean,
+  language_tokens = language_tokens
 )
 
 followups_clean <- clean_followups(
   followups = followups,
-  contacts_address_history_clean = contacts_address_history_clean
+  contacts_address_history_clean = contacts_address_history_clean,
+  language_tokens = language_tokens
 )
 }
 }

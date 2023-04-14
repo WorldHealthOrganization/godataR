@@ -4,7 +4,7 @@
 \alias{clean_relationships}
 \title{Cleans relationship data}
 \usage{
-clean_relationships(relationships)
+clean_relationships(relationships, language_tokens)
 }
 \arguments{
 \item{relationships}{A \code{tibble} of relationship data. Relationship data is
@@ -31,6 +31,16 @@ relationships <- get_relationships(
   outbreak_id = outbreak_id
 )
 
-clean_relationships <- clean_relationships(relationships)
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
+
+clean_relationships <- clean_relationships(
+  relationships,
+  language_tokens = language_tokens
+)
 }
 }

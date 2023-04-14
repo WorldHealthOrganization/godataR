@@ -35,56 +35,78 @@ Cleans and un-nests contact data. Contact data is returned by
 }
 \examples{
 \dontrun{
-  url <- "https://MyGoDataServer.com/"
-  username <- "myemail@email.com"
-  password <- "mypassword"
-  outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
+url <- "https://MyGoDataServer.com/"
+username <- "myemail@email.com"
+password <- "mypassword"
+outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 
-  contacts <- get_contacts(
-    url = url,
-    username = username,
-    password = password,
-    outbreak_id = outbreak_id
-  )
+contacts <- get_contacts(
+  url = url,
+  username = username,
+  password = password,
+  outbreak_id = outbreak_id
+)
 
-  locations <- get_locations(
-    url = url,
-    username = username,
-    password = password
-  )
+locations <- get_locations(
+  url = url,
+  username = username,
+  password = password
+)
 
-  locations_clean <- clean_locations(locations = locations)
+locations_clean <- clean_locations(locations = locations)
 
-  # other cleaned data required for `clean_contacts()`
-  contacts_vacc_history_clean <- clean_contact_vax_history(contacts = contacts)
-  contacts_address_history_clean <- clean_contact_address_history(
-    contacts = contacts,
-    locations_clean = locations_clean
-  )
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us"
+)
 
-  cases <- get_cases(
-    url = url,
-    username = username,
-    password = password,
-    outbreak_id = outbreak_id
-  )
-  cases_address_history_clean <- clean_case_address_history(cases = cases)
-  cases_vacc_history_clean <- clean_case_vax_history(cases = cases)
-  cases_dateranges_history_clean <- clean_case_med_history(cases = cases)
+# other cleaned data required for `clean_contacts()`
+contacts_vacc_history_clean <- clean_contact_vax_history(
+  contacts = contacts,
+  language_tokens = language_tokens
+)
+contacts_address_history_clean <- clean_contact_address_history(
+  contacts = contacts,
+  locations_clean = locations_clean,
+  language_tokens = language_tokens
+)
 
-  cases_clean <- clean_cases(
-    cases = cases,
-    cases_address_history_clean = cases_address_history_clean,
-    cases_vacc_history_clean = cases_vacc_history_clean,
-    cases_dateranges_history_clean = cases_dateranges_history_clean
-  )
-  contacts_becoming_cases <- cases_from_contacts(cases_clean = cases_clean)
+cases <- get_cases(
+  url = url,
+  username = username,
+  password = password,
+  outbreak_id = outbreak_id
+)
+cases_address_history_clean <- clean_case_address_history(
+  cases = cases,
+  locations_clean = locations_clean,
+  language_tokens = language_tokens
+)
+cases_vacc_history_clean <- clean_case_vax_history(
+  cases = cases,
+  language_tokens = language_tokens
+)
+cases_dateranges_history_clean <- clean_case_med_history(
+  cases = cases,
+  language_tokens = language_tokens
+)
 
-  contacts_clean <- clean_contacts(
-    contacts = contacts,
-    contacts_address_history_clean = cases_address_history_clean,
-    contacts_vacc_history_clean = cases_vacc_history_clean,
-    contacts_becoming_cases = contacts_becoming_cases
-  )
+cases_clean <- clean_cases(
+  cases = cases,
+  cases_address_history_clean = cases_address_history_clean,
+  cases_vacc_history_clean = cases_vacc_history_clean,
+  cases_dateranges_history_clean = cases_dateranges_history_clean,
+  language_tokens = language_tokens
+)
+contacts_becoming_cases <- cases_from_contacts(cases_clean = cases_clean)
+
+contacts_clean <- clean_contacts(
+  contacts = contacts,
+  contacts_address_history_clean = cases_address_history_clean,
+  contacts_vacc_history_clean = cases_vacc_history_clean,
+  contacts_becoming_cases = contacts_becoming_cases
+)
 }
 }
