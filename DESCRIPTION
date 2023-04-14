@@ -28,7 +28,8 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    urltools
+    urltools,
+    janitor
 Suggests:
     devtools,
     testthat (>= 3.0.0)
