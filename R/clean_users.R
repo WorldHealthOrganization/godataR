@@ -21,9 +21,17 @@
 #'   password = password
 #' )
 #'
-#' clean_users <- clean_users(users)
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
+#' clean_users <- clean_users(users = users, language_tokens = language_tokens)
 #' }
-clean_users <- function(users) {
+clean_users <- function(users,
+                        language_tokens) {
 
   # standardize column name syntax
   clean_users <- janitor::clean_names(users)
@@ -43,10 +51,10 @@ clean_users <- function(users) {
 
   clean_users <- tidyr::unnest_wider(clean_users, "role_ids", names_sep = "_")
 
-  #  truncate responses of categorical vars so easier to read
-  clean_users <- dplyr::mutate(
-    clean_users,
-    institution_name = sub(".*NAME_", "", .data$institution_name)
+  # translate responses of categorical vars so easier to read
+  clean_users <- translate_categories(
+    data = clean_users,
+    language_tokens = language_tokens
   )
 
   # organize order of vars, only bring in what we need, take away confusing vars

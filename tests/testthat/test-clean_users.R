@@ -2,7 +2,15 @@ test_that("clean_users works as expected", {
   skip("get_users requires API call")
 
   users <- get_users(url = url, username = username, password = password)
-  res <- clean_users(users = users)
+
+  language_tokens <- get_language_tokens(
+    url = url,
+    username = username,
+    password = password,
+    language = "english_us"
+  )
+
+  res <- clean_users(users = users, language_tokens = language_tokens)
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
