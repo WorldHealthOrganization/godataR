@@ -6,7 +6,7 @@ test_that("clean_teams works as expected", {
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
-  expect_identical(dim(res), c(4L, 15L))
+  expect_identical(dim(res), c(5L, 15L))
   expect_true(
     all(c(
       "id", "name", "user_ids_1", "user_ids_2", "user_ids_3", "user_ids_4",
