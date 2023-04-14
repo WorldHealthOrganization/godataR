@@ -23,9 +23,17 @@ test_that("clean_followups works as expected", {
 
   locations_clean <- clean_locations(locations = locations)
 
+  language_tokens <- get_language_tokens(
+    url = url,
+    username = username,
+    password = password,
+    language = "english_us"
+  )
+
   contacts_address_history_clean <- clean_contact_address_history(
     contacts = contacts,
-    locations_clean = locations_clean
+    locations_clean = locations_clean,
+    language_tokens = language_tokens
   )
 
   res <- clean_followups(
@@ -35,7 +43,7 @@ test_that("clean_followups works as expected", {
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")
-  expect_identical(dim(res), c(49L, 24L))
+  expect_identical(dim(res), c(172L, 24L))
   expect_true(
     all(c(
       "id", "contact_id", "contact_visual_id", "date", "followup_number",

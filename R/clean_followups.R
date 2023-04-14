@@ -41,18 +41,28 @@
 #'
 #' locations_clean <- clean_locations(locations = locations)
 #'
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
 #' contacts_address_history_clean <- clean_contact_address_history(
 #'   contacts = contacts,
-#'   locations_clean = locations_clean
+#'   locations_clean = locations_clean,
+#'   language_tokens = language_tokens
 #' )
 #'
 #' followups_clean <- clean_followups(
 #'   followups = followups,
-#'   contacts_address_history_clean = contacts_address_history_clean
+#'   contacts_address_history_clean = contacts_address_history_clean,
+#'   language_tokens = language_tokens
 #' )
 #' }
 clean_followups <- function(followups,
-                            contacts_address_history_clean) {
+                            contacts_address_history_clean,
+                            language_tokens) {
 
   # Remove all deleted records
   followups_clean <- dplyr::filter(
@@ -105,15 +115,20 @@ clean_followups <- function(followups,
     datetime_created_at = as.POSIXct(datetime_created_at, format = "%Y-%m-%dT%H:%M")
   )
 
-  #  truncate responses of categorical vars so easier to read
-  followups_clean <- dplyr::mutate(
+  # translate responses of categorical vars so easier to read
+  followups_clean <- translate_categories(
+    data = followups_clean,
+    language_tokens = language_tokens
+  )
+
+  followups_clean <- dplyr::rename(
     .data = followups_clean,
-    followup_status = sub(".*TYPE_", "", status_id)
+    followup_status = "status_id"
   )
 
   contacts_address_history_clean <- dplyr::filter(
     .data = contacts_address_history_clean,
-    addresses_typeid == "USUAL_PLACE_OF_RESIDENCE"
+    addresses_typeid == "Current address"
   )
 
   followups_clean <- dplyr::left_join(
