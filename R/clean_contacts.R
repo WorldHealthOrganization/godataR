@@ -19,57 +19,79 @@
 #'
 #' @examples
 #' \dontrun{
-#'   url <- "https://MyGoDataServer.com/"
-#'   username <- "myemail@email.com"
-#'   password <- "mypassword"
-#'   outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
+#' url <- "https://MyGoDataServer.com/"
+#' username <- "myemail@email.com"
+#' password <- "mypassword"
+#' outbreak_id <- "3b5554d7-2c19-41d0-b9af-475ad25a382b"
 #'
-#'   contacts <- get_contacts(
-#'     url = url,
-#'     username = username,
-#'     password = password,
-#'     outbreak_id = outbreak_id
-#'   )
+#' contacts <- get_contacts(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   outbreak_id = outbreak_id
+#' )
 #'
-#'   locations <- get_locations(
-#'     url = url,
-#'     username = username,
-#'     password = password
-#'   )
+#' locations <- get_locations(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
 #'
-#'   locations_clean <- clean_locations(locations = locations)
+#' locations_clean <- clean_locations(locations = locations)
 #'
-#'   # other cleaned data required for `clean_contacts()`
-#'   contacts_vacc_history_clean <- clean_contact_vax_history(contacts = contacts)
-#'   contacts_address_history_clean <- clean_contact_address_history(
-#'     contacts = contacts,
-#'     locations_clean = locations_clean
-#'   )
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
 #'
-#'   cases <- get_cases(
-#'     url = url,
-#'     username = username,
-#'     password = password,
-#'     outbreak_id = outbreak_id
-#'   )
-#'   cases_address_history_clean <- clean_case_address_history(cases = cases)
-#'   cases_vacc_history_clean <- clean_case_vax_history(cases = cases)
-#'   cases_dateranges_history_clean <- clean_case_med_history(cases = cases)
+#' # other cleaned data required for `clean_contacts()`
+#' contacts_vacc_history_clean <- clean_contact_vax_history(
+#'   contacts = contacts,
+#'   language_tokens = language_tokens
+#' )
+#' contacts_address_history_clean <- clean_contact_address_history(
+#'   contacts = contacts,
+#'   locations_clean = locations_clean,
+#'   language_tokens = language_tokens
+#' )
 #'
-#'   cases_clean <- clean_cases(
-#'     cases = cases,
-#'     cases_address_history_clean = cases_address_history_clean,
-#'     cases_vacc_history_clean = cases_vacc_history_clean,
-#'     cases_dateranges_history_clean = cases_dateranges_history_clean
-#'   )
-#'   contacts_becoming_cases <- cases_from_contacts(cases_clean = cases_clean)
+#' cases <- get_cases(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   outbreak_id = outbreak_id
+#' )
+#' cases_address_history_clean <- clean_case_address_history(
+#'   cases = cases,
+#'   locations_clean = locations_clean,
+#'   language_tokens = language_tokens
+#' )
+#' cases_vacc_history_clean <- clean_case_vax_history(
+#'   cases = cases,
+#'   language_tokens = language_tokens
+#' )
+#' cases_dateranges_history_clean <- clean_case_med_history(
+#'   cases = cases,
+#'   language_tokens = language_tokens
+#' )
 #'
-#'   contacts_clean <- clean_contacts(
-#'     contacts = contacts,
-#'     contacts_address_history_clean = cases_address_history_clean,
-#'     contacts_vacc_history_clean = cases_vacc_history_clean,
-#'     contacts_becoming_cases = contacts_becoming_cases
-#'   )
+#' cases_clean <- clean_cases(
+#'   cases = cases,
+#'   cases_address_history_clean = cases_address_history_clean,
+#'   cases_vacc_history_clean = cases_vacc_history_clean,
+#'   cases_dateranges_history_clean = cases_dateranges_history_clean,
+#'   language_tokens = language_tokens
+#' )
+#' contacts_becoming_cases <- cases_from_contacts(cases_clean = cases_clean)
+#'
+#' contacts_clean <- clean_contacts(
+#'   contacts = contacts,
+#'   contacts_address_history_clean = cases_address_history_clean,
+#'   contacts_vacc_history_clean = cases_vacc_history_clean,
+#'   contacts_becoming_cases = contacts_becoming_cases
+#' )
 #' }
 clean_contacts <- function(contacts,
                            contacts_address_history_clean,
@@ -145,26 +167,25 @@ clean_contacts <- function(contacts,
     datetime_created_at = as.POSIXct(datetime_created_at, format = "%Y-%m-%dT%H:%M")
   )
 
-  #  truncate responses of categorical vars so easier to read
-  contacts_clean <- dplyr::mutate(
+  # translate responses of categorical vars so easier to read
+  contacts_clean <- translate_categories(
+    data = contacts_clean,
+    language_tokens = language_tokens
+  )
+
+  contacts_clean <- dplyr::rename(
     .data = contacts_clean,
-    classification = sub(".*CLASSIFICATION_", "", classification),
-    gender = sub(".*GENDER_", "", gender),
-    occupation = sub(".*OCCUPATION_", "", occupation),
-    outcome = sub(".*OUTCOME_", "", outcome_id),
-    pregnancy_status = sub(".*STATUS_", "", pregnancy_status),
-    risk_level = sub(".*LEVEL_", "", risk_level),
-    follow_up_status = sub(".*TYPE_", "", follow_up_status),
-    relationship_certainty_level = sub(".*LEVEL_", "", relationship_certainty_level_id),
-    relationship_exposure_type = sub(".*TYPE_", "", relationship_exposure_type_id),
-    relationship_context_of_transmission = sub(".*TRANSMISSION_", "", relationship_social_relationship_type_id),
-    relationship_exposure_frequency = sub(".*FREQUENCY_", "", relationship_exposure_frequency_id),
-    relationship_exposure_duration = sub(".*DURATION_", "", relationship_exposure_duration_id)
+    outcome = "outcome_id",
+    relationship_certainty_level = "relationship_certainty_level_id",
+    relationship_exposure_type = "relationship_exposure_type_id",
+    relationship_context_of_transmission = "relationship_social_relationship_type_id",
+    relationship_exposure_frequency = "relationship_exposure_frequency_id",
+    relationship_exposure_duration = "relationship_exposure_duration_id"
   )
 
   contacts_address_history_clean <- dplyr::filter(
     .data = contacts_address_history_clean,
-    addresses_typeid == "USUAL_PLACE_OF_RESIDENCE"
+    addresses_typeid == "Current address"
   )
 
   # join in current address from address history, only current place of residence
@@ -177,7 +198,7 @@ clean_contacts <- function(contacts,
   # join in info from vacc block
   contacts_clean <- dplyr::mutate(
     .data = contacts_clean,
-    vaccinated = case_when(id %in% contacts_vacc_history_clean$id[contacts_vacc_history_clean$vaccinesreceived_status == "VACCINATED"] ~ TRUE, TRUE ~ FALSE)
+    vaccinated = case_when(id %in% contacts_vacc_history_clean$id[contacts_vacc_history_clean$vaccinesreceived_status == "Vaccinated"] ~ TRUE, TRUE ~ FALSE)
   )
 
   # force NA ages to appear as NA, not as 0 like sometimes occurs
