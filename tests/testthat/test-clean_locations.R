@@ -1,12 +1,20 @@
 test_that("clean_locations works as expected", {
   skip("get_locations requires API call")
 
-  res <- get_locations(
+  locations <- get_locations(
     url = url,
     username = username,
     password = password
   )
-  res <- clean_locations(locations = res)
+
+  language_tokens <- get_language_tokens(
+    url = url,
+    username = username,
+    password = password,
+    language = "english_us"
+  )
+
+  res <- clean_locations(locations = locations, language_tokens = language_tokens)
 
   expect_s3_class(res, "tbl_df")
   expect_s3_class(res, "data.frame")

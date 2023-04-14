@@ -21,9 +21,17 @@
 #'   password = password
 #' )
 #'
-#' clean_locations(locations = locations)
+#' language_tokens <- get_language_tokens(
+#'   url = url,
+#'   username = username,
+#'   password = password,
+#'   language = "english_us"
+#' )
+#'
+#' clean_locations(locations = locations, language_tokens = language_tokens)
 #' }
-clean_locations <- function(locations) {
+clean_locations <- function(locations,
+                            language_tokens) {
 
   # filter out delete and inactive (or NA) values
   clean_locations <- dplyr::filter(
@@ -35,10 +43,15 @@ clean_locations <- function(locations) {
     .data$active == TRUE | is.na(.data$active)
   )
 
+  clean_locations <- translate_categories(
+    data = clean_locations,
+    language_tokens = language_tokens
+  )
+
   # add admin-level column
-  clean_locations <- dplyr::mutate(
+  clean_locations <- dplyr::rename(
     .data = clean_locations,
-    admin_level = sub(".*LEVEL_", "", .data$geographicalLevelId)
+    admin_level = "geographicalLevelId"
   )
 
   # select columns
