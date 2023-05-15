@@ -4,17 +4,20 @@
 \alias{get_all_outbreaks}
 \title{Get a list of all outbreaks and their attributes}
 \usage{
-get_all_outbreaks(url = url, username = username, password = password)
+get_all_outbreaks(url, username, password)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
 \item{password}{The password for your Go.Data login}
 }
 \value{
-Returns data frame of outbreaks. The resulting list is filtered by the user's permissions: only outbreaks for which the user has access will be returned.
+Returns data frame of outbreaks. The resulting list is filtered by the
+user's permissions: only outbreaks for which the user has access will be
+returned.
 }
 \description{
 A function to retrieve all outbreaks assigned
@@ -28,8 +31,10 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
-outbreaks <- get_all_outbreaks(url=url,
-                               username=username,
-                               password=password)
+outbreaks <- get_all_outbreaks(
+  url = url,
+  username = username,
+  password = password
+)
 }
 }

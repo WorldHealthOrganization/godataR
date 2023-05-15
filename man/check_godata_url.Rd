@@ -4,10 +4,14 @@
 \alias{check_godata_url}
 \title{Check if the provided Go.Data URL is valid}
 \usage{
-check_godata_url(url = url)
+check_godata_url(url, success_code = 200)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
+
+\item{success_code}{A numeric specifying which code is returned by the API
+when successfully returning the status code. Default is 200.}
 }
 \value{
 Boolean, where \code{TRUE} indicates a valid URL.
@@ -20,6 +24,6 @@ used in many of the other \code{godataR} functions.
 \examples{
 \dontrun{
 url <- "https://MyGoDataServer.com/"
-check_godata_url(url=url)
+check_godata_url(url = url)
 }
 }

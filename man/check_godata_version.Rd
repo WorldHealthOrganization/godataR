@@ -7,7 +7,8 @@
 check_godata_version(url = url)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 }
 \value{
 Boolean, where \code{TRUE} indicates version 2.38.1 or later.
@@ -21,6 +22,6 @@ many of the other \code{godataR} functions.
 \examples{
 \dontrun{
 url <- "https://MyGoDataServer.com/"
-check_godata_version(url=url)
+check_godata_version(url = url)
 }
 }

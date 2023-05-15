@@ -49,7 +49,8 @@ element order can be selected (i.e. all dates in the column to be converted
 must be in the same format).
 
 Dates with and without a time-stamp are both accepted. Dates which do include
-a time stamp must include hours, minutes and seconds in the format \strong{HH:mm:ss}
+a time stamp must include hours, minutes and seconds in the format
+\strong{HH:mm:ss}
 }
 \examples{
 # Create dummy dataframe with dates to convert:

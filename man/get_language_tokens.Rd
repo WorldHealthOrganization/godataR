@@ -2,29 +2,29 @@
 % Please edit documentation in R/get_language_tokens.R
 \name{get_language_tokens}
 \alias{get_language_tokens}
-\title{Get a list of variable tokens and their labels for the language you specify, in order to re-code variables in R.}
+\title{Get a list of variable tokens and their labels for the language you specify,
+in order to re-code variables in R.}
 \usage{
-get_language_tokens(
-  url = url,
-  username = username,
-  password = password,
-  language = language
-)
+get_language_tokens(url, username, password, language)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
 \item{password}{The password for your Go.Data login}
 
-\item{language}{The language ID you are retrieving translation file for, for instance "english_us"}
+\item{language}{The language ID you are retrieving translation file for,
+for instance "english_us"}
 }
 \value{
-Returns data frame of language tokens for your language. You will only be able to execute this function if you have access to the language tokens.
+Returns data frame of language tokens for your language. You will only be
+able to execute this function if you have access to the language tokens.
 }
 \description{
-Get a list of variable tokens and their labels for the language you specify, in order to re-code variables in R.
+Get a list of variable tokens and their labels for the language you specify,
+in order to re-code variables in R.
 }
 \examples{
 \dontrun{
@@ -33,9 +33,11 @@ username <- "myemail@email.com"
 password <- "mypassword"
 language <- "english_us"
 
-language_tokens <- get_language_tokens(url=url,
-                                       username=username,
-                                       password=password,
-                                       language=language)
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = language
+)
 }
 }

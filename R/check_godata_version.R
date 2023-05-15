@@ -5,43 +5,42 @@
 #' This is a housekeeping function used in
 #' many of the other `godataR` functions.
 #'
-#' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
+#' @param url Insert the base URL for your instance of Go.Data here. Don't
+#' forget the forward slash "/" at end!
 #'
 #' @return Boolean, where `TRUE` indicates version 2.38.1 or later.
 #' @examples
 #' \dontrun{
 #' url <- "https://MyGoDataServer.com/"
-#' check_godata_version(url=url)
+#' check_godata_version(url = url)
 #' }
-#' @importFrom magrittr %>%
-#' @importFrom stringr str_split
-check_godata_version <- function(url=url) {
+check_godata_version <- function(url = url) {
 
   # Get Current Version of Go.Data
-  gd.version <- get_godata_version(url=url)
+  gd_version <- get_godata_version(url = url)
 
   # Convert string to vector of 3 numbers
-  gd.version <- str_split(gd.version, "[.]") %>%
-    unlist() %>%
-    as.numeric()
+  gd_version <- strsplit(x = gd_version, split = "[.]")
+
+  gd_version <- as.numeric(unlist(gd_version))
+
+  stopifnot(
+    "godata version from API does not have major, minor and patch versioning" =
+      length(gd_version) == 3
+  )
+
+  names(gd_version) <- c("major", "minor", "patch")
 
   # Check if 2.38.1 or later
   # Should be TRUE if it is version 2.38.1 or later &
   # FALSE if version 2.38.0 or earlier
-  if (gd.version[1] < 2) {
-    after.2.38.1 <- FALSE
-  } else if (gd.version[1]==2 & gd.version[2] < 38) {
-    after.2.38.1 <- FALSE
-  } else if (gd.version[1]==2 & gd.version[2]==38 & gd.version[3]<1) {
-    after.2.38.1 <- FALSE
-  } else if (gd.version[1]==2 & gd.version[2]==38 & gd.version[3]>=1) {
-    after.2.38.1 <- TRUE
-  } else if (gd.version[1]==2 & gd.version[2]>38) {
-    after.2.38.1 <- TRUE
-  } else if (gd.version[1]>2) {
-    after.2.38.1 <- TRUE
+  if (gd_version["major"] < 2) {
+    return(FALSE)
+  } else if (gd_version["major"] == 2 && gd_version["minor"] < 38) {
+    return(FALSE)
+  } else if (gd_version["major"] == 2 && gd_version["minor"] == 38 && gd_version["patch"] == 0) {
+    return(FALSE)
+  } else {
+    return(TRUE)
   }
-
-  return(after.2.38.1)
-
 }

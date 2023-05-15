@@ -7,7 +7,8 @@
 #' housekeeping function used in many of the
 #' other `godataR` functions.
 #'
-#' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
+#' @param url Insert the base URL for your instance of Go.Data here. Don't
+#' forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login.
 #'
@@ -20,27 +21,38 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
-#' active_outbreak_id <- get_active_outbreak(url=url,
-#'                                           username=username,
-#'                                           password=password)
+#' active_outbreak_id <- get_active_outbreak(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
+get_active_outbreak <- function(url,
+                                username,
+                                password) {
 
-get_active_outbreak <- function(url=url,
-                                username=username,
-                                password=password) {
+  # get request to go.data
+  godata_url <- httr::GET(
+    paste0(
+      url,
+      "api/users",
+      "?access_token=",
+      get_access_token(
+        url = url,
+        username = username,
+        password = password
+      )
+    )
+  )
 
-  users <- GET(paste0(url,"api/users",
-                          "?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-    content(as="text") %>%
-    fromJSON(flatten=TRUE)
+  # unpack request as character string
+  url_content <- httr::content(godata_url, as = "text")
 
-  active.outbreak <- users$activeOutbreakId[users$email==username]
+  # converts JSON string into data frame
+  users <- jsonlite::fromJSON(url_content, flatten = TRUE)
 
-  return(active.outbreak)
+  # subset to active user
+  active_outbreak <- users$activeOutbreakId[users$email == username]
 
+  return(active_outbreak)
 }

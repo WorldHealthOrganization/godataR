@@ -6,7 +6,8 @@
 #' endpoint). This function relies on the
 #' `\teams` API endpoint.
 #'
-#' @param url Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!
+#' @param url Insert the base URL for your instance of Go.Data here. Don't
+#' forget the forward slash "/" at end!
 #' @param username The email address for your Go.Data login.
 #' @param password The password for your Go.Data login
 #'
@@ -19,29 +20,33 @@
 #' username <- "myemail@email.com"
 #' password <- "mypassword"
 #'
-#' teams <- get_teams(url=url,
-#'                    username=username,
-#'                    password=password)
+#' teams <- get_teams(
+#'   url = url,
+#'   username = username,
+#'   password = password
+#' )
 #' }
-#' @importFrom magrittr %>%
-#' @import dplyr
-#' @import tidyr
-#' @import httr
-#' @importFrom jsonlite fromJSON
-#' @importFrom purrr pluck
 #' @export
+get_teams <- function(url,
+                      username,
+                      password) {
 
-
-get_teams <- function(url=url,
-                      username=username,
-                      password=password) {
-
-  teams <- GET(paste0(url,"api/teams",
-                      "?access_token=",get_access_token(url=url, username=username, password=password))) %>%
-    content(as="text") %>%
-    fromJSON(flatten=TRUE) %>%
-    filter(deleted!=TRUE)
+  teams_request <- httr::GET(
+    paste0(
+      url,
+      "api/teams",
+      "?access_token=",
+      get_access_token(
+        url = url,
+        username = username,
+        password = password
+      )
+    )
+  )
+  teams_content <- httr::content(teams_request, as = "text")
+  teams <- jsonlite::fromJSON(teams_content, flatten = TRUE)
+  teams <- dplyr::filter(teams, .data$deleted != TRUE)
+  teams <- tibble::as_tibble(teams)
 
   return(teams)
-
 }

@@ -4,17 +4,20 @@
 \alias{get_users}
 \title{Get user data from Go.Data}
 \usage{
-get_users(url = url, username = username, password = password)
+get_users(url, username, password)
 }
 \arguments{
-\item{url}{Insert the base URL for your instance of Go.Data here. Don't forget the forward slash "/" at end!}
+\item{url}{Insert the base URL for your instance of Go.Data here. Don't
+forget the forward slash "/" at end!}
 
 \item{username}{The email address for your Go.Data login.}
 
 \item{password}{The password for your Go.Data login}
 }
 \value{
-Returns a data frame. Some fields, such as addresses, hospitalization history, and questionnaire fields may require further unnesting. See \code{\link[tidyr]{nest}} for assitance with unnesting.
+Returns a data frame. Some fields, such as addresses, hospitalization
+history, and questionnaire fields may require further unnesting. See
+\code{\link[tidyr]{nest}} for assitance with unnesting.
 }
 \description{
 A function to retrieve a list of all user
@@ -29,8 +32,10 @@ url <- "https://MyGoDataServer.com/"
 username <- "myemail@email.com"
 password <- "mypassword"
 
-users <- get_users(url=url,
-                   username=username,
-                   password=password)
+users <- get_users(
+  url = url,
+  username = username,
+  password = password
+)
 }
 }
