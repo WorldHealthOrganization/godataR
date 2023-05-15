@@ -279,7 +279,6 @@ You can find more information on the Go.Data API
 Bug reports and feature requests should be posted on github under
 [*issues*](https://github.com/WorldHealthOrganization/godataR/issues).
 All other questions and feedback, feel free to email us at
-<godata@who.int> or post a query in the [Go.Data Community of
-Practice](https://community-godata.who.int/)
+<godata@who.int>.
 
 Contributions are welcome via pull requests.
